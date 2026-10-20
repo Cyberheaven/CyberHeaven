@@ -1,0 +1,36 @@
+---
+import { site } from "../../lib/site";
+import ScrollWords from "../ScrollWords.astro";
+
+// Lucide icon paths, keyed by the "icon" field in site.json principles.
+const icons: Record<string, string> = {
+  target: '<circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />',
+  accessibility:
+    '<circle cx="16" cy="4" r="1" /><path d="m18 19 1-7-5.87.94" /><path d="m5 8 3-3 5.5 3-2.21 3.1" /><path d="M4.24 14.48a5 5 0 0 0 6.88 6.05" /><path d="M13.76 17.52a5 5 0 0 0-3.88-6.9" />',
+  users:
+    '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />',
+  heart:
+    '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />',
+};
+---
+<section class="principles container">
+  <div class="principles-header">
+    <ScrollWords as="h2" class="h2 balance principles-heading" text={`${site.principles.length} values that keep CyberHeaven going`} />
+  </div>
+  <div class="principles-cards">
+    {site.principles.map((c) => (
+      <div class="pcard" data-pcard>
+        <div class="pcard-inner">
+          <div class="pcard-face pcard-front">
+            <h3>{c.title}</h3>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={icons[c.icon] ?? icons.target} />
+          </div>
+          <div class="pcard-face pcard-back">
+            <img src={c.image} alt={c.alt} loading="lazy" />
+            <p>{c.description}</p>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>

@@ -1,0 +1,35 @@
+---
+import { site } from "../../lib/site";
+// "Topics we cover": scroll-driven switcher (behaviour in scripts/fx/services.ts).
+const topics = site.topics;
+const n = topics.length;
+const pad = (v: number) => String(v).padStart(2, "0");
+---
+<section id="topics" class="services container">
+  <div id="servicesScroll" class="services-scroll" data-services data-captions={JSON.stringify(topics.map((s) => s.captions))}>
+    <div class="services-switcher">
+      <div class="services-top">
+        <h2 class="body" style="color: var(--grey)">TOPICS WE COVER</h2>
+        <p class="caption"><span data-counter>01</span> / {pad(n)}</p>
+      </div>
+      <div class="services-middle">
+        <div class="services-names">
+          {topics.map((s, i) => (
+            <h3 class="h2 balance services-name" style={`color: ${i === 0 ? "var(--white)" : "var(--white-60)"}`} data-name={i}>{s.name}</h3>
+          ))}
+        </div>
+        <div class="services-detail">
+          <div class="services-image">
+            {topics.map((s, i) => <img class={i === 0 ? "is-on" : undefined} src={s.image} alt={s.alt} loading="lazy" />)}
+          </div>
+          <div class="services-captions" data-caps>
+            {topics[0].captions.map((c) => <p class="body">{c}</p>)}
+          </div>
+        </div>
+      </div>
+      <div class="services-progress">
+        <div class="services-fill" style={`width: ${(1 / n) * 100}%`} data-fill></div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,36 @@
+---
+import Base from "../../layouts/Base.astro";
+import Topbar from "../../components/Topbar.astro";
+import Footer from "../../components/sections/Footer.astro";
+import { getArticles, site } from "../../lib/site";
+import "../../styles/prose.css";
+
+const articles = (await getArticles()).filter((a) => !a.id.startsWith("_"));
+const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const cats = [...new Set(articles.map((a) => a.data.category))];
+---
+<Base title={`Articles | ${site.name}`} description="Free cybersecurity guides, tutorials and career advice.">
+  <Topbar path="/articles" />
+  <main>
+    <header class="list-head"><h1>Articles</h1></header>
+    <nav class="cat-nav" aria-label="Categories">
+      {cats.map((c) => <a href={`#${slug(c)}`}>{c}</a>)}
+    </nav>
+    {cats.map((c) => (
+      <section class="cat-group" aria-labelledby={slug(c)}>
+        <h2 id={slug(c)}>{c}</h2>
+        <div class="post-grid">
+          {articles.filter((a) => a.data.category === c).map((a) => (
+            <a class="post-card" href={`/articles/${a.id}`}>
+              <img src={a.data.cover} alt={a.data.coverAlt} loading="lazy" />
+              <span class="article-meta"><time datetime={a.data.date.toISOString()}>{a.data.date.toLocaleDateString("en-GB", { dateStyle: "medium", timeZone: "UTC" })}</time></span>
+              <h3>{a.data.title}</h3>
+              <p>{a.data.excerpt}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
+  </main>
+  <Footer />
+</Base>

@@ -1,0 +1,59 @@
+---
+import Base from "../../layouts/Base.astro";
+import Topbar from "../../components/Topbar.astro";
+import Contact from "../../components/sections/Contact.astro";
+import Footer from "../../components/sections/Footer.astro";
+import Icon from "../../components/Icon.astro";
+import { render } from "astro:content";
+import { getArticles, site } from "../../lib/site";
+import "../../styles/prose.css";
+
+export async function getStaticPaths() {
+  const articles = (await getArticles()).filter((a) => !a.id.startsWith("_"));
+  return articles.map((article, i) => ({
+    params: { slug: article.id },
+    props: { article, next: articles[i + 1] ?? null, prev: articles[i - 1] ?? null },
+  }));
+}
+
+const { article, next, prev } = Astro.props;
+const a = article.data;
+const { Content } = await render(article);
+const minutes = Math.max(1, Math.ceil((article.body ?? "").split(/\s+/).filter(Boolean).length / 200));
+const fmt = (d: Date) => d.toLocaleDateString("en-GB", { dateStyle: "long", timeZone: "UTC" });
+---
+<Base title={`${a.title} | ${site.name}`} description={a.excerpt}>
+  <Topbar path={`/articles/${article.id}`} />
+  <main>
+    <article>
+      <header class="article-head">
+        <p class="body">{a.category}</p>
+        <h1>{a.title}</h1>
+        <p class="article-meta">
+          <time datetime={a.date.toISOString()}>{fmt(a.date)}</time>
+          <span>By {a.author}</span>
+          <span>{minutes} min read</span>
+        </p>
+      </header>
+      {a.cover && <div class="article-cover"><img src={a.cover} alt={a.coverAlt} /></div>}
+      <div class="prose"><Content /></div>
+      {a.tags.length > 0 && <ul class="tag-list" aria-label="Tags">{a.tags.map((t) => <li>{t}</li>)}</ul>}
+    </article>
+    {(next || prev) && (
+      <section class="next-project">
+        {next && (
+          <a class="next-link" href={`/articles/${next.id}`} aria-label={`Next article: ${next.data.title}`}>
+            <span class="next-text">
+              <span class="body">Next · {next.data.category}</span>
+              <span class="h2">{next.data.title}</span>
+            </span>
+            <span class="round-btn" aria-hidden="true"><Icon name="arrow-up-right" size={24} /></span>
+          </a>
+        )}
+        {prev && <a class="body prose-link" href={`/articles/${prev.id}`}>Previous: {prev.data.title}</a>}
+      </section>
+    )}
+    <Contact />
+  </main>
+  <Footer />
+</Base>

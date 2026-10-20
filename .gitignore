@@ -4,6 +4,7 @@ node_modules/
 # Build
 dist/
 .astro/
+__pycache__/
 
 # Environment
 .env
@@ -14,7 +15,6 @@ dist/
 .idea/
 *.swp
 *.swo
-CLAUDE.md
 
 # OS
 .DS_Store
@@ -23,3 +23,4 @@ Thumbs.db
 # Migration data (local only)
 site-content/
 scrape_site.py
+_theme-ref/
