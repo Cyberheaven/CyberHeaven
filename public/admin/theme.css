@@ -148,6 +148,53 @@
 }
 
 /*
+ * Collection pages (and the Assets page, whose bar is labelled "Folder") open like the site's inner pages
+ * (PageHead): a big tight heading with the collection's description as a lead line under it, instead of Sveltia's small title with the description squeezed beside
+ * it. New and Delete stay on the heading's line, to the right.
+ */
+[role="toolbar"]:is([aria-label="Collection"], [aria-label="Folder"])[aria-orientation="horizontal"] {
+  height: auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 8px;
+  padding: 44px 24px 28px;
+}
+[role="toolbar"]:is([aria-label="Collection"], [aria-label="Folder"]) h2,
+[role="toolbar"]:is([aria-label="Collection"], [aria-label="Folder"]) h2:first-child {
+  margin-inline-end: auto;   /* Sveltia pins the heading's flex size, so the margin pushes New and Delete right */
+  padding: 0;
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: #fff;
+}
+[role="toolbar"]:is([aria-label="Collection"], [aria-label="Folder"]) .description {
+  order: 1;
+  flex: 1 0 100%;
+  font-size: 16px;
+  line-height: 1.5;
+  color: rgb(255 255 255 / 60%);
+  opacity: 1;
+}
+/* Sveltia cuts the description to one line; the lead line may wrap */
+[role="toolbar"]:is([aria-label="Collection"], [aria-label="Folder"]) .description .truncated-text { display: block; max-width: 640px; -webkit-line-clamp: unset !important; white-space: normal; }
+@media (max-width: 767px) {
+  [role="toolbar"]:is([aria-label="Collection"], [aria-label="Folder"])[aria-orientation="horizontal"] { padding: 20px 16px 16px; }
+  [role="toolbar"]:is([aria-label="Collection"], [aria-label="Folder"]) h2 { font-size: 30px; }
+  [role="toolbar"]:is([aria-label="Collection"], [aria-label="Folder"]) .description { font-size: 15px; }
+}
+
+/* List rows at the site's scale: taller rows, larger titles and thumbnails */
+:is([aria-label="Entries"], [aria-label="Files"])[role="grid"] { --sui-primary-row-height: 72px; }
+:not(.grid-view) > :is([aria-label="Entries"], [aria-label="Files"])[role="grid"] [role="gridcell"].title {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+:not(.grid-view) > :is([aria-label="Entries"], [aria-label="Files"])[role="grid"] [role="gridcell"].image > * { width: 48px; height: 48px; }
+
+/*
  * Entry lists (articles, people, pages, labs…): hovering or keyboard-focusing a row sweeps it white from the
  * left and the text turns dark, like the rows on the site's lab and resource pages (.bigrow in global.css).
  * Rows are table rows, so the sweep is a growing white background rather than a separate layer.
