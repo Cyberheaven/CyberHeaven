@@ -60,7 +60,7 @@
   },
   "principles": [
     { "title": "Quality content, always", "description": "Practical, accurate guides you can actually learn from. Going volunteer-led doesn’t lower the bar.", "icon": "target", "image": "/assets/principle-1.webp", "alt": "Blurred charcoal and cream abstract streaks" },
-    { "title": "Free for everyone", "description": "No pricing, no paid courses, no paywalled paths. Every article and resource is free to read.", "icon": "accessibility", "image": "/assets/principle-2.webp", "alt": "Blurred blue-grey abstract streaks" },
+    { "title": "Free for everyone", "description": "No pricing, no paid courses, no paywalled paths. Everything CyberHeaven publishes is free to read and use.", "icon": "accessibility", "image": "/assets/principle-2.webp", "alt": "Blurred blue-grey abstract streaks" },
     { "title": "Community-driven", "description": "Learners shape what comes next. The Discord is led by a community lead responsible for its reforms and restructuring.", "icon": "users", "image": "/assets/principle-3.webp", "alt": "Blurred green abstract streaks" },
     { "title": "Volunteer-powered", "description": "Community contributions keep CyberHeaven active, fresh and valuable. Anyone can write, review or help out.", "icon": "heart", "image": "/assets/principle-4.webp", "alt": "Blurred orange abstract streaks" }
   ],
@@ -76,7 +76,7 @@
     { "name": "Linux", "image": "/assets/streak-linux.webp", "alt": "", "captions": ["File management & navigation", "Permissions", "Networking commands"] }
   ],
   "faq": [
-    { "q": "Is CyberHeaven really free?", "a": "Yes. There is no pricing, no paid courses and no paid learning paths. Every article and resource on the site is free for everyone." },
+    { "q": "Is CyberHeaven really free?", "a": "Yes. There is no pricing, no paid courses and no paid learning paths. Every article, lab and tool on CyberHeaven is free for everyone. Our resources page also recommends some outside courses, a few of them paid; we’re not affiliated with any of them." },
     { "q": "Who runs CyberHeaven?", "a": "Volunteers. CyberHeaven is now a community-driven, volunteer-contributed project, and the Discord is led by a community lead responsible for its reforms and restructuring." },
     { "q": "How can I contribute an article?", "a": "Share your idea in the Discord or email cyberheavenhq@proton.me with a short outline of the topic. Community contributions are what keep CyberHeaven active and fresh." },
     { "q": "How do I join the community?", "a": "Join the CyberHeaven Discord. It’s the place to ask questions, share what you’re learning and meet other cybersecurity aspirants." },
