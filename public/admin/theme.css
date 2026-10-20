@@ -101,9 +101,34 @@
  */
 .container:has(> .inner > img.logo) {
   isolation: isolate;
-  background:
-    radial-gradient(ellipse at center, rgb(18 18 18 / 70%) 0%, rgb(18 18 18 / 86%) 55%, rgb(18 18 18 / 96%) 100%),
-    url(/assets/principle-1.webp) center / cover #121212;
+  overflow: hidden;
+  background: #121212;
+}
+/* The streak image sits on its own layer so it can drift slowly; the dark vignette stays still on top */
+.container:has(> .inner > img.logo)::before,
+.container:has(> .inner > img.logo)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.container:has(> .inner > img.logo)::before {
+  background: url(/assets/principle-1.webp) center / cover;
+  animation: ch-drift 40s ease-in-out infinite alternate;
+}
+.container:has(> .inner > img.logo)::after {
+  background: radial-gradient(ellipse at center, rgb(18 18 18 / 70%) 0%, rgb(18 18 18 / 86%) 55%, rgb(18 18 18 / 96%) 100%);
+}
+/* Logo, heading and button rise out of a blur one after another, like the heading on every site page */
+.container:has(> .inner > img.logo) > .inner > * { animation: ch-word-in 1.1s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.container:has(> .inner > img.logo) > .inner > h1 { animation-delay: 80ms; }
+.container:has(> .inner > img.logo) > .inner > :nth-child(n + 3) { animation-delay: 260ms; }
+@keyframes ch-drift { to { transform: scale(1.08) translate3d(-2%, -1%, 0); } }
+@keyframes ch-word-in { from { opacity: 0; filter: blur(14px); transform: translate3d(0, 0.4em, 0); } }
+@media (prefers-reduced-motion: reduce) {
+  .container:has(> .inner > img.logo)::before,
+  .container:has(> .inner > img.logo) > .inner > * { animation: none; }
 }
 .container:has(> .inner > img.logo) > .inner > img.logo { width: auto; height: 68px; }
 .container:has(> .inner > img.logo) > .inner {
