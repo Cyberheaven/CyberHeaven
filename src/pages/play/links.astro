@@ -1,0 +1,135 @@
+---
+import Base from "../../layouts/Base.astro";
+import Topbar from "../../components/Topbar.astro";
+import Footer from "../../components/sections/Footer.astro";
+import PageHead from "../../components/PageHead.astro";
+import Icon from "../../components/Icon.astro";
+import DefenderNote from "../../components/DefenderNote.astro";
+import { site } from "../../lib/site";
+
+// Links are generated in src/lib/links.mjs: made-up organisations, reserved .example/.test domains.
+---
+<Base title={`Real or fake link? | ${site.name}`} description="A free exercise in reading links like a defender: decide which addresses really belong to an organisation and learn the tricks lookalike links use. New links every round.">
+  <Topbar path="/play/links" />
+  <main>
+    <PageHead title="Real or fake link?" lead="Fake links hide in emails, texts and ads by looking almost right. Learn to read an address the way a browser does, find who really owns it, and know what to report. Every round brings new links.">
+      <a class="text-link body-sb" href="/play/phishing">Then try Spot the phish<Icon name="arrow-right" size={18} /></a>
+    </PageHead>
+
+    <section class="shell lab lk" data-lk>
+      <DefenderNote />
+      <div class="panel lk-brief">
+        <p class="panel-title" data-lk-org></p>
+        <p class="body muted">The trick: find the first single slash after <code>https://</code>. The domain just before it, read from the right, is who controls the link. Anything to its left is a subdomain they chose; anything after the slash is just a path.</p>
+        <p class="caption muted" data-lk-score></p>
+      </div>
+      <ol class="lk-list" data-lk-list></ol>
+      <div class="verdict" data-lk-end hidden>
+        <b data-lk-final></b>
+        <span class="body muted">If a link looks wrong, don't click it. Open the site by typing the address you know, and report the message to your IT or security team so they can block it for everyone.</span>
+        <button type="button" class="btn btn-sm lk-again" data-lk-again>New round</button>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style is:global>
+  /* global: the link rows are drawn by the script below */
+  .lk-brief code { font-family: var(--mono); color: var(--white); }
+  .lk-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border: 1px solid var(--white-20); border-radius: 16px; overflow: clip; background: var(--grey-50); }
+  .lk-row { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 8px 16px; align-items: center; padding: 16px 20px; }
+  .lk-row + .lk-row { border-top: 1px solid var(--white-20); }
+  .lk-n { font-size: 13px; color: var(--white-40); font-variant-numeric: tabular-nums; }
+  .lk-url { font-family: var(--mono); font-size: 14.5px; color: var(--white); overflow-wrap: anywhere; }
+  .lk-btns { display: flex; gap: 8px; }
+  .lk-btns .btn { height: 40px; padding: 0 16px; }
+  .lk-result { grid-column: 2 / -1; display: flex; flex-direction: column; gap: 2px; font-size: 14px; color: var(--grey); }
+  .lk-result b { font-weight: 600; }
+  .lk-row.is-right .lk-result b { color: rgb(120, 220, 145); }
+  .lk-row.is-wrong .lk-result b { color: rgb(255, 130, 136); }
+  .lk-again { align-self: flex-start; margin-top: 6px; }
+  @media (max-width: 809px) {
+    .lk-row { grid-template-columns: 24px minmax(0, 1fr); padding: 16px; }
+    .lk-btns { grid-column: 2; }
+    .lk-url { font-size: 13px; }
+  }
+</style>
+
+<script>
+  import { makeRound } from "../../lib/links.mjs";
+  import { scrollToY } from "../../scripts/lib";
+
+  const root = document.querySelector<HTMLElement>("[data-lk]")!;
+  const $ = <T extends HTMLElement = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+  const list = $("[data-lk-list]");
+  let round = makeRound();
+  let answered = 0;
+  let score = 0;
+
+  // The URL with its real owner highlighted (only after the learner has answered)
+  const urlNode = (url: string, owner?: string) => {
+    const span = document.createElement("span");
+    span.className = "lk-url";
+    const start = url.indexOf("//") + 2;
+    const end = url.indexOf("/", start) < 0 ? url.length : url.indexOf("/", start);
+    const at = owner ? url.slice(0, end).lastIndexOf(owner) : -1;
+    if (at < start) span.textContent = url;
+    else {
+      const mark = document.createElement("mark");
+      mark.textContent = owner!;
+      span.append(url.slice(0, at), mark, url.slice(at + owner!.length));
+    }
+    return span;
+  };
+
+  const status = () => ($("[data-lk-score]").textContent = `${answered} of ${round.links.length} checked · ${score} right`);
+
+  const deal = () => {
+    answered = score = 0;
+    $("[data-lk-end]").hidden = true;
+    $("[data-lk-org]").textContent = `You work at ${round.org.name}. Its real domain is ${round.base}.`;
+    list.replaceChildren(
+      ...round.links.map((l, i) => {
+        const li = document.createElement("li");
+        li.className = "lk-row";
+        const n = Object.assign(document.createElement("span"), { className: "lk-n", textContent: String(i + 1) });
+        const btns = document.createElement("div");
+        btns.className = "lk-btns";
+        for (const [label, says] of [["Real", true], ["Fake", false]] as const) {
+          const b = Object.assign(document.createElement("button"), { type: "button", className: `btn ${says ? "btn-ghost" : ""}`, textContent: label });
+          b.setAttribute("aria-label", `${label}: ${l.url}`);
+          b.addEventListener("click", () => {
+            const right = says === l.real;
+            answered++;
+            if (right) score++;
+            li.classList.add(right ? "is-right" : "is-wrong");
+            li.children[1].replaceWith(urlNode(l.url, l.owner));
+            const res = document.createElement("p");
+            res.className = "lk-result";
+            const b2 = document.createElement("b");
+            b2.textContent = `${right ? "Correct" : "Not quite"}: ${l.real ? "real" : "fake"}.`;
+            res.append(b2, l.why);
+            btns.replaceWith(res);
+            status();
+            if (answered === round.links.length) {
+              $("[data-lk-final]").textContent = `${score} of ${round.links.length} right.`;
+              $("[data-lk-end]").hidden = false;
+            }
+          });
+          btns.append(b);
+        }
+        li.append(n, urlNode(l.url), btns);
+        return li;
+      })
+    );
+    status();
+  };
+
+  $("[data-lk-again]").addEventListener("click", () => {
+    round = makeRound();
+    deal();
+    scrollToY(root.getBoundingClientRect().top + window.scrollY - 100);
+  });
+  deal();
+</script>

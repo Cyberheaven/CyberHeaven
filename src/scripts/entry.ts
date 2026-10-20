@@ -18,4 +18,5 @@ import "./fx/services";
 import "./fx/faq";
 import "./fx/footer";
 import "./fx/youtube";
+import "./fx/scramble";
 import "./smooth-scroll";

@@ -8,8 +8,8 @@
   "comments": {
     "repo": "Cyberheaven/CyberHeaven",
     "repoId": "R_kgDOVQalrA",
-    "category": "Announcements",
-    "categoryId": "DIC_kwDOVQalrM4DJJjj"
+    "category": "Comments",
+    "categoryId": "DIC_kwDOVQalrM4DJKQH"
   },
   "year": "2026",
   "nav": [
@@ -32,11 +32,19 @@
     { "label": "Terms, privacy & cookies", "href": "/legal" }
   ],
   "tools": [
-    { "title": "Find your path", "description": "Eight quick questions that match what you enjoy to a cybersecurity career, with free guides to start.", "href": "/career" },
-    { "title": "Spot the phish", "description": "Real or fake? Sort eight messages and learn the clues that give phishing away.", "href": "/play/phishing" },
-    { "title": "Route the alert", "description": "Climb the SOC escalation ladder, then decide which tier should handle each alert.", "href": "/play/soc" },
-    { "title": "Know your enemy", "description": "Explore six malware families, what they do and the real attacks they're known for.", "href": "/play/malware" },
-    { "title": "Glossary", "description": "Plain-English definitions of the cybersecurity terms you’ll run into, from APT to zero trust. Searchable and filterable.", "href": "/glossary" }
+    {"title": "Alert triage", "description": "Work a SOC shift: read eight alerts, close the benign ones and escalate the real threats. New alerts every shift.", "href": "/play/soc", "topic": "SOC Careers", "featured": true, "specimen": "HIGH  Impossible travel · user a.okafor"},
+    {"title": "Log hunt", "description": "Filter a real-looking server log, pin the evidence and work out how the attacker got in. Two cases.", "href": "/play/logs", "topic": "DFIR & Forensics", "featured": true, "specimen": "03:14:07 sshd: Accepted password for deploy from 203.0.113.45"},
+    {"title": "Shell quest", "description": "Review a copy of a server in a real-feeling Linux terminal. Use ls, cat, grep and find to collect five flags. A new server every game.", "href": "/play/shell", "topic": "Linux", "featured": true, "specimen": "$ grep ERROR /var/log/app.log"},
+    {"title": "Decode the layers", "description": "Peel Base64, hex, URL, ROT13 and XOR layers off suspicious strings, like analysts do in CyberChef. Endless random mode.", "href": "/play/decode", "topic": "DFIR & Forensics", "featured": true, "specimen": "Q0h7YmFzZTY0X2lzX25vdF9lbmNyeXB0aW9ufQ=="},
+    {"title": "Real or fake link?", "description": "Read addresses the way a browser does and spot the lookalike links hiding in emails and texts. New links every round.", "href": "/play/links", "topic": "Web & account security", "featured": true, "specimen": "https://northwindbank.example.secure-login.test/"},
+    {"title": "Write the rule", "description": "Write a YARA-style detection rule that catches every malware sample and none of the clean files. Scored live as you type.", "href": "/play/rules", "topic": "Malware Analysis", "specimen": "$mutex = \"InkwellMtx\""},
+    {"title": "Classify the infection", "description": "Read what defenders observed on an infected machine, name the type of malware and learn how to respond.", "href": "/play/malware", "topic": "Malware Analysis", "specimen": "IR-4821: every file now ends in .locked"},
+    {"title": "Spot the phish", "description": "An inbox of eight messages, shuffled every time. Report the phishing, keep the real ones.", "href": "/play/phishing", "topic": "SOC Careers", "specimen": "From: security@northwind-bank-alerts.com"},
+    {"title": "Permissions lab", "description": "Set Linux file permissions with least privilege. Watch ls -l, octal and chmod change live. New tasks every run.", "href": "/play/permissions", "topic": "Linux", "specimen": "-rwxr-x--- maya devops deploy.sh"},
+    {"title": "Hash and salt", "description": "See how websites should store passwords: a live SHA-256 hash, why salting matters and how strong a password really is.", "href": "/play/hashing", "topic": "Web & account security", "specimen": "sha256(\"sunshine2026\") = 5d6180aa498ee7335f2899c3e818a2f4"},
+    {"title": "Fix the query", "description": "Review code that builds SQL from user input, pick the fix a security reviewer would approve and watch the tests run.", "href": "/play/query", "topic": "Web & account security", "specimen": "db.get(\"... WHERE name = ?\", [name])"},
+    {"title": "Find your path", "description": "Eight quick questions that match what you enjoy to a cybersecurity career, with free guides to start.", "href": "/career"},
+    {"title": "Glossary", "description": "Plain-English definitions of the cybersecurity terms you’ll run into, from APT to zero trust. Searchable and filterable.", "href": "/glossary"}
   ],
   "socials": [
     { "label": "Discord", "href": "https://discord.gg/QH8mRSCdW9" },
@@ -55,6 +63,9 @@
     { "title": "Free for everyone", "description": "No pricing, no paid courses, no paywalled paths. Every article and resource is free to read.", "icon": "accessibility", "image": "/assets/principle-2.webp", "alt": "Blurred blue-grey abstract streaks" },
     { "title": "Community-driven", "description": "Learners shape what comes next. The Discord is led by a community lead responsible for its reforms and restructuring.", "icon": "users", "image": "/assets/principle-3.webp", "alt": "Blurred green abstract streaks" },
     { "title": "Volunteer-powered", "description": "Community contributions keep CyberHeaven active, fresh and valuable. Anyone can write, review or help out.", "icon": "heart", "image": "/assets/principle-4.webp", "alt": "Blurred orange abstract streaks" }
+  ],
+  "labTopics": [
+    { "name": "Web & account security", "image": "/assets/streak-web.webp" }
   ],
   "ticker": "LEARN · DEFEND · SHARE · GROW TOGETHER ·",
   "topics": [

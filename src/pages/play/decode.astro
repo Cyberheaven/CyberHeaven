@@ -1,0 +1,250 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHead from "../../components/PageHead.astro";
+import Topbar from "../../components/Topbar.astro";
+import Footer from "../../components/sections/Footer.astro";
+import Icon from "../../components/Icon.astro";
+import DefenderNote from "../../components/DefenderNote.astro";
+import { site } from "../../lib/site";
+import { encode, OPS } from "../../lib/decode-ops.mjs";
+import data from "../../data/decode.json";
+
+// Challenges live in src/data/decode.json (CMS: Interactive → Decode the layers). Each one stores the
+// plain message and its layers; the scrambled string is made here at build time, so editors never
+// have to encode anything by hand.
+const challenges = data.challenges.map((c) => ({ ...c, input: encode(c.message, c.layers), flag: c.message.match(/CH\{[^}]+\}/)![0] }));
+const ops = Object.entries(OPS).map(([id, o]) => ({ id, label: o.label, about: o.about, keyed: !!(o as { keyed?: boolean }).keyed }));
+---
+<Base title={`Decode the layers | ${site.name}`} description="A free in-browser decoding lab: stack Base64, hex, URL decoding, ROT13, reverse and XOR steps to peel obfuscated strings, like analysts do with CyberChef.">
+  <Topbar path="/play/decode" />
+  <main>
+    <PageHead title="Decode the layers" lead="Suspicious strings in logs and emails are often hidden under layers of encoding. Build a recipe of decoding steps to peel each one back to its flag, the way analysts do when they investigate. Every step runs right here in your browser.">
+      <a class="text-link body-sb" href="/articles/a-beginners-guide-to-malware-analysis">Read the beginner’s guide to malware analysis<Icon name="arrow-right" size={18} /></a>
+    </PageHead>
+
+    <section class="shell lab dc" data-dc data-challenges={JSON.stringify(challenges)} data-ops={JSON.stringify(ops)}>
+      <DefenderNote />
+      <div class="chips" role="group" aria-label="Challenges">
+        {challenges.map((c, i) => <button type="button" class="chip" data-pick={i} aria-pressed={i === 0 ? "true" : "false"}><small>{i + 1}</small><span class="dc-check" hidden><Icon name="check" size={14} stroke={2.5} /></span>{c.title}</button>)}
+        <button type="button" class="chip" data-pick={challenges.length} aria-pressed="false"><Icon name="plus" size={14} stroke={2.5} />Random string</button>
+      </div>
+
+      <div class="dc-grid">
+        <div class="dc-recipe">
+          <div class="term">
+            <div class="term-bar"><span>Input</span><button type="button" class="dc-link" data-dc-reset>Reset</button></div>
+            <textarea class="term-body dc-input" data-dc-input rows="3" spellcheck="false" aria-label="Input to decode"></textarea>
+          </div>
+          <ol class="dc-steps" data-dc-steps aria-live="polite"></ol>
+          <div class="dc-add">
+            <p class="caption muted">Add a step</p>
+            <div class="dc-ops">
+              {ops.map((o) => (
+                <button type="button" class="dc-op" data-add={o.id}>
+                  <span class="body-sb">{o.label}</span>
+                  <span class="caption muted">{o.about}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <aside class="panel dc-side" aria-live="polite">
+          <p class="caption muted" data-dc-count></p>
+          <p class="panel-title" data-dc-title></p>
+          <p class="body muted" data-dc-story></p>
+          <div class="lab-actions"><button type="button" class="btn btn-sm btn-ghost" data-dc-hint>Show a hint</button></div>
+          <p class="body dc-hint" data-dc-hinttext hidden></p>
+          <div class="verdict is-right" data-dc-win hidden>
+            <b>Flag found: <span data-dc-flag></span></b>
+            <span class="body muted" data-dc-explain></span>
+          </div>
+          <button type="button" class="btn btn-sm dc-next" data-dc-next hidden><span data-dc-nextlabel>Next challenge</span><Icon name="arrow-right" size={18} /></button>
+          <p class="caption muted dc-note">Paste any string into Input to use this as a mini CyberChef. Nothing you type leaves your browser.</p>
+        </aside>
+      </div>
+
+      <template data-dc-step>
+        <li class="dc-step">
+          <div class="dc-step-head">
+            <span class="dc-step-n caption"></span>
+            <span class="body-sb dc-step-name"></span>
+            <label class="dc-key" hidden>
+              <span class="caption muted">Key</span>
+              <input type="range" min="0" max="255" value="0" />
+              <output class="term-body"></output>
+            </label>
+            <button type="button" class="dc-remove" aria-label="Remove this step"><Icon name="x" size={16} /></button>
+          </div>
+          <pre class="term-body dc-out" data-lenis-prevent></pre>
+        </li>
+      </template>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .dc-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 16px; align-items: start; }
+  .dc-recipe { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .dc-input { display: block; width: 100%; min-height: 96px; padding: 16px; border: 0; background: none; color: var(--white); resize: vertical; overflow-wrap: anywhere; }
+  .dc-input:focus { outline: none; box-shadow: inset 0 0 0 1px var(--white-60); border-radius: 0 0 14px 14px; }
+  .dc-link { padding: 4px 0; border: 0; background: none; color: var(--white-60); font-size: 13px; cursor: pointer; }
+  @media (hover: hover) and (pointer: fine) { .dc-link:hover { color: var(--white); } }
+
+  .dc-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+  .dc-steps:empty { display: none; }
+  .dc-step { position: relative; border-radius: 14px; border: 1px solid var(--white-20); background: var(--black); animation: dc-in 0.5s var(--ease-out); }
+  .dc-step::before { content: ""; position: absolute; left: 27px; top: -17px; height: 16px; width: 1px; background: var(--white-20); }
+  @keyframes dc-in { from { opacity: 0; transform: translateY(-8px); filter: blur(6px); } }
+  .dc-step-head { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 10px 8px 16px; border-bottom: 1px solid var(--white-20); }
+  .dc-step-n { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--white-20); color: var(--white-60); font-variant-numeric: tabular-nums; }
+  .dc-step-name { color: var(--white); }
+  .dc-key { flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .dc-key input { flex: 1; min-width: 60px; accent-color: var(--white); }
+  .dc-key output { min-width: 8ch; color: var(--white); font-size: 13px; text-align: right; }
+  .dc-remove { margin-left: auto; display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 50%; background: none; color: var(--white-60); cursor: pointer; transition: background 0.3s var(--ease-out), color 0.3s var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .dc-remove:hover { background: var(--white-20); color: var(--white); } }
+  .dc-out { margin: 0; padding: 14px 16px; max-height: 220px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--grey); transition: color 0.3s var(--ease-out); }
+  .dc-step.is-error .dc-out { color: rgb(255, 130, 136); font-family: var(--font); font-size: 14px; }
+  .dc-step.is-error { border-color: rgba(237, 50, 59, 0.6); }
+  .dc-step.is-win { border-color: var(--success); }
+  .dc-step.is-win .dc-out { color: var(--white); }
+
+  .dc-add { display: flex; flex-direction: column; gap: 10px; padding-top: 8px; }
+  .dc-ops { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .dc-op {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--white-20);
+    background: transparent; color: var(--white); text-align: left; cursor: pointer; transition: background 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
+  }
+  .dc-op .body-sb { color: inherit; }
+  @media (hover: hover) and (pointer: fine) { .dc-op:hover { background: var(--grey-50); border-color: var(--white-60); } }
+  .dc-op:active { transform: scale(0.98); }
+
+  .dc-side { position: sticky; top: 96px; }
+  .dc-check { display: inline-flex; color: var(--success); }
+  .chip[aria-pressed="true"] .dc-check { color: rgb(30, 140, 60); }
+  .dc-hint { color: var(--white); }
+  .dc-win b span { font-family: var(--mono); }
+  .dc-next { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; }
+  .dc-note { padding-top: 12px; border-top: 1px solid var(--white-20); }
+
+  @media (max-width: 1199px) { .dc-grid { grid-template-columns: minmax(0, 1fr); } .dc-side { position: static; order: -1; } }
+  @media (max-width: 809px) { .dc-ops { grid-template-columns: 1fr 1fr; } .dc-step-head { flex-wrap: wrap; } .dc-key { order: 5; flex-basis: 100%; } }
+  @media (prefers-reduced-motion: reduce) { .dc-step { animation: none; } }
+</style>
+
+<script>
+  import { decode, encode, show, OPS } from "../../lib/decode-ops.mjs";
+  import { int, pick as choose, sample, token } from "../../lib/random.mjs";
+
+  type Challenge = { title: string; story: string; hint: string; explain: string; input: string; flag: string };
+  type Op = { id: string; label: string; keyed: boolean };
+  const root = document.querySelector<HTMLElement>("[data-dc]")!;
+  const challenges: Challenge[] = JSON.parse(root.dataset.challenges!);
+  const GUIDED = challenges.length;
+
+  // "Random string": a harmless flag wrapped in 2-4 random layers, new every time it's picked.
+  const WORDS = ["blue", "team", "quiet", "signal", "harbor", "patient", "layers", "lantern", "orbit", "maple", "copper", "tidal"];
+  const randomChallenge = (): Challenge => {
+    const layers: string[] = sample(["base64", "hex", "url", "rot13", "reverse"], int(2, 3));
+    if (Math.random() < 0.4) {
+      // XOR makes unreadable bytes, so a text encoding (Base64, hex or URL) has to come after it
+      layers.unshift(`xor:${int(1, 255)}`);
+      if (!layers.slice(1).some((l) => ["base64", "hex", "url"].includes(l))) layers.push(choose(["base64", "hex"]));
+    }
+    const flag = `CH{${choose(WORDS)}_${choose(WORDS)}_${token(4, "0123456789abcdef")}}`;
+    const steps = layers.slice().reverse().map((l) => (l.startsWith("xor") ? `XOR with key ${l.split(":")[1]}` : OPS[l].label));
+    return {
+      title: "Random string",
+      story: `A suspicious string from a log, wrapped in ${layers.length} layers of encoding. Recognise each alphabet and peel the layers off until the flag appears.`,
+      hint: `Peel it in this order: ${steps.join(", then ")}.`,
+      explain: "Same skill, new string. Real investigations rarely label their layers, so the habit to build is: look at the alphabet, decode one layer, look again.",
+      input: encode(`ref=${flag}`, layers),
+      flag,
+    };
+  };
+  const ops: Op[] = JSON.parse(root.dataset.ops!);
+  const $ = <T extends HTMLElement = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+  const input = $<HTMLTextAreaElement>("[data-dc-input]");
+  const list = $("[data-dc-steps]");
+  const tpl = $<HTMLTemplateElement>("[data-dc-step]");
+  const solved = new Set<number>();
+  let current = 0;
+
+  const steps = () => Array.from(list.children) as HTMLElement[];
+
+  const run = () => {
+    const items = steps();
+    const results = decode(input.value, items.map((li) => ({ op: li.dataset.op!, key: li.querySelector("input")!.value })));
+    const c = challenges[current];
+    let win = false;
+    items.forEach((li, k) => {
+      const r = results[k];
+      const text = "bytes" in r && r.bytes ? show(r.bytes) : r.error;
+      const hit = "bytes" in r && !!r.bytes && k === items.length - 1 && text.includes(c.flag);
+      li.querySelector(".dc-step-n")!.textContent = String(k + 1);
+      li.querySelector(".dc-out")!.textContent = text || "(empty)";
+      li.classList.toggle("is-error", !("bytes" in r && r.bytes));
+      li.classList.toggle("is-win", hit);
+      win ||= hit;
+    });
+    $("[data-dc-win]").hidden = !win;
+    $("[data-dc-next]").hidden = !win;
+    $("[data-dc-nextlabel]").textContent = current < GUIDED - 1 ? "Next challenge" : "Another random string";
+    if (win && current < GUIDED && !solved.has(current)) {
+      solved.add(current);
+      const chip = root.querySelector(`[data-pick="${current}"]`)!;
+      chip.querySelector("small")!.hidden = true;
+      chip.querySelector<HTMLElement>(".dc-check")!.hidden = false;
+    }
+  };
+
+  const addStep = (id: string) => {
+    const op = ops.find((o) => o.id === id)!;
+    const li = (tpl.content.firstElementChild as HTMLElement).cloneNode(true) as HTMLElement;
+    li.dataset.op = id;
+    li.querySelector(".dc-step-name")!.textContent = op.label;
+    const key = li.querySelector<HTMLElement>(".dc-key")!;
+    const range = key.querySelector("input")!;
+    const out = key.querySelector("output")!;
+    key.hidden = !op.keyed;
+    range.setAttribute("aria-label", "XOR key");
+    const label = () => (out.textContent = `${range.value} · 0x${Number(range.value).toString(16).padStart(2, "0")}`);
+    label();
+    range.addEventListener("input", () => (label(), run()));
+    li.querySelector(".dc-remove")!.addEventListener("click", () => (li.remove(), run()));
+    list.append(li);
+    run();
+    if (op.keyed) range.focus();
+  };
+
+  const pick = (i: number) => {
+    current = i;
+    if (i >= GUIDED) challenges[GUIDED] = randomChallenge();
+    const c = challenges[i];
+    root.querySelectorAll<HTMLButtonElement>("[data-pick]").forEach((b) => b.setAttribute("aria-pressed", String(Number(b.dataset.pick) === i)));
+    $("[data-dc-count]").textContent = i < GUIDED ? `Challenge ${i + 1} of ${GUIDED}` : "Random mode · new string every time";
+    $("[data-dc-title]").textContent = c.title;
+    $("[data-dc-story]").textContent = c.story;
+    $("[data-dc-hinttext]").textContent = c.hint;
+    $("[data-dc-hinttext]").hidden = true;
+    $("[data-dc-hint]").hidden = false;
+    $("[data-dc-flag]").textContent = c.flag;
+    $("[data-dc-explain]").textContent = c.explain;
+    input.value = c.input;
+    list.replaceChildren();
+    run();
+  };
+
+  root.querySelectorAll<HTMLButtonElement>("[data-add]").forEach((b) => b.addEventListener("click", () => addStep(b.dataset.add!)));
+  root.querySelectorAll<HTMLButtonElement>("[data-pick]").forEach((b) => b.addEventListener("click", () => pick(Number(b.dataset.pick))));
+  input.addEventListener("input", run);
+  $("[data-dc-reset]").addEventListener("click", () => pick(current));
+  $("[data-dc-hint]").addEventListener("click", (e) => {
+    (e.currentTarget as HTMLElement).hidden = true;
+    $("[data-dc-hinttext]").hidden = false;
+  });
+  $("[data-dc-next]").addEventListener("click", () => pick(Math.min(current + 1, GUIDED)));
+  pick(0);
+</script>

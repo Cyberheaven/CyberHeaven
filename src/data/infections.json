@@ -1,0 +1,59 @@
+{
+  "types": [
+    {
+      "id": "ransomware",
+      "label": "Ransomware",
+      "about": "Locks files away and demands payment to get them back.",
+      "respond": ["Isolate affected machines from the network", "Preserve evidence before wiping anything", "Restore from offline backups", "Report it: don't pay without legal advice"]
+    },
+    {
+      "id": "worm",
+      "label": "Worm",
+      "about": "Spreads from machine to machine on its own, without anyone opening anything.",
+      "respond": ["Isolate the affected network segment", "Patch the weakness it spreads through", "Scan every machine on that segment", "Report it to your incident team"]
+    },
+    {
+      "id": "spyware",
+      "label": "Spyware",
+      "about": "Quietly watches what someone does and sends it to someone else.",
+      "respond": ["Isolate the device", "Reset passwords from a different, clean device", "Check accounts for unknown sign-ins", "Report it to your incident team"]
+    },
+    {
+      "id": "trojan",
+      "label": "Trojan",
+      "about": "Pretends to be useful software so people install it themselves.",
+      "respond": ["Isolate the device", "Remove the program and anything it installed", "Find out where the download came from and block it", "Report it to your incident team"]
+    },
+    {
+      "id": "wiper",
+      "label": "Wiper",
+      "about": "Destroys data on purpose. There is no way to pay to get it back.",
+      "respond": ["Isolate affected machines immediately", "Preserve what's left for investigation", "Rebuild and restore from offline backups", "Report it: wipers often signal a targeted attack"]
+    },
+    {
+      "id": "botnet",
+      "label": "Botnet client",
+      "about": "Turns a device into one of many remote-controlled machines.",
+      "respond": ["Isolate the device", "Block the control server's address", "Change default passwords and update firmware", "Report it to your incident team"]
+    }
+  ],
+  "notes": [
+    { "type": "ransomware", "note": "Every document in the shared folder now ends in .locked and won't open. A file called HOW_TO_RECOVER.txt appeared in each folder, asking for payment in cryptocurrency within 72 hours." },
+    { "type": "ransomware", "note": "Staff report the accounting app can't open its database. The file server's disk activity spiked overnight, and a full-screen message with a countdown timer appears when anyone logs in." },
+    { "type": "ransomware", "note": "Backups on the network drive were deleted at 01:10. By 01:40, files on three laptops had been renamed with random extensions, and a note says the data was also copied and will be published unless the company pays." },
+    { "type": "worm", "note": "One unpatched server started sending connection attempts to every address in the office network. An hour later, twelve more machines that nobody had touched are doing exactly the same." },
+    { "type": "worm", "note": "Network traffic suddenly tripled. Machines in different departments, with different users, are all showing the same new process, and it appeared in a chain, one machine after another, a few minutes apart." },
+    { "type": "worm", "note": "A USB stick from a conference was plugged into one PC. Within a day, the same suspicious file shows up on every shared drive and on machines that never saw the stick." },
+    { "type": "spyware", "note": "A manager's laptop has been sending small, regular uploads to an unknown server for weeks. An unfamiliar program is recording keystrokes and taking a screenshot every few minutes." },
+    { "type": "spyware", "note": "A journalist's phone battery drains fast and it runs warm when idle. Investigators find an app with no icon that has access to messages, the microphone and location." },
+    { "type": "spyware", "note": "A browser extension the user doesn't remember installing has permission to read every website. Their logins to several sites were used from abroad the next day." },
+    { "type": "trojan", "note": "A user downloaded a free PDF converter from a pop-up ad. The converter works, but since then a hidden program starts at login and has opened a connection the firewall flagged." },
+    { "type": "trojan", "note": "A cracked copy of a paid game was installed on a work laptop. The game runs fine. Antivirus logs show a second program arriving inside the installer and settling into the startup folder." },
+    { "type": "trojan", "note": "An email attachment called invoice.pdf.exe used a PDF icon. The user opened it, saw nothing happen, and closed it. The laptop then started downloading more files from an unknown site." },
+    { "type": "wiper", "note": "Several servers won't boot: the disks' start sections were overwritten. A ransom-style note appeared, but the payment address is invalid and there is no way to contact anyone." },
+    { "type": "wiper", "note": "Files across the network were overwritten with random data in a few minutes, during a period of political tension. Nothing was encrypted and nobody asked for money." },
+    { "type": "botnet", "note": "The office security cameras still use their factory password. Their internet traffic jumped, and they're sending floods of requests to a website the company has nothing to do with." },
+    { "type": "botnet", "note": "A home router checks in with the same unknown server every few minutes. Occasionally it receives a command and starts sending spam email, then goes quiet again." },
+    { "type": "botnet", "note": "Thousands of login attempts against an online shop came from many different home internet connections at once. One of them traces back to an old PC in the company's own warehouse." }
+  ]
+}

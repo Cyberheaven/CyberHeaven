@@ -34,7 +34,7 @@ Free for everyone, run by the people who use it. No pricing, paid courses or pai
 ## Brand Commitments
 
 - Name: CyberHeaven. Logo at `public/assets/logo.webp`.
-- CyberHeaven itself never charges: no pricing, paid courses or paid paths. External resources may be marked “Paid” when worth it (owner request, 2026-10-20), but never list prices. Never use old @cyberheaven.eu emails.
+- CyberHeaven itself never charges: no pricing, paid courses or paid paths. External resources may be marked “Paid” when worth it (owner request, 2026-10-20), but never list prices. CyberHeaven is not affiliated with any listed resource; they are independent recommendations. Never use old @cyberheaven.eu emails.
 - Keep the original elias-vent dark theme (Sora, dark ground, scroll-driven sections). Enhance it; never replace it with a different visual style. An Apple-style redesign was tried and rejected.
 
 ## Evidence on Hand

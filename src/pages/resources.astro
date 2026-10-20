@@ -29,7 +29,9 @@ const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(
     <PageHead
       title="Everything you need to learn cybersecurity"
       lead={`${items.length} hand-picked courses, labs, tools and references from across the web. ${freeCount} are completely free, most others have a free tier, and the few paid ones are here because they’re worth it.`}
-    />
+    >
+      <p class="caption muted rs-disclaimer">CyberHeaven isn’t affiliated with any of these. They’re independent recommendations: we don’t get paid for listing them or for anything you sign up to.</p>
+    </PageHead>
 
     <section class="rs shell" data-list>
       <div class="rs-controls">
@@ -100,6 +102,7 @@ const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(
 </Base>
 
 <style>
+  .rs-disclaimer { max-width: 600px; font-size: 13px; line-height: 1.5; }
   .rs { padding-bottom: 120px; display: flex; flex-direction: column; }
   .rs-controls { display: flex; flex-direction: column; gap: 16px; padding-bottom: 40px; }
   .rs-top { display: flex; align-items: center; gap: 12px 16px; flex-wrap: wrap; }

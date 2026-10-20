@@ -222,6 +222,9 @@ button { font: inherit; }
 .footer-social a, .footer-nav a { color: var(--white-60); transition: color 0.2s ease; }
 .footer-wordmark { position: relative; z-index: 1; width: 100%; overflow-x: clip; font-weight: 700; line-height: 1em; letter-spacing: 0; color: var(--grey); text-align: center; white-space: nowrap; }
 .footer-bottom { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; }
+.footer-bottom { flex-wrap: wrap; gap: 8px 24px; }
+.footer-credit { color: var(--white); text-decoration: underline; text-decoration-color: var(--white-40); text-underline-offset: 3px; transition: text-decoration-color 0.3s var(--ease-out); }
+@media (hover: hover) and (pointer: fine) { .footer-credit:hover { text-decoration-color: var(--white); } }
 @media (hover: hover) and (pointer: fine) { .footer-social a:hover { color: var(--white); } .footer-nav a:hover { color: var(--white); } }
 @media (max-width: 1199px) { .footer-col { width: auto; } .footer-col a { width: auto; } }
 @media (max-width: 809px) {
@@ -343,6 +346,7 @@ button { font: inherit; }
 .phead-w { display: inline-block; animation: wordIn 1.1s var(--ease-out) both; animation-delay: var(--d); }
 .phead-lead { max-width: 600px; font-size: 18px; line-height: 1.5em; color: var(--white-60); animation: wordIn 1.1s var(--ease-out) both; animation-delay: var(--d); }
 .phead-extra { animation: fadeIn 1s var(--ease-out) both; animation-delay: var(--d); }
+.phead-extra .text-link { width: auto; max-width: 100%; }
 @keyframes wordIn { from { opacity: 0; filter: blur(14px); transform: translate3d(0, 0.4em, 0); } }
 @media (max-width: 809px) { .phead { padding-top: 40px; padding-bottom: 40px; } .phead-lead { font-size: 16px; } }
 
@@ -449,6 +453,27 @@ button { font: inherit; }
   .bigrow.is-main .bigrow-name { font-size: 48px; }
   .bigrow-btn { width: 48px; height: 48px; }
 }
+
+/* ---------- Labs (/play/*): logs, code and other data are set in a monospace face ---------- */
+:root { --mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace; }
+.lab { padding-bottom: 120px; display: flex; flex-direction: column; gap: 24px; }
+.term { border-radius: 14px; border: 1px solid var(--white-20); background: var(--black); overflow: clip; }
+.term-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 8px 16px; border-bottom: 1px solid var(--white-20); font-size: 13px; color: var(--white-60); }
+.term-bar code, .term-body { font-family: var(--mono); }
+.term-body { font-size: 13.5px; line-height: 1.65; color: var(--grey); font-variant-ligatures: none; }
+.panel { padding: 28px; border-radius: 16px; background: var(--grey-50); border: 1px solid var(--white-20); display: flex; flex-direction: column; gap: 16px; }
+.panel-title { font-size: 20px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.3; color: var(--white); }
+.verdict { padding: 16px 18px; border-radius: 12px; border: 1px solid var(--white-20); display: flex; flex-direction: column; gap: 6px; animation: fadeIn 0.4s var(--ease-out); }
+.verdict b { color: var(--white); font-weight: 600; }
+.verdict.is-right { border-color: var(--success); }
+.verdict.is-wrong { border-color: var(--error); }
+.lab-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn-sm { height: 44px; padding: 0 18px; border-radius: 22px; font-size: 15px; font-weight: 600; border: 0; cursor: pointer; }
+.btn-sm.btn-ghost { border: 1px solid var(--white-20); }
+.btn:disabled { opacity: 0.4; cursor: default; }
+mark { background: rgba(255, 255, 255, 0.85); color: var(--black); border-radius: 3px; padding: 0 1px; }
+@media (max-width: 809px) { .panel { padding: 20px; } }
+@media (prefers-reduced-motion: reduce) { .verdict { animation: none; } }
 
 /* the hidden attribute always wins over a component's display rule */
 [hidden] { display: none !important; }

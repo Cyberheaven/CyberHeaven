@@ -1,0 +1,261 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHead from "../../components/PageHead.astro";
+import Topbar from "../../components/Topbar.astro";
+import Footer from "../../components/sections/Footer.astro";
+import Icon from "../../components/Icon.astro";
+import DefenderNote from "../../components/DefenderNote.astro";
+import { site } from "../../lib/site";
+import data from "../../data/rules.json";
+
+// Rounds live in src/data/rules.json (CMS: Interactive → Write the rule). The rule language is a small
+// subset of YARA, explained in src/lib/yara-lite.mjs. All samples are made up and harmless.
+const { rounds } = data;
+---
+<Base title={`Write the rule | ${site.name}`} description="A free in-browser detection lab: write a YARA-style rule that catches the malware samples and leaves the clean files alone, scored live as you type.">
+  <Topbar path="/play/rules" />
+  <main>
+    <PageHead title="Write the rule" lead="Malware analysts turn what they find into detection rules. Write one that flags every malicious sample and leaves the clean files alone. It's scored live as you type, using the same ideas as YARA.">
+      <a class="text-link body-sb" href="/articles/a-beginners-guide-to-malware-analysis">Read the beginner’s guide to malware analysis<Icon name="arrow-right" size={18} /></a>
+    </PageHead>
+
+    <section class="shell lab rw" data-rw data-rounds={JSON.stringify(rounds)}>
+      <DefenderNote />
+      <div class="chips" role="group" aria-label="Rounds">
+        {rounds.map((r, i) => <button type="button" class="chip" data-pick={i} aria-pressed={i === 0 ? "true" : "false"}><small>{i + 1}</small><span class="rw-check" hidden><Icon name="check" size={14} stroke={2.5} /></span>{r.title}</button>)}
+      </div>
+
+      <div class="rw-grid">
+        <div class="rw-left">
+          <div class="panel rw-brief">
+            <p class="caption muted" data-rw-count></p>
+            <p class="panel-title balance" data-rw-title></p>
+            <p class="body muted" data-rw-text></p>
+          </div>
+
+          <div class="term rw-editor">
+            <div class="term-bar"><code>rule.yar</code><button type="button" class="rw-link" data-rw-reset>Reset</button></div>
+            <textarea class="term-body rw-code" data-rw-code rows="10" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Your rule" aria-describedby="rw-status"></textarea>
+            <p class="rw-status" id="rw-status" data-rw-status aria-live="polite"></p>
+          </div>
+
+          <div class="lab-actions">
+            <button type="button" class="btn btn-sm btn-ghost" data-rw-hint>Show a hint</button>
+            <button type="button" class="btn btn-sm btn-ghost" data-rw-solution hidden>Show a solution</button>
+          </div>
+          <p class="body rw-hint" data-rw-hinttext hidden></p>
+
+          <div class="verdict is-right" data-rw-win hidden>
+            <b>Every sample sorted correctly.</b>
+            <span class="body muted" data-rw-explain></span>
+          </div>
+          <button type="button" class="btn btn-sm rw-next" data-rw-next hidden>Next round<Icon name="arrow-right" size={18} /></button>
+
+          <details class="rw-cheat">
+            <summary class="body-sb">Rule syntax</summary>
+            <pre class="term-body">strings:
+  $a = "exact text"
+  $b = "any case" nocase
+  $c = /regex[0-9]+/i
+condition:
+  any of them
+  all of them
+  2 of them
+  $a and ($b or not $c)</pre>
+          </details>
+        </div>
+
+        <ul class="rw-samples" data-rw-samples aria-label="Samples"></ul>
+      </div>
+
+      <template data-rw-sample>
+        <li class="rw-sample">
+          <div class="rw-sample-head">
+            <code class="rw-name"></code>
+            <span class="tag rw-kind"></span>
+            <span class="rw-found"></span>
+            <span class="rw-state"></span>
+          </div>
+          <pre class="term-body rw-text" data-lenis-prevent></pre>
+        </li>
+      </template>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .rw-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 16px; align-items: start; }
+  .rw-left { position: sticky; top: 96px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .rw-code { display: block; width: 100%; min-height: 230px; padding: 16px; border: 0; background: none; color: var(--white); resize: vertical; tab-size: 2; white-space: pre; overflow: auto; }
+  .rw-code:focus { outline: none; box-shadow: inset 0 0 0 1px var(--white-60); }
+  .rw-link { padding: 4px 0; border: 0; background: none; color: var(--white-60); font-size: 13px; cursor: pointer; }
+  @media (hover: hover) and (pointer: fine) { .rw-link:hover { color: var(--white); } }
+  .rw-status { padding: 12px 16px; border-top: 1px solid var(--white-20); font-size: 14px; color: var(--white-60); }
+  .rw-status.is-error { color: rgb(255, 130, 136); }
+  .rw-status b { color: var(--white); font-weight: 600; }
+  .rw-hint { color: var(--white); }
+  .rw-next { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; }
+  .rw-check { display: inline-flex; color: var(--success); }
+  .chip[aria-pressed="true"] .rw-check { color: rgb(30, 140, 60); }
+  .rw-cheat { border-top: 1px solid var(--white-20); padding-top: 14px; }
+  .rw-cheat summary { cursor: pointer; color: var(--white-60); }
+  .rw-cheat pre { margin: 12px 0 0; color: var(--grey); }
+
+  .rw-samples { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+  .rw-sample { position: relative; border-radius: 14px; border: 1px solid var(--white-20); background: var(--black); overflow: clip; transition: border-color 0.4s var(--ease-out), background 0.4s var(--ease-out); }
+  .rw-sample-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 12px 16px; border-bottom: 1px solid var(--white-20); }
+  .rw-name { font-family: var(--mono); font-size: 14px; color: var(--white); margin-right: auto; }
+  .rw-kind.is-bad { border-color: rgba(237, 50, 59, 0.45); color: rgb(255, 130, 136); }
+  .rw-found { display: inline-flex; gap: 4px; font-family: var(--mono); font-size: 12px; color: var(--white-60); }
+  .rw-state { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--white-20); color: var(--white); }
+  .rw-sample.is-good .rw-state { background: var(--success); color: var(--black); }
+  .rw-sample.is-bad .rw-state { background: var(--error); color: var(--white); }
+  .rw-sample.is-bad { border-color: rgba(237, 50, 59, 0.6); }
+  .rw-sample.is-hit { background: rgba(255, 255, 255, 0.03); }
+  /* a light sweeps across a sample each time the rule starts matching it */
+  .rw-sample.is-sweep::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.10) 50%, transparent 70%); transform: translateX(-100%); animation: rw-sweep 0.9s var(--ease-out) forwards; }
+  @keyframes rw-sweep { to { transform: translateX(100%); } }
+  .rw-text { margin: 0; padding: 14px 16px; max-height: 260px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+  @media (max-width: 1199px) { .rw-grid { grid-template-columns: minmax(0, 1fr); } .rw-left { position: static; } }
+  @media (prefers-reduced-motion: reduce) { .rw-sample.is-sweep::after { animation: none; display: none; } }
+</style>
+
+<script>
+  import { parseRule, scan } from "../../lib/yara-lite.mjs";
+  import { fill, shuffle } from "../../lib/random.mjs";
+  import { scrollToY } from "../../scripts/lib";
+
+  type Sample = { name: string; malicious: boolean; text: string };
+  type Round = { title: string; brief: string; hint: string; starter: string; solution: string; explain: string; samples: Sample[] };
+  const root = document.querySelector<HTMLElement>("[data-rw]")!;
+  const rounds: Round[] = JSON.parse(root.dataset.rounds!);
+  const $ = <T extends HTMLElement = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+  const code = $<HTMLTextAreaElement>("[data-rw-code]");
+  const list = $("[data-rw-samples]");
+  const tpl = $<HTMLTemplateElement>("[data-rw-sample]");
+  const status = $("[data-rw-status]");
+  const drafts: string[] = rounds.map((r) => r.starter);
+  let current = 0;
+  let samples: Sample[] = []; // this round's samples: shuffled, placeholders filled in
+
+  // The sample text with every match of the rule's strings wrapped in <mark>.
+  const highlight = (pre: HTMLElement, text: string, strings: Map<string, RegExp> | null) => {
+    const ranges: [number, number][] = [];
+    for (const re of strings?.values() ?? []) {
+      const g = new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g");
+      for (const m of text.matchAll(g)) if (m[0]) ranges.push([m.index!, m.index! + m[0].length]);
+    }
+    ranges.sort((a, b) => a[0] - b[0]);
+    pre.replaceChildren();
+    let at = 0;
+    for (const [s, e] of ranges) {
+      if (e <= at) continue;
+      pre.append(text.slice(at, Math.max(at, s)));
+      const mark = document.createElement("mark");
+      mark.textContent = text.slice(Math.max(at, s), e);
+      pre.append(mark);
+      at = e;
+    }
+    pre.append(text.slice(at));
+  };
+
+  const run = () => {
+    const round = rounds[current];
+    drafts[current] = code.value;
+    let rule: ReturnType<typeof parseRule> | null = null;
+    try {
+      rule = parseRule(code.value);
+    } catch (e) {
+      status.classList.add("is-error");
+      status.textContent = (e as Error).message;
+    }
+    let caught = 0;
+    let falseAlarms = 0;
+    Array.from(list.children).forEach((li, k) => {
+      const s = samples[k];
+      const r = rule ? scan(rule, s.text) : { hit: false, found: [] };
+      const wasHit = li.classList.contains("is-hit");
+      const good = r.hit === s.malicious;
+      if (s.malicious && r.hit) caught++;
+      if (!s.malicious && r.hit) falseAlarms++;
+      li.classList.toggle("is-hit", r.hit);
+      li.classList.toggle("is-good", good && !!rule);
+      li.classList.toggle("is-bad", !good && !!rule);
+      if (r.hit && !wasHit) {
+        li.classList.remove("is-sweep");
+        void (li as HTMLElement).offsetWidth;
+        li.classList.add("is-sweep");
+      }
+      li.querySelector(".rw-state")!.textContent = !rule ? "Waiting" : s.malicious ? (r.hit ? "Caught" : "Missed") : r.hit ? "False alarm" : "Left alone";
+      li.querySelector(".rw-found")!.textContent = r.found.join(" ");
+      highlight(li.querySelector(".rw-text")!, s.text, rule?.strings ?? null);
+    });
+    const bad = samples.filter((s) => s.malicious).length;
+    const win = !!rule && caught === bad && falseAlarms === 0;
+    if (rule) {
+      status.classList.remove("is-error");
+      status.innerHTML = "";
+      const b = document.createElement("b");
+      b.textContent = `${caught} of ${bad} caught`;
+      status.append(b, ` · ${falseAlarms} false ${falseAlarms === 1 ? "alarm" : "alarms"}`);
+    }
+    $("[data-rw-win]").hidden = !win;
+    $("[data-rw-next]").hidden = !win || current === rounds.length - 1;
+    if (win) {
+      const chip = root.querySelector(`[data-pick="${current}"]`)!;
+      chip.querySelector("small")!.hidden = true;
+      chip.querySelector<HTMLElement>(".rw-check")!.hidden = false;
+    }
+  };
+
+  const pick = (i: number) => {
+    current = i;
+    const r = rounds[i];
+    root.querySelectorAll<HTMLButtonElement>("[data-pick]").forEach((b) => b.setAttribute("aria-pressed", String(Number(b.dataset.pick) === i)));
+    $("[data-rw-count]").textContent = `Round ${i + 1} of ${rounds.length}`;
+    $("[data-rw-title]").textContent = r.title;
+    $("[data-rw-text]").textContent = r.brief;
+    $("[data-rw-hinttext]").textContent = r.hint;
+    $("[data-rw-hinttext]").hidden = true;
+    $("[data-rw-hint]").hidden = false;
+    $("[data-rw-solution]").hidden = true;
+    $("[data-rw-explain]").textContent = r.explain;
+    code.value = drafts[i];
+    const shared = {};
+    samples = shuffle(r.samples).map((s) => ({ ...s, text: fill(s.text, shared) }));
+    list.replaceChildren(
+      ...samples.map((s) => {
+        const li = (tpl.content.firstElementChild as HTMLElement).cloneNode(true) as HTMLElement;
+        li.querySelector(".rw-name")!.textContent = s.name;
+        const kind = li.querySelector(".rw-kind")!;
+        kind.textContent = s.malicious ? "Malicious" : "Clean";
+        kind.classList.toggle("is-bad", s.malicious);
+        return li;
+      })
+    );
+    run();
+  };
+
+  root.querySelectorAll<HTMLButtonElement>("[data-pick]").forEach((b) => b.addEventListener("click", () => pick(Number(b.dataset.pick))));
+  code.addEventListener("input", run);
+  $("[data-rw-reset]").addEventListener("click", () => {
+    code.value = rounds[current].starter;
+    run();
+  });
+  $("[data-rw-hint]").addEventListener("click", (e) => {
+    (e.currentTarget as HTMLElement).hidden = true;
+    $("[data-rw-hinttext]").hidden = false;
+    $("[data-rw-solution]").hidden = false;
+  });
+  $("[data-rw-solution]").addEventListener("click", () => {
+    code.value = rounds[current].solution;
+    run();
+  });
+  $("[data-rw-next]").addEventListener("click", () => {
+    pick(current + 1);
+    scrollToY(root.getBoundingClientRect().top + window.scrollY - 100);
+  });
+  pick(0);
+</script>

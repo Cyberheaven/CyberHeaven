@@ -1,0 +1,60 @@
+{
+  "rounds": [
+    {
+      "title": "The login form",
+      "context": "This code checks a username and password at login. It glues what the user typed straight into the SQL text.",
+      "code": "const sql = \"SELECT * FROM users WHERE name = '\" + name + \"' AND password_hash = '\" + hash + \"'\";\nconst user = await db.get(sql);",
+      "why": "Whatever the user types becomes part of the SQL command itself. A quote character in the input can end the string early and change what the query means. That's SQL injection.",
+      "tests": ["alex with the right password logs in", "O'Brien (a real name with an apostrophe) can log in", "' OR '1'='1 typed as the name must NOT log anyone in"],
+      "options": [
+        { "code": "const user = await db.get(\n  \"SELECT * FROM users WHERE name = ? AND password_hash = ?\",\n  [name, hash]\n);", "correct": true, "tests": [true, true, true], "feedback": "A parameterized query sends the SQL and the values separately. The database always treats the values as plain data, so no input can change the command." },
+        { "code": "const safeName = name.replace(\"'\", \"\");\nconst sql = \"SELECT * FROM users WHERE name = '\" + safeName + \"' AND password_hash = '\" + hash + \"'\";", "correct": false, "tests": [true, false, false], "feedback": "Stripping characters breaks real names like O'Brien, and replace() here only removes the first quote. Blocklists always miss something." },
+        { "code": "try {\n  const user = await db.get(sql);\n} catch {\n  return \"Login failed\";\n}", "correct": false, "tests": [true, true, false], "feedback": "Hiding error messages is good hygiene, but the query is still built from raw input, so the vulnerability is still there." },
+        { "code": "<input name=\"name\" pattern=\"[A-Za-z]+\" required>", "correct": false, "tests": [true, false, false], "feedback": "Checks in the browser help honest users, but anyone can send a request without your form. Validation must happen on the server, and it still doesn't replace parameters." }
+      ],
+      "takeaway": "Never build SQL by gluing strings together. Use parameterized queries (also called prepared statements) every time."
+    },
+    {
+      "title": "The search box",
+      "context": "A shop's search box finds products whose name contains the search text.",
+      "code": "const sql = \"SELECT * FROM products WHERE name LIKE '%\" + q + \"%'\";\nconst results = await db.all(sql);",
+      "why": "Same problem in a different place: the search text becomes part of the SQL command.",
+      "tests": ["searching mug finds mugs", "searching children's toys works (it contains an apostrophe)", "a search containing quotes and SQL words is treated as plain text"],
+      "options": [
+        { "code": "const results = await db.all(\n  \"SELECT * FROM products WHERE name LIKE ?\",\n  [\"%\" + q + \"%\"]\n);", "correct": true, "tests": [true, true, true], "feedback": "The % wildcards are added to the value, not the SQL. The query text never changes, whatever is typed." },
+        { "code": "if (q.includes(\"SELECT\")) throw new Error(\"Nice try\");\nconst sql = \"SELECT * FROM products WHERE name LIKE '%\" + q + \"%'\";", "correct": false, "tests": [true, false, false], "feedback": "Blocking keywords is a guessing game: lowercase, other keywords or encoded input slip past, and children's toys still breaks." },
+        { "code": "const sql = \"SELECT * FROM products WHERE name LIKE '%\" + q.slice(0, 20) + \"%'\";", "correct": false, "tests": [true, false, false], "feedback": "Limiting the length makes an attack a bit harder, not impossible. Short inputs can still change the query." },
+        { "code": "const results = (await db.all(\"SELECT * FROM products\"))\n  .filter((p) => p.name.includes(q));", "correct": false, "tests": [true, true, true], "feedback": "This is safe from injection, but it loads every product on every search. Parameterized LIKE is safe and lets the database do the work." }
+      ],
+      "takeaway": "Wildcards, numbers, dates: they all go in as parameters. The SQL text should be the same for every request."
+    },
+    {
+      "title": "The order page",
+      "context": "The order page reads an order number from the address, like /orders?id=1042.",
+      "code": "const sql = \"SELECT * FROM orders WHERE id = \" + req.query.id;\nconst order = await db.get(sql);",
+      "why": "There are no quotes here, so it's even easier: anything after the number becomes more SQL.",
+      "tests": ["id=1042 shows order 1042", "id=1042abc is rejected cleanly", "an id followed by extra SQL is treated as plain data"],
+      "options": [
+        { "code": "const id = Number.parseInt(req.query.id, 10);\nif (!Number.isInteger(id)) return res.status(400).send(\"Bad order number\");\nconst order = await db.get(\"SELECT * FROM orders WHERE id = ?\", [id]);", "correct": true, "tests": [true, true, true], "feedback": "Validate that it's really a number, then still pass it as a parameter. Two layers: validation for good errors, parameters for safety." },
+        { "code": "const sql = \"SELECT * FROM orders WHERE id = '\" + req.query.id + \"'\";", "correct": false, "tests": [true, false, false], "feedback": "Adding quotes just moves the problem: a quote in the input can still close the string." },
+        { "code": "const order = await db.get(\"SELECT * FROM orders WHERE id = \" + req.query.id + \" LIMIT 1\");", "correct": false, "tests": [true, false, false], "feedback": "LIMIT 1 changes how many rows come back, not what the query means. The input is still part of the SQL." },
+        { "code": "const order = await db.get(\"SELECT * FROM orders WHERE id = ?\", [req.query.id]);", "correct": false, "tests": [true, false, true], "feedback": "Safe from injection, good. But 1042abc should be rejected with a clear error, not quietly passed to the database. Validate the type too." }
+      ],
+      "takeaway": "Validate input for correctness, and parameterize it for safety. You need both."
+    },
+    {
+      "title": "Sort by column",
+      "context": "A table can be sorted by clicking a column header, which sends ?sort=price or ?sort=name.",
+      "code": "const sql = \"SELECT * FROM products ORDER BY \" + req.query.sort;\nconst rows = await db.all(sql);",
+      "why": "Parameters work for values, not for column names, so the usual fix doesn't apply here. What's left?",
+      "tests": ["sort=price sorts by price", "sort=name sorts by name", "a sort value that isn't a known column is refused"],
+      "options": [
+        { "code": "const columns = { price: \"price\", name: \"name\", newest: \"created_at\" };\nconst column = columns[req.query.sort];\nif (!column) return res.status(400).send(\"Unknown sort\");\nconst rows = await db.all(\"SELECT * FROM products ORDER BY \" + column);", "correct": true, "tests": [true, true, true], "feedback": "An allowlist maps what the user asks for to SQL you wrote yourself. User input never reaches the query text at all." },
+        { "code": "const rows = await db.all(\"SELECT * FROM products ORDER BY ?\", [req.query.sort]);", "correct": false, "tests": [false, false, true], "feedback": "Most databases treat a parameter here as a constant value, so nothing gets sorted. Parameters can't stand in for column names." },
+        { "code": "const sort = req.query.sort.replace(/[^a-z_]/g, \"\");\nconst rows = await db.all(\"SELECT * FROM products ORDER BY \" + sort);", "correct": false, "tests": [true, true, false], "feedback": "Better than nothing, but it still lets users pick any column, including ones you never meant to expose. An allowlist is exact." },
+        { "code": "const rows = (await db.all(\"SELECT * FROM products\"))\n  .sort((a, b) => (a[req.query.sort] > b[req.query.sort] ? 1 : -1));", "correct": false, "tests": [true, true, false], "feedback": "No injection, but any property name is accepted, and sorting everything in the app gets slow. An allowlist keeps it explicit." }
+      ],
+      "takeaway": "When something can't be a parameter (column names, sort direction), map the input to an allowlist of values you wrote yourself."
+    }
+  ]
+}

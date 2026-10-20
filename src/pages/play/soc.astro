@@ -4,21 +4,226 @@ import Topbar from "../../components/Topbar.astro";
 import Footer from "../../components/sections/Footer.astro";
 import PageHead from "../../components/PageHead.astro";
 import Icon from "../../components/Icon.astro";
-import SocLadder from "../../components/widgets/SocLadder.astro";
+import DefenderNote from "../../components/DefenderNote.astro";
 import { site } from "../../lib/site";
+import data from "../../data/triage.json";
+
+// Alert templates live in src/data/triage.json (CMS: Interactive → Alert triage). Each shift deals
+// 8 of them (half benign, half worth escalating) and fills in fresh people, machines and addresses.
 ---
-<Base title={`Route the alert | ${site.name}`} description="Climb the SOC escalation ladder, then decide which tier should handle each alert. A free interactive for aspiring SOC analysts.">
+<Base title={`Alert triage | ${site.name}`} description="A free SOC analyst simulator: work through a queue of security alerts, decide which are benign and which to escalate, and learn the reasoning. New alerts every shift.">
   <Topbar path="/play/soc" />
   <main>
-    <PageHead title="Route the alert" lead="See how a Security Operations Centre splits the work, then play triage: read each alert and send it to the tier that should handle it first.">
-      <a class="text-link body-sb" href="/articles/career-guide-how-to-become-a-soc-analyst">Read the full SOC career guide<Icon name="arrow-right" size={18} /></a>
+    <PageHead title="Alert triage" lead="You’re on shift in a Security Operations Centre. Eight alerts are waiting. Read each one, decide whether it’s benign or needs escalating, and see how an experienced analyst would call it. Every shift is different.">
+      <a class="text-link body-sb" href="/articles/career-guide-how-to-become-a-soc-analyst">Read the SOC analyst career guide<Icon name="arrow-right" size={18} /></a>
     </PageHead>
-    <section class="shell play"><SocLadder /></section>
+
+    <section class="shell lab tr" data-tr data-alerts={JSON.stringify(data.alerts)}>
+      <DefenderNote />
+      <div class="tr-console">
+        <div class="tr-queue">
+          <div class="tr-queue-head">
+            <span class="body-sb">Alert queue</span>
+            <span class="caption muted"><span data-tr-score>0</span> right · <span data-tr-left>8</span> left</span>
+          </div>
+          <ol class="tr-list" data-tr-list></ol>
+        </div>
+        <div class="tr-pane" data-tr-pane aria-live="polite"></div>
+      </div>
+    </section>
   </main>
   <Footer />
 </Base>
 
-<style>
-  .play { padding-bottom: 120px; }
-  .play :global(.soc) { margin: 0; }
+<style is:global>
+  /* global: the queue and alert details are drawn by the script below */
+  .tr-console { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); border-radius: 16px; border: 1px solid var(--white-20); background: var(--grey-50); overflow: clip; min-height: 600px; }
+  .tr-queue { border-right: 1px solid var(--white-20); }
+  .tr-queue-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 20px; border-bottom: 1px solid var(--white-20); }
+  .tr-list { list-style: none; margin: 0; padding: 0; }
+  .tr-list li + li { border-top: 1px solid var(--white-20); }
+  .tr-item { width: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 14px 20px; border: 0; background: none; color: var(--grey); text-align: left; cursor: pointer; transition: background 0.3s var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .tr-item:hover { background: rgba(255, 255, 255, 0.04); } }
+  .tr-item[aria-pressed="true"] { background: rgba(255, 255, 255, 0.08); }
+  .tr-item-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .tr-item-rule { font-weight: 600; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tr-item-host { font-family: var(--mono); font-size: 12px; color: var(--white-60); }
+  .tr-item.is-done .tr-item-rule { color: var(--white-60); font-weight: 400; }
+  .tr-item-state { font-size: 12px; font-weight: 600; }
+  .tr-item-state.is-right { color: rgb(120, 220, 145); }
+  .tr-item-state.is-wrong { color: rgb(255, 130, 136); }
+
+  .tr-sev { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; border: 1px solid var(--white-20); color: var(--white-60); }
+  .tr-sev.is-medium { color: rgb(245, 190, 110); border-color: rgba(245, 190, 110, 0.45); }
+  .tr-sev.is-high { color: rgb(255, 140, 120); border-color: rgba(255, 140, 120, 0.5); }
+  .tr-sev.is-critical { color: var(--black); background: rgb(255, 120, 120); border-color: rgb(255, 120, 120); }
+
+  .tr-pane { padding: 32px; display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+  .tr-alert { display: flex; flex-direction: column; gap: 22px; animation: fadeIn 0.4s var(--ease-out); }
+  .tr-alert-head { display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; border-bottom: 1px solid var(--white-20); }
+  .tr-alert-title { font-size: 24px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.3; color: var(--white); }
+  .tr-alert-head .tr-sev { align-self: flex-start; }
+  .tr-fields { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  .tr-fields div { display: flex; flex-direction: column; gap: 2px; }
+  .tr-fields dt { font-size: 12px; color: var(--white-60); }
+  .tr-fields dd { margin: 0; font-family: var(--mono); font-size: 13.5px; color: var(--white); overflow-wrap: anywhere; }
+  .tr-details { max-width: 62ch; font-size: 16px; line-height: 1.65; color: var(--grey); }
+  .tr-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .tr-empty { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 16px; max-width: 520px; animation: fadeIn 0.5s var(--ease-out); }
+  .tr-empty .btn { display: inline-flex; gap: 8px; }
+
+  @media (max-width: 1199px) { .tr-console { grid-template-columns: minmax(0, 1fr); min-height: 0; } .tr-queue { border-right: 0; border-top: 1px solid var(--white-20); order: 2; } }
+  @media (max-width: 809px) { .tr-pane { padding: 20px; } .tr-alert-title { font-size: 20px; } .tr-fields { grid-template-columns: 1fr 1fr; } .tr-actions .btn { flex: 1 1 100%; } }
+  @media (prefers-reduced-motion: reduce) { .tr-alert, .tr-empty { animation: none; } }
 </style>
+
+<script>
+  import { int, pick, sample, shuffle, docIp, lanIp } from "../../lib/random.mjs";
+
+  type Alert = { rule: string; severity: string; details: string; escalate: boolean; why: string; next: string };
+  type Dealt = Alert & { host: string; user: string; time: string; id: string; answer?: boolean };
+  const root = document.querySelector<HTMLElement>("[data-tr]")!;
+  const templates: Alert[] = JSON.parse(root.dataset.alerts!);
+  const list = root.querySelector<HTMLElement>("[data-tr-list]")!;
+  const pane = root.querySelector<HTMLElement>("[data-tr-pane]")!;
+  const SIZE = 8;
+  let shift: Dealt[] = [];
+  let open = -1;
+
+  const el = (tag: string, cls = "", text = "") => {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text) e.textContent = text;
+    return e;
+  };
+
+  // Half benign, half worth escalating, each filled with fresh names, machines and addresses.
+  const deal = () => {
+    const benign = templates.filter((a) => !a.escalate);
+    const bad = templates.filter((a) => a.escalate);
+    const picked = shuffle([...sample(benign, SIZE / 2), ...sample(bad, SIZE / 2)]);
+    let minutes = int(8 * 60, 14 * 60);
+    return picked.map((a) => {
+      const v: Record<string, string> = {
+        user: pick(["a.okafor", "j.martin", "p.sharma", "l.nguyen", "m.rossi", "s.berg", "t.kowalski", "r.haddad"]),
+        host: `${pick(["FIN", "HR", "ENG", "OPS", "SALES", "FS"])}-${pick(["LT", "WS", "SRV"])}${int(10, 99)}`,
+        ip: docIp(),
+        lan: lanIp(),
+        n: String(int(1500, 9000)),
+        n4: String(int(1000, 9999)),
+      };
+      const f = (s: string) => s.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? `{${k}}`);
+      minutes += int(2, 25);
+      return { ...a, details: f(a.details), why: f(a.why), next: f(a.next), host: v.host, user: v.user, time: `${String(Math.floor(minutes / 60) % 24).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`, id: `AL-${int(10000, 99999)}` };
+    });
+  };
+
+  const sev = (s: string) => el("span", `tr-sev is-${s.toLowerCase()}`, s);
+
+  const drawQueue = () => {
+    list.replaceChildren(
+      ...shift.map((a, i) => {
+        const li = el("li");
+        const b = el("button", "tr-item") as HTMLButtonElement;
+        b.type = "button";
+        b.setAttribute("aria-pressed", String(i === open));
+        b.classList.toggle("is-done", a.answer !== undefined);
+        const text = el("span", "tr-item-text");
+        text.append(el("span", "tr-item-rule", a.rule), el("span", "tr-item-host", `${a.time} · ${a.host}`));
+        const state = el("span", "tr-item-state");
+        if (a.answer !== undefined) {
+          const right = a.answer === a.escalate;
+          state.textContent = a.escalate ? "Escalated" : "Closed";
+          state.classList.add(right ? "is-right" : "is-wrong");
+        }
+        b.append(sev(a.severity), text, state);
+        b.addEventListener("click", () => show(i));
+        li.append(b);
+        return li;
+      })
+    );
+    const done = shift.filter((a) => a.answer !== undefined);
+    root.querySelector("[data-tr-score]")!.textContent = String(done.filter((a) => a.answer === a.escalate).length);
+    root.querySelector("[data-tr-left]")!.textContent = String(SIZE - done.length);
+  };
+
+  const next = () => shift.findIndex((a) => a.answer === undefined);
+
+  const show = (i: number) => {
+    open = i;
+    const a = shift[i];
+    const card = el("article", "tr-alert");
+    const head = el("header", "tr-alert-head");
+    const fields = el("dl", "tr-fields");
+    for (const [k, v] of [["Alert", a.id], ["Time", a.time], ["Host", a.host], ["User", a.user]]) {
+      const d = el("div");
+      d.append(el("dt", "", k), el("dd", "", v));
+      fields.append(d);
+    }
+    head.append(sev(a.severity), el("p", "tr-alert-title", a.rule), fields);
+    card.append(head, el("p", "tr-details", a.details));
+
+    const actions = el("div", "tr-actions");
+    if (a.answer === undefined) {
+      for (const [label, esc, cls] of [["Close as benign", false, "btn btn-sm btn-ghost"], ["Escalate", true, "btn btn-sm"]] as const) {
+        const b = el("button", cls, label) as HTMLButtonElement;
+        b.type = "button";
+        b.addEventListener("click", () => {
+          a.answer = esc;
+          drawQueue();
+          show(i);
+        });
+        actions.append(b);
+      }
+    } else {
+      const right = a.answer === a.escalate;
+      const v = el("div", `verdict ${right ? "is-right" : "is-wrong"}`);
+      v.append(el("b", "", `${right ? "Good call" : "Not this time"}: ${a.escalate ? "this one needs escalating." : "this one is benign."}`), el("span", "body muted", a.why), el("span", "body", a.next));
+      card.append(v);
+      const n = next();
+      const b = el("button", "btn btn-sm", n < 0 ? "End shift" : "Next alert") as HTMLButtonElement;
+      b.type = "button";
+      b.addEventListener("click", () => (n < 0 ? finish() : show(n)));
+      actions.append(b);
+      queueMicrotask(() => b.focus({ preventScroll: true }));
+    }
+    card.append(actions);
+    pane.replaceChildren(card);
+    drawQueue();
+    if (innerWidth < 1200) card.scrollIntoView({ block: "start" });
+  };
+
+  const intro = () => {
+    open = -1;
+    const box = el("div", "tr-empty");
+    const b = el("button", "btn btn-sm", "Start with the first alert") as HTMLButtonElement;
+    b.type = "button";
+    b.addEventListener("click", () => show(0));
+    box.append(el("p", "h4", "Your shift is starting."), el("p", "body muted", "Benign alerts get closed with a note. Anything that could be a real attack gets escalated to the incident responders. When in doubt, ask: what would happen if I'm wrong?"), b);
+    pane.replaceChildren(box);
+    drawQueue();
+  };
+
+  const finish = () => {
+    open = -1;
+    const score = shift.filter((a) => a.answer === a.escalate).length;
+    const missed = shift.filter((a) => a.escalate && a.answer === false).length;
+    const box = el("div", "tr-empty");
+    const b = el("button", "btn btn-sm", "Start a new shift") as HTMLButtonElement;
+    b.type = "button";
+    b.addEventListener("click", () => {
+      shift = deal();
+      intro();
+    });
+    box.append(
+      el("p", "h3", `Shift over: ${score} of ${SIZE} called right.`),
+      el("p", "body muted", missed ? `You closed ${missed} ${missed === 1 ? "alert" : "alerts"} that needed escalating. In a real SOC, a missed attack costs far more than an extra escalation, so lean towards escalating when the evidence is unclear.` : "No real attacks slipped through. That's the part that matters most."),
+      b
+    );
+    pane.replaceChildren(box);
+    drawQueue();
+  };
+
+  shift = deal();
+  intro();
+</script>

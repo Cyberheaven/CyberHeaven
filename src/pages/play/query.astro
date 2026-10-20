@@ -1,0 +1,153 @@
+---
+import Base from "../../layouts/Base.astro";
+import Topbar from "../../components/Topbar.astro";
+import Footer from "../../components/sections/Footer.astro";
+import PageHead from "../../components/PageHead.astro";
+import Icon from "../../components/Icon.astro";
+import DefenderNote from "../../components/DefenderNote.astro";
+import { site } from "../../lib/site";
+import data from "../../data/query.json";
+
+// Rounds live in src/data/query.json (CMS: Interactive → Fix the query). The fixes are shuffled each time.
+const { rounds } = data;
+---
+<Base title={`Fix the query | ${site.name}`} description="A free secure coding exercise: find out why building SQL from user input is dangerous, pick the safe fix, and watch the tests pass. Parameterized queries and allowlists explained.">
+  <Topbar path="/play/query" />
+  <main>
+    <PageHead title="Fix the query" lead="Most SQL injection bugs come from one habit: gluing what users type into database commands. Read each piece of code, pick the fix a security reviewer would approve, and see the tests run.">
+      <a class="text-link body-sb" href="/glossary">Look up SQL injection in the glossary<Icon name="arrow-right" size={18} /></a>
+    </PageHead>
+
+    <section class="shell lab fq" data-fq data-rounds={JSON.stringify(rounds)}>
+      <DefenderNote />
+      <div class="chips" role="group" aria-label="Rounds">
+        {rounds.map((r, i) => <button type="button" class="chip" data-pick={i} aria-pressed={i === 0 ? "true" : "false"}><small>{i + 1}</small>{r.title}</button>)}
+      </div>
+
+      <div class="fq-grid">
+        <div class="fq-left">
+          <div class="panel">
+            <p class="caption muted" data-fq-count></p>
+            <p class="panel-title" data-fq-title></p>
+            <p class="body muted" data-fq-context></p>
+          </div>
+          <div class="term">
+            <div class="term-bar"><span>Code under review</span><span class="fq-flag">Unsafe</span></div>
+            <pre class="term-body fq-code" data-fq-code></pre>
+          </div>
+          <p class="body fq-why" data-fq-why></p>
+          <div class="panel fq-tests">
+            <p class="body-sb">Tests</p>
+            <ul class="fq-testlist" data-fq-tests></ul>
+          </div>
+        </div>
+
+        <div class="fq-right">
+          <p class="body-sb">Which fix would you approve?</p>
+          <div class="fq-options" data-fq-options></div>
+          <div class="verdict" data-fq-verdict hidden><b data-fq-vtitle></b><span class="body muted" data-fq-feedback></span><span class="body" data-fq-takeaway></span></div>
+          <div class="lab-actions">
+            <button type="button" class="btn btn-sm btn-ghost" data-fq-retry hidden>Try another fix</button>
+            <button type="button" class="btn btn-sm" data-fq-next hidden>Next round</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style is:global>
+  /* global: options and test rows are drawn by the script below */
+  .fq-grid { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: 16px; align-items: start; }
+  .fq-left, .fq-right { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .fq-flag { color: rgb(255, 130, 136); font-weight: 600; }
+  .fq-code { margin: 0; padding: 16px; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--white); }
+  .fq-why { color: var(--grey); }
+  .fq-testlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .fq-test { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; font-size: 15px; color: var(--grey); }
+  .fq-dot { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--white-20); display: grid; place-items: center; }
+  .fq-test.is-pass .fq-dot { background: var(--success); border-color: var(--success); color: var(--black); }
+  .fq-test.is-fail .fq-dot { background: var(--error); border-color: var(--error); color: var(--white); }
+  .fq-options { display: flex; flex-direction: column; gap: 10px; }
+  .fq-option { display: block; width: 100%; padding: 0; border-radius: 14px; border: 1px solid var(--white-20); background: var(--black); color: var(--white); text-align: left; cursor: pointer; overflow: clip; transition: border-color 0.3s var(--ease-out), opacity 0.3s var(--ease-out); }
+  .fq-option pre { margin: 0; padding: 14px 16px; font-family: var(--mono); font-size: 13px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+  @media (hover: hover) and (pointer: fine) { .fq-option:not(:disabled):hover { border-color: var(--white-60); } }
+  .fq-option:disabled { cursor: default; opacity: 0.4; }
+  .fq-option.is-picked { opacity: 1; }
+  .fq-option.is-picked.is-right { border-color: var(--success); }
+  .fq-option.is-picked.is-wrong { border-color: var(--error); }
+  @media (max-width: 1199px) { .fq-grid { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<script>
+  import { shuffle } from "../../lib/random.mjs";
+
+  type Option = { code: string; correct: boolean; tests: boolean[]; feedback: string };
+  type Round = { title: string; context: string; code: string; why: string; tests: string[]; options: Option[]; takeaway: string };
+  const root = document.querySelector<HTMLElement>("[data-fq]")!;
+  const rounds: Round[] = JSON.parse(root.dataset.rounds!);
+  const $ = <T extends HTMLElement = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+  const ICON = { pass: '<path d="M20 6 9 17l-5-5"/>', fail: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>' };
+  let current = 0;
+
+  const drawTests = (r: Round, results?: boolean[]) => {
+    $("[data-fq-tests]").replaceChildren(
+      ...r.tests.map((t, k) => {
+        const li = document.createElement("li");
+        const state = results ? (results[k] ? "pass" : "fail") : "";
+        li.className = `fq-test${state ? ` is-${state}` : ""}`;
+        li.innerHTML = `<span class="fq-dot">${state ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[state as "pass" | "fail"]}</svg>` : ""}</span><span></span>`;
+        li.lastElementChild!.textContent = (state ? (state === "pass" ? "Pass: " : "Fail: ") : "") + t;
+        return li;
+      })
+    );
+  };
+
+  const pick = (i: number) => {
+    current = i;
+    const r = rounds[i];
+    root.querySelectorAll<HTMLButtonElement>("[data-pick]").forEach((b) => b.setAttribute("aria-pressed", String(Number(b.dataset.pick) === i)));
+    $("[data-fq-count]").textContent = `Round ${i + 1} of ${rounds.length}`;
+    $("[data-fq-title]").textContent = r.title;
+    $("[data-fq-context]").textContent = r.context;
+    $("[data-fq-code]").textContent = r.code;
+    $("[data-fq-why]").textContent = r.why;
+    $("[data-fq-verdict]").hidden = $("[data-fq-next]").hidden = $("[data-fq-retry]").hidden = true;
+    drawTests(r);
+    $("[data-fq-options]").replaceChildren(
+      ...shuffle(r.options).map((o) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "fq-option";
+        const pre = document.createElement("pre");
+        pre.textContent = o.code;
+        b.append(pre);
+        b.addEventListener("click", () => choose(b, o));
+        return b;
+      })
+    );
+  };
+
+  const choose = (b: HTMLButtonElement, o: Option) => {
+    const r = rounds[current];
+    root.querySelectorAll<HTMLButtonElement>(".fq-option").forEach((x) => (x.disabled = true));
+    b.classList.add("is-picked", o.correct ? "is-right" : "is-wrong");
+    drawTests(r, o.tests);
+    const v = $("[data-fq-verdict]");
+    const allPass = o.tests.every(Boolean);
+    v.hidden = false;
+    v.classList.toggle("is-right", o.correct);
+    v.classList.toggle("is-wrong", !o.correct);
+    $("[data-fq-vtitle]").textContent = o.correct ? "Approved." : allPass ? "It works, but it's not the fix to approve." : "Not safe yet.";
+    $("[data-fq-feedback]").textContent = o.feedback;
+    $("[data-fq-takeaway]").textContent = o.correct ? r.takeaway : "";
+    $("[data-fq-retry]").hidden = o.correct;
+    $("[data-fq-next]").hidden = !o.correct || current === rounds.length - 1;
+  };
+
+  root.querySelectorAll<HTMLButtonElement>("[data-pick]").forEach((b) => b.addEventListener("click", () => pick(Number(b.dataset.pick))));
+  $("[data-fq-retry]").addEventListener("click", () => pick(current));
+  $("[data-fq-next]").addEventListener("click", () => pick(current + 1));
+  pick(0);
+</script>

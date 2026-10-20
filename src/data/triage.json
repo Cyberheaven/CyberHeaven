@@ -1,0 +1,100 @@
+{
+  "alerts": [
+    {
+      "rule": "Multiple failed sign-ins",
+      "severity": "Low",
+      "details": "3 failed sign-ins for {user}, then a successful one. Same laptop and office network ({lan}) {user} has used every day this month.",
+      "escalate": false,
+      "why": "A typo pattern from a known device and network. Note it and close.",
+      "next": "Close as benign. If it keeps happening, suggest a password manager."
+    },
+    {
+      "rule": "Port scan blocked",
+      "severity": "Low",
+      "details": "The firewall blocked {n} connection attempts from {ip} across 20 ports in 2 minutes. No connection was allowed through.",
+      "escalate": false,
+      "why": "Internet background noise that the firewall already stopped. Nothing got in.",
+      "next": "Close. Check the address's reputation and confirm the block rule is in place."
+    },
+    {
+      "rule": "Malware quarantined",
+      "severity": "Medium",
+      "details": "Antivirus quarantined a file in {user}'s Downloads folder on {host} before it ever ran. No other alerts on {host} in the last 24 hours.",
+      "escalate": false,
+      "why": "The control worked: the file was caught before it ran and nothing else looks wrong.",
+      "next": "Close after confirming the quarantine succeeded, and remind {user} about downloads."
+    },
+    {
+      "rule": "Admin sign-in at unusual hour",
+      "severity": "Medium",
+      "details": "{user} signed in to {host} as an administrator at 23:40 from {lan}. Change ticket CHG-{n4} schedules maintenance on {host} at 23:30 tonight, owned by {user}.",
+      "escalate": false,
+      "why": "Unusual hour, but it matches an approved change owned by the same person.",
+      "next": "Close and link the alert to CHG-{n4} so the next analyst sees why."
+    },
+    {
+      "rule": "Large outbound transfer",
+      "severity": "Medium",
+      "details": "{host} uploaded 40 GB to the company's approved backup service at 02:00. It has done the same every night for a year.",
+      "escalate": false,
+      "why": "Big, but expected: a known destination on a long-standing schedule.",
+      "next": "Close, and consider tuning the rule to skip the backup job."
+    },
+    {
+      "rule": "Vulnerability scanner activity",
+      "severity": "Low",
+      "details": "Internal scanner {lan} probed every server in the {host} subnet. The security team's weekly scan is scheduled for today.",
+      "escalate": false,
+      "why": "It's our own scheduled scanner doing its job.",
+      "next": "Close and add the scanner to the rule's allowlist."
+    },
+    {
+      "rule": "Impossible travel",
+      "severity": "High",
+      "details": "{user} signed in from two countries 10 minutes apart. An MFA prompt was approved for the second sign-in.",
+      "escalate": true,
+      "why": "Nobody travels that fast, and the approved MFA prompt suggests the person was tricked into approving it.",
+      "next": "Escalate: revoke {user}'s sessions, reset the password and review what the account accessed."
+    },
+    {
+      "rule": "Office app launched a script",
+      "severity": "High",
+      "details": "A Word document {user} opened on {host} started PowerShell with an encoded command. The file arrived by email from an outside sender.",
+      "escalate": true,
+      "why": "Word almost never needs to launch scripts. This is a common first step of an email-borne infection.",
+      "next": "Escalate: isolate {host}, keep the document as evidence and check who else received the email."
+    },
+    {
+      "rule": "Regular outbound connections",
+      "severity": "High",
+      "details": "{host} has contacted {ip} every 60 seconds for 6 hours. The domain behind it was registered yesterday.",
+      "escalate": true,
+      "why": "Clockwork connections to a brand-new domain look like malware checking in for instructions.",
+      "next": "Escalate: isolate {host}, block the domain and search for other machines talking to it."
+    },
+    {
+      "rule": "New mail forwarding rule",
+      "severity": "High",
+      "details": "A new rule in {user}'s mailbox forwards every incoming email to an outside address. {user} says they didn't create it.",
+      "escalate": true,
+      "why": "Hidden forwarding rules are a classic sign of a taken-over mailbox quietly leaking mail.",
+      "next": "Escalate: remove the rule, secure {user}'s account and work out what was forwarded."
+    },
+    {
+      "rule": "Mass file renames",
+      "severity": "Critical",
+      "details": "Files on the shared drive on {host} are being renamed with a new extension at hundreds per minute, and a text file with the same name appeared in every folder.",
+      "escalate": true,
+      "why": "This is what ransomware looks like while it's running. Minutes matter.",
+      "next": "Escalate immediately: isolate {host} and the account doing the renames, and start the incident response plan."
+    },
+    {
+      "rule": "Security tool disabled",
+      "severity": "High",
+      "details": "Endpoint protection on {host} was switched off by a local account. No change ticket, and {user}, who uses {host}, isn't an administrator.",
+      "escalate": true,
+      "why": "Attackers often turn off security tools first. Unexplained and unapproved is enough to escalate.",
+      "next": "Escalate: turn protection back on, isolate {host} and find out which account did it."
+    }
+  ]
+}

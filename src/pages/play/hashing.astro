@@ -1,0 +1,189 @@
+---
+import Base from "../../layouts/Base.astro";
+import Topbar from "../../components/Topbar.astro";
+import Footer from "../../components/sections/Footer.astro";
+import PageHead from "../../components/PageHead.astro";
+import Icon from "../../components/Icon.astro";
+import DefenderNote from "../../components/DefenderNote.astro";
+import { site } from "../../lib/site";
+---
+<Base title={`Hash and salt | ${site.name}`} description="A free in-browser lab on how websites should store passwords: see a real SHA-256 hash change, why salting matters, and roughly how strong a password is. Nothing leaves your browser.">
+  <Topbar path="/play/hashing" />
+  <main>
+    <PageHead title="Hash and salt" lead="Websites shouldn’t store your password, only a scrambled fingerprint of it. Type a made-up password and watch what hashing and salting do, and why the way a site stores passwords decides how bad a data breach gets." />
+
+    <section class="shell lab hs" data-hs>
+      <DefenderNote />
+      <label class="hs-field">
+        <span class="body-sb">Try a password</span>
+        <span class="caption muted">Use a made-up one, not a password you really use. It’s hashed in your browser and never sent anywhere.</span>
+        <input class="term-body" data-hs-input value="sunshine2026" autocomplete="off" spellcheck="false" autocapitalize="off" />
+      </label>
+
+      <div class="hs-grid">
+        <div class="panel">
+          <p class="panel-title">1. Hash it</p>
+          <p class="body muted">SHA-256 turns any text into a 64-character fingerprint. The same input always gives the same hash, but you can’t run it backwards. Change one character and almost every character of the hash changes.</p>
+          <p class="term-body hs-hash" data-hs-hash aria-live="polite"></p>
+          <p class="caption muted" data-hs-diff></p>
+        </div>
+
+        <div class="panel">
+          <p class="panel-title">2. Salt it</p>
+          <p class="body muted">Two people pick the same password. Without salt, their hashes match, so cracking one cracks both. A salt is a random value stored next to each hash that makes every hash unique.</p>
+          <div class="hs-table">
+            <div class="hs-row hs-head"><span>User</span><span>Salt</span><span>Stored hash (first 24 characters)</span></div>
+            <div class="hs-row"><span>alex</span><span class="muted">none</span><code data-hs-plain="0"></code></div>
+            <div class="hs-row"><span>sam</span><span class="muted">none</span><code data-hs-plain="1"></code></div>
+            <div class="hs-row"><span>alex</span><code data-hs-salt="0"></code><code data-hs-salted="0"></code></div>
+            <div class="hs-row"><span>sam</span><code data-hs-salt="1"></code><code data-hs-salted="1"></code></div>
+          </div>
+          <p class="caption hs-same" data-hs-same></p>
+          <button type="button" class="btn btn-sm btn-ghost" data-hs-resalt>New salts</button>
+        </div>
+
+        <div class="panel">
+          <p class="panel-title">3. How strong is it?</p>
+          <div class="hs-meter" aria-hidden="true"><i data-hs-bar></i></div>
+          <p class="h4" data-hs-rating></p>
+          <ul class="hs-reasons" data-hs-reasons></ul>
+          <dl class="hs-times">
+            <div><dt>Rough time to guess if a site used a fast hash like plain SHA-256</dt><dd data-hs-fast></dd></div>
+            <div><dt>…and if it used a slow password hash like bcrypt or Argon2</dt><dd data-hs-slow></dd></div>
+          </dl>
+          <p class="caption muted">A rough estimate from length and character variety, assuming an attacker with a stolen database and a modern graphics card. Real guessing starts with common passwords, so anything on those lists falls instantly.</p>
+        </div>
+
+        <div class="panel hs-takeaway">
+          <p class="panel-title">What defenders do</p>
+          <ul class="hs-list">
+            <li><b>Store passwords with a slow password hash:</b> bcrypt, scrypt or Argon2. Plain SHA-256 is far too fast for passwords; it’s used here only to show the idea.</li>
+            <li><b>Give every password its own random salt.</b> Good password-hashing libraries do this for you.</li>
+            <li><b>Turn on multi-factor sign-in,</b> so a guessed password alone isn’t enough.</li>
+            <li><b>As a user:</b> one long, unique password per site, kept in a password manager.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .hs-field { display: flex; flex-direction: column; gap: 8px; max-width: 640px; }
+  .hs-field input { height: 56px; padding: 0 20px; border-radius: 28px; border: 1px solid var(--white-20); background: var(--grey-50); color: var(--white); font-size: 18px; }
+  .hs-field input:focus { outline: none; border-color: var(--white); }
+  .hs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .hs-hash { padding: 16px; border-radius: 12px; background: var(--black); border: 1px solid var(--white-20); color: var(--white); font-size: 15px; letter-spacing: 0.02em; overflow-wrap: anywhere; }
+  .hs-hash :global(.is-changed) { color: rgb(120, 220, 145); }
+  .hs-table { display: flex; flex-direction: column; border: 1px solid var(--white-20); border-radius: 12px; overflow: clip; background: var(--black); }
+  .hs-row { display: grid; grid-template-columns: 56px 92px minmax(0, 1fr); gap: 12px; padding: 10px 14px; font-size: 14px; align-items: center; }
+  .hs-row + .hs-row { border-top: 1px solid var(--white-20); }
+  .hs-head { font-size: 12px; color: var(--white-60); }
+  .hs-row code { font-family: var(--mono); font-size: 12.5px; color: var(--white); overflow-wrap: anywhere; }
+  .hs-row code.is-match { color: rgb(255, 130, 136); }
+  .hs-same { color: rgb(255, 130, 136); }
+  .hs-takeaway .btn, .hs-grid .btn { align-self: flex-start; }
+  .hs-meter { height: 6px; border-radius: 6px; background: var(--white-20); overflow: clip; }
+  .hs-meter i { display: block; height: 100%; border-radius: 6px; background: var(--white); transform-origin: left; transform: scaleX(0); transition: transform 0.5s var(--ease-out), background 0.5s var(--ease-out); }
+  .hs-reasons, .hs-list { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 6px; color: var(--grey); }
+  .hs-list b { color: var(--white); font-weight: 600; }
+  .hs-times { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+  .hs-times div { display: flex; justify-content: space-between; gap: 16px; padding-top: 10px; border-top: 1px solid var(--white-20); }
+  .hs-times dt { font-size: 14px; color: var(--white-60); }
+  .hs-times dd { margin: 0; font-weight: 600; color: var(--white); text-align: right; white-space: nowrap; }
+  @media (max-width: 1199px) { .hs-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 480px) { .hs-row { grid-template-columns: 44px 1fr; } .hs-row > :last-child { grid-column: 1 / -1; } .hs-times div { flex-direction: column; gap: 2px; } .hs-times dd { text-align: left; } }
+  @media (prefers-reduced-motion: reduce) { .hs-meter i { transition: none; } }
+</style>
+
+<script>
+  import { token } from "../../lib/random.mjs";
+
+  const root = document.querySelector<HTMLElement>("[data-hs]")!;
+  const $ = <T extends HTMLElement = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+  const input = $<HTMLInputElement>("[data-hs-input]");
+  const COMMON = ["123456", "password", "123456789", "qwerty", "111111", "12345678", "abc123", "password1", "iloveyou", "admin", "welcome", "monkey", "dragon", "letmein", "football", "sunshine", "princess", "000000", "qwerty123", "1q2w3e4r", "baseball", "shadow", "master", "superman", "trustno1"];
+  let salts = [token(8, "0123456789abcdef"), token(8, "0123456789abcdef")];
+  let previous = "";
+
+  const sha256 = async (text: string) => Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text))), (b) => b.toString(16).padStart(2, "0")).join("");
+
+  const duration = (seconds: number) => {
+    if (seconds < 1) return "instantly";
+    const units: [number, string][] = [[31557600 * 1e6, "million years"], [31557600 * 1000, "thousand years"], [31557600, "years"], [86400, "days"], [3600, "hours"], [60, "minutes"], [1, "seconds"]];
+    if (seconds > 31557600 * 1e9) return "longer than the universe has existed";
+    const [size, name] = units.find(([s]) => seconds >= s)!;
+    return `about ${Math.round(seconds / size).toLocaleString("en")} ${name}`;
+  };
+
+  const strength = (pw: string) => {
+    const reasons: string[] = [];
+    const lower = pw.toLowerCase();
+    const common = COMMON.some((c) => lower === c || lower.replace(/[0-9!@#$%^&*._-]+$/, "") === c);
+    let pool = 0;
+    if (/[a-z]/.test(pw)) pool += 26;
+    if (/[A-Z]/.test(pw)) pool += 26;
+    if (/[0-9]/.test(pw)) pool += 10;
+    if (/[^a-zA-Z0-9]/.test(pw)) pool += 33;
+    let bits = pw.length * Math.log2(Math.max(pool, 1));
+    if (common) { bits = Math.min(bits, 12); reasons.push("It's on (or built from) a list of the most common passwords."); }
+    if (/^(.)\1+$/.test(pw)) { bits = Math.min(bits, 8); reasons.push("It's one character repeated."); }
+    if (/(abc|123|qwe|asd|zxc)/i.test(pw)) { bits -= 10; reasons.push("It contains a keyboard or alphabet run like 123 or qwe."); }
+    if (/(19|20)\d\d$/.test(pw)) { bits -= 6; reasons.push("It ends in a year, which guessers try early."); }
+    if (pw.length < 12) reasons.push(`It's ${pw.length} characters. Aim for at least 14, or a passphrase of 4 random words.`);
+    else reasons.push(`Good length: ${pw.length} characters.`);
+    if (pool < 60 && pw.length < 16) reasons.push("Mixing in more kinds of characters, or simply making it longer, helps.");
+    return { bits: Math.max(0, bits), reasons };
+  };
+
+  const update = async () => {
+    const pw = input.value;
+    const hash = await sha256(pw);
+    if (input.value !== pw) return;
+    // highlight the characters that changed since the last hash
+    const out = $("[data-hs-hash]");
+    out.replaceChildren(...Array.from(hash, (c, i) => {
+      const s = document.createElement("span");
+      s.textContent = c;
+      if (previous && previous[i] !== c) s.className = "is-changed";
+      return s;
+    }));
+    if (previous && previous !== hash) {
+      const changed = Array.from(hash).filter((c, i) => previous[i] !== c).length;
+      $("[data-hs-diff]").textContent = `${changed} of 64 characters changed from the last version.`;
+    }
+    previous = hash;
+
+    const plain = hash.slice(0, 24);
+    root.querySelectorAll<HTMLElement>("[data-hs-plain]").forEach((el) => {
+      el.textContent = plain;
+      el.classList.add("is-match");
+    });
+    const salted = await Promise.all(salts.map((s) => sha256(s + pw)));
+    salts.forEach((s, i) => {
+      $(`[data-hs-salt="${i}"]`).textContent = s;
+      $(`[data-hs-salted="${i}"]`).textContent = salted[i].slice(0, 24);
+    });
+    $("[data-hs-same]").textContent = "Without salt, alex and sam have identical hashes. With salt, they don't.";
+
+    const { bits, reasons } = strength(pw);
+    const guesses = Math.pow(2, bits) / 2;
+    const ratings: [number, string, string][] = [[28, "Very weak", "rgb(255, 120, 120)"], [45, "Weak", "rgb(255, 160, 110)"], [65, "Okay", "rgb(245, 200, 110)"], [85, "Strong", "rgb(150, 220, 140)"], [Infinity, "Very strong", "rgb(120, 220, 145)"]];
+    const [, label, color] = ratings.find(([max]) => bits < max)!;
+    $("[data-hs-rating]").textContent = pw ? label : "Type a password";
+    const bar = $("[data-hs-bar]");
+    bar.style.transform = `scaleX(${Math.min(1, bits / 100)})`;
+    bar.style.background = color;
+    $("[data-hs-reasons]").replaceChildren(...(pw ? reasons : []).map((r) => Object.assign(document.createElement("li"), { textContent: r })));
+    $("[data-hs-fast]").textContent = pw ? duration(guesses / 1e10) : "";
+    $("[data-hs-slow]").textContent = pw ? duration(guesses / 1e4) : "";
+  };
+
+  input.addEventListener("input", update);
+  $("[data-hs-resalt]").addEventListener("click", () => {
+    salts = [token(8, "0123456789abcdef"), token(8, "0123456789abcdef")];
+    update();
+  });
+  update();
+</script>

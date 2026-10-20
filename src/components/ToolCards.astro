@@ -1,17 +1,28 @@
 ---
 import { site } from "../lib/site";
 import Icon from "./Icon.astro";
-// Interactive tools (list in site.json "tools"). Used on the home page and /interactive.
+// Interactive tools (list in site.json "tools"). The home page shows the featured ones;
+// /interactive passes each topic's tools with `dense` (equal cards, two per row).
+// A tool's "specimen" is a line of real data from it, set in mono, that decodes itself into view.
+type Tool = (typeof site.tools)[number];
+interface Props {
+  tools?: Tool[];
+  dense?: boolean;
+}
+const { tools = site.tools.filter((t) => t.featured), dense = false } = Astro.props;
 ---
-<ul class="tools">
-  {site.tools.map((t) => (
+<ul class:list={["tools", { "is-dense": dense }]}>
+  {tools.map((t) => (
     <li>
       <a class="tool" href={t.href}>
         <span class="tool-text">
           <span class="h4 balance">{t.title}</span>
           <span class="body muted balance">{t.description}</span>
         </span>
-        <span class="round-btn tool-btn" aria-hidden="true"><Icon name="arrow-up-right" size={22} /></span>
+        <span class="tool-foot">
+          {"specimen" in t && t.specimen && <code class="tool-specimen" data-scramble aria-hidden="true">{t.specimen}</code>}
+          <span class="round-btn tool-btn" aria-hidden="true"><Icon name="arrow-up-right" size={22} /></span>
+        </span>
       </a>
     </li>
   ))}
@@ -29,20 +40,34 @@ import Icon from "./Icon.astro";
   .tools li:nth-child(-n + 2) .tool { min-height: 320px; }
   .tool-text { display: flex; flex-direction: column; gap: 12px; max-width: 420px; }
   .tools li:nth-child(-n + 2) .h4 { font-size: 36px; line-height: 1.2em; }
-  .tool-btn { align-self: flex-end; }
+  .tool-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; }
+  .tool-specimen { min-width: 0; font-family: var(--mono); font-size: 12.5px; line-height: 1.5; color: var(--white-40); overflow-wrap: anywhere; transition: color 0.4s var(--ease-out); }
+  .tool-specimen :global(.is-cipher) { color: var(--white-20); }
+  .tool-btn { flex: none; margin-left: auto; }
   @media (hover: hover) and (pointer: fine) {
     .tool:hover { border-color: var(--white-20); background: rgba(230, 230, 230, 0.08); }
     .tool:hover .tool-btn { background: var(--white); color: var(--black); }
+    .tool:hover .tool-specimen { color: var(--grey); }
   }
   .tool:active .tool-btn { background: var(--white); color: var(--black); }
+
+  .tools.is-dense { grid-template-columns: 1fr 1fr; }
+  .tools.is-dense li { grid-column: span 1; }
+  .tools.is-dense li:only-child, .tools.is-dense li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .tools.is-dense .tool, .tools.is-dense li:nth-child(-n + 2) .tool { min-height: 280px; }
+  .tools.is-dense li:nth-child(-n + 2) .h4 { font-size: 28px; }
+
   @media (max-width: 1199px) {
     .tools { grid-template-columns: 1fr 1fr; }
     .tools li, .tools li:nth-child(-n + 2) { grid-column: span 1; }
     .tools li:first-child { grid-column: 1 / -1; }
+    .tools.is-dense li:first-child { grid-column: span 1; }
+    .tools.is-dense li:only-child, .tools.is-dense li:last-child:nth-child(odd) { grid-column: 1 / -1; }
     .tools li:nth-child(-n + 2) .h4 { font-size: 28px; }
   }
   @media (max-width: 809px) {
-    .tools { grid-template-columns: 1fr; }
-    .tool, .tools li:nth-child(-n + 2) .tool { min-height: 220px; }
+    .tools, .tools.is-dense { grid-template-columns: 1fr; }
+    .tools.is-dense li:first-child { grid-column: auto; }
+    .tool, .tools li:nth-child(-n + 2) .tool, .tools.is-dense .tool { min-height: 220px; padding: 24px; }
   }
 </style>

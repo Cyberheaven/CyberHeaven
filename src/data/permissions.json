@@ -1,0 +1,60 @@
+{
+  "challenges": [
+    {
+      "file": "backup.sh",
+      "directory": false,
+      "task": "The owner can read, change and run this script. Everyone else can read it and run it, but not change it.",
+      "answer": "755",
+      "explain": "7 = 4 (read) + 2 (write) + 1 (execute) for the owner, 5 = 4 + 1 for group and others. 755 is the usual setting for scripts and programs.",
+      "group": "staff"
+    },
+    {
+      "file": "notes.txt",
+      "directory": false,
+      "task": "Private notes. The owner can read and change them. Nobody else can do anything with them.",
+      "answer": "600",
+      "explain": "6 = read + write. The zeros mean the group and everyone else get nothing, not even a peek.",
+      "group": "staff"
+    },
+    {
+      "file": "index.html",
+      "directory": false,
+      "task": "A web page. The owner can read and change it. Everyone else, including the web server, only needs to read it.",
+      "answer": "644",
+      "explain": "644 is the default for most files. Nobody needs execute on a web page: it's read, not run.",
+      "group": "staff"
+    },
+    {
+      "file": "id_ed25519",
+      "directory": false,
+      "task": "An SSH private key. SSH refuses to use a key that others can read. The owner only needs to read it; nobody else gets anything.",
+      "answer": "400",
+      "explain": "400 is read-only for the owner. Even the owner can't change it by accident. 600 also works for SSH, but the task asked for read only.",
+      "group": "staff"
+    },
+    {
+      "file": "q3-report.xlsx",
+      "directory": false,
+      "task": "The owner and everyone in the finance group can read and change this report. Nobody else can open it.",
+      "answer": "660",
+      "explain": "The middle digit is the group. Giving a team access through a group is far safer than opening a file to everyone.",
+      "group": "finance"
+    },
+    {
+      "file": "deploy.sh",
+      "directory": false,
+      "task": "The owner has full control. The devops group can read and run it but not change it. Everyone else gets nothing.",
+      "answer": "750",
+      "explain": "Scripts that deploy code often hold secrets or paths attackers would love. 750 keeps them inside the team.",
+      "group": "devops"
+    },
+    {
+      "file": "uploads",
+      "directory": true,
+      "task": "A tutorial says to run chmod 777 on this folder. Don't. Give the owner full control, let the group list and enter it, and let others enter it (to reach a file by its exact name) but not list what's inside.",
+      "answer": "751",
+      "explain": "On a folder, r lets you list its contents, w lets you create and delete files in it, and x lets you enter it. 777 would let anyone on the machine drop or delete files, which is how web shells end up in upload folders.",
+      "group": "www-data"
+    }
+  ]
+}

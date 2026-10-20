@@ -6,13 +6,43 @@ import Footer from "../components/sections/Footer.astro";
 import Contact from "../components/sections/Contact.astro";
 import ToolCards from "../components/ToolCards.astro";
 import { site } from "../lib/site";
+
+// Tools are grouped by the homepage topics (site.json "topics"), in the same order. A tool without a
+// topic goes under "Start here"; a topic with no tools yet is left out.
+const start = site.tools.filter((t) => !("topic" in t) || !t.topic);
+const topicOf = (t: (typeof site.tools)[number]) => ("topic" in t ? t.topic : "") ?? "";
+const groups = site.topics.map((topic) => ({ name: topic.name, image: topic.image as string | undefined, tools: site.tools.filter((t) => topicOf(t) === topic.name) })).filter((g) => g.tools.length);
+// a tool topic that isn't a homepage topic gets its own group, with its image from site.json "labTopics"
+// (or a plain heading if it has none)
+for (const name of new Set(site.tools.map(topicOf)))
+  if (name && !groups.some((g) => g.name === name))
+    groups.push({ name, image: site.labTopics.find((t) => t.name === name)?.image, tools: site.tools.filter((t) => topicOf(t) === name) });
 ---
-<Base title={`Interactive | ${site.name}`} description="Free interactive cybersecurity tools: a career quiz, a phishing game, SOC and malware explorers, and a beginner glossary.">
+<Base title={`Interactive | ${site.name}`} description="Free hands-on cybersecurity labs for defenders that run in your browser: triage SOC alerts, hunt through logs, review a Linux server, decode suspicious strings, write detection rules and more.">
   <Topbar path="/interactive" />
   <main>
-    <PageHead title="Learn by doing" lead="Free hands-on tools to find your direction and practise the basics. Everything runs in your browser, with no sign-up." />
-    <section class="hub shell">
-      <ToolCards />
+    <PageHead title="Learn by doing" lead="Hands-on labs built from the work analysts really do: reading logs, peeling encodings, writing detections. Everything runs in your browser. No sign-up, nothing to install, nothing tracked." />
+
+    <section class="shell hub">
+      <div class="hub-group">
+        <div class="hub-head hub-start">
+          <h2 class="h3">Start here</h2>
+          <p class="body muted">New to security? Find a direction first, and keep the glossary open while you play.</p>
+        </div>
+        <ToolCards tools={start} dense />
+      </div>
+
+      {groups.map((g) => (
+        <div class="hub-group">
+          <div class="hub-head">
+            {g.image
+              ? <h2 class="hub-topic"><img src={g.image} alt={g.name} width="1000" height="563" loading="lazy" decoding="async" /></h2>
+              : <h2 class="h3 hub-start">{g.name}</h2>}
+            <p class="caption muted">{g.tools.length} {g.tools.length === 1 ? "lab" : "labs"}</p>
+          </div>
+          <ToolCards tools={g.tools} dense />
+        </div>
+      ))}
     </section>
     <Contact />
   </main>
@@ -20,5 +50,20 @@ import { site } from "../lib/site";
 </Base>
 
 <style>
-  .hub { padding-bottom: 100px; }
+  .hub { padding-bottom: 100px; display: flex; flex-direction: column; }
+  .hub-group { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 16px 40px; padding: 40px 0; border-top: 1px solid var(--white-20); }
+  .hub-group:first-child { border-top: 0; padding-top: 0; }
+  .hub-head { position: sticky; top: 96px; align-self: start; display: flex; flex-direction: column; gap: 12px; }
+  .hub-start { padding-top: 8px; }
+  .hub-start .body { max-width: 340px; }
+  .hub-topic { margin: 0; border-radius: 14px; overflow: clip; aspect-ratio: 1000 / 563; background: var(--grey-50); }
+  .hub-topic img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .hub-group:hover .hub-topic img { transform: scale(1.04); } }
+  @media (max-width: 1199px) {
+    .hub-group { grid-template-columns: 1fr; }
+    .hub-head { position: static; }
+    .hub-topic { max-width: 520px; }
+  }
+  @media (max-width: 809px) { .hub-group { padding: 32px 0; } }
+  @media (prefers-reduced-motion: reduce) { .hub-topic img { transition: none; } }
 </style>

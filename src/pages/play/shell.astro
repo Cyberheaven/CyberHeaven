@@ -1,0 +1,213 @@
+---
+import Base from "../../layouts/Base.astro";
+import Topbar from "../../components/Topbar.astro";
+import Footer from "../../components/sections/Footer.astro";
+import PageHead from "../../components/PageHead.astro";
+import Icon from "../../components/Icon.astro";
+import DefenderNote from "../../components/DefenderNote.astro";
+import { site } from "../../lib/site";
+
+// The pretend shell and its randomly generated server live in src/lib/shell.mjs.
+---
+<Base title={`Shell quest | ${site.name}`} description="A free in-browser Linux terminal exercise: review a copy of a server after an alert, using ls, cd, cat, grep and find to collect five flags. A new server every game.">
+  <Topbar path="/play/shell" />
+  <main>
+    <PageHead title="Shell quest" lead="You’ve been handed a read-only copy of a server after a security alert. Use real Linux commands to look around, read the logs and find five flags. Every game builds a new server, and nothing here runs on a real machine.">
+      <a class="text-link body-sb" href="/articles/linux-command-line-cheat-sheet">Keep the Linux cheat sheet open<Icon name="arrow-right" size={18} /></a>
+    </PageHead>
+
+    <section class="shell lab sq" data-sq>
+      <DefenderNote />
+      <div class="sq-grid">
+        <div class="term sq-term" data-sq-term>
+          <div class="term-bar"><code data-sq-host></code><button type="button" class="sq-link" data-sq-new>New server</button></div>
+          <div class="term-body sq-out" data-sq-out aria-live="polite"></div>
+          <form class="term-body sq-line" data-sq-form>
+            <label class="sq-prompt" for="sq-input" data-sq-prompt></label>
+            <input id="sq-input" data-sq-input autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" aria-label="Command" />
+          </form>
+        </div>
+
+        <aside class="panel sq-side">
+          <p class="caption muted" data-sq-count></p>
+          <ol class="sq-objs" data-sq-objs></ol>
+          <form class="sq-submit" data-sq-flagform>
+            <label class="caption muted" for="sq-flag">Found a flag? Paste it here (or type submit &lt;flag&gt;)</label>
+            <div class="sq-submit-row">
+              <input id="sq-flag" class="term-body" data-sq-flag placeholder="CH{...}" autocomplete="off" spellcheck="false" />
+              <button type="submit" class="btn btn-sm">Submit</button>
+            </div>
+            <p class="caption sq-msg" data-sq-msg aria-live="polite"></p>
+          </form>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style is:global>
+  /* global: terminal lines and objectives are drawn by the script below */
+  .sq-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 16px; align-items: start; }
+  .sq-term { cursor: text; }
+  .sq-link { padding: 4px 0; border: 0; background: none; color: var(--white-60); font-size: 13px; cursor: pointer; }
+  @media (hover: hover) and (pointer: fine) { .sq-link:hover { color: var(--white); } }
+  .sq-out { padding: 16px 16px 0; min-height: 360px; }
+  .sq-out pre { margin: 0; font: inherit; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .sq-cmd { color: var(--white); }
+  .sq-cmd span { color: rgb(120, 220, 145); }
+  .sq-res { color: var(--grey); margin-bottom: 8px !important; }
+  .sq-err { color: rgb(255, 130, 136); margin-bottom: 8px !important; }
+  .sq-ok { color: rgb(120, 220, 145); margin-bottom: 8px !important; }
+  .sq-line { display: flex; align-items: baseline; gap: 8px; padding: 0 16px 18px; }
+  .sq-prompt { flex: none; color: rgb(120, 220, 145); }
+  .sq-line input { flex: 1; min-width: 0; border: 0; padding: 0; background: none; color: var(--white); font: inherit; caret-color: var(--white); outline: none; }
+
+  .sq-side { position: sticky; top: 96px; }
+  .sq-objs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .sq-obj { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 4px 12px; padding: 14px 0; border-top: 1px solid var(--white-20); }
+  .sq-obj:first-child { border-top: 0; padding-top: 4px; }
+  .sq-mark { grid-row: span 3; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--white-20); display: grid; place-items: center; font-size: 12px; color: var(--white-60); }
+  .sq-obj.is-done .sq-mark { background: var(--success); border-color: var(--success); color: var(--black); }
+  .sq-obj-title { font-weight: 600; color: var(--white); }
+  .sq-obj.is-done .sq-obj-title { color: var(--white-60); }
+  .sq-obj-task { font-size: 14px; color: var(--grey); }
+  .sq-obj:not(.is-current) .sq-obj-task, .sq-obj:not(.is-current) .sq-hint { display: none; }
+  .sq-hint { justify-self: start; padding: 2px 0; border: 0; background: none; color: var(--white-60); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; text-align: left; }
+  .sq-hint.is-open { text-decoration: none; cursor: default; font-family: var(--mono); color: var(--white); }
+  .sq-submit { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--white-20); }
+  .sq-submit-row { display: flex; gap: 8px; }
+  .sq-submit input { flex: 1; min-width: 0; height: 44px; padding: 0 14px; border-radius: 22px; border: 1px solid var(--white-20); background: var(--black); color: var(--white); font-size: 14px; }
+  .sq-submit input:focus { outline: none; border-color: var(--white); }
+  .sq-msg:empty { display: none; }
+  .sq-msg.is-right { color: rgb(120, 220, 145); }
+  .sq-msg.is-wrong { color: rgb(255, 130, 136); }
+
+  @media (max-width: 1199px) { .sq-grid { grid-template-columns: minmax(0, 1fr); } .sq-side { position: static; order: -1; } }
+  @media (max-width: 809px) { .sq-out { min-height: 280px; font-size: 12.5px; } .sq-line { font-size: 12.5px; } }
+</style>
+
+<script>
+  import { makeWorld, run } from "../../lib/shell.mjs";
+  import { scrollToY } from "../../scripts/lib";
+
+  const root = document.querySelector<HTMLElement>("[data-sq]")!;
+  const $ = <T extends HTMLElement = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+  const out = $("[data-sq-out]");
+  const input = $<HTMLInputElement>("[data-sq-input]");
+  const objsEl = $("[data-sq-objs]");
+  const msg = $("[data-sq-msg]");
+  let w = makeWorld();
+  let cwd = w.home;
+  let done = new Set<number>();
+  const history: string[] = [];
+  let back = 0;
+
+  const host = () => w.files["/etc/hostname"].trim();
+  const prompt = () => `${w.user}@${host()}:${cwd.replace(w.home, "~")}$`;
+  const print = (text: string, cls: string) => {
+    if (!text) return;
+    const pre = document.createElement("pre");
+    pre.className = cls;
+    pre.textContent = text;
+    out.append(pre);
+  };
+
+  const drawObjectives = () => {
+    const current = w.objectives.findIndex((_, i) => !done.has(i));
+    objsEl.replaceChildren(
+      ...w.objectives.map((o, i) => {
+        const li = document.createElement("li");
+        li.className = `sq-obj${done.has(i) ? " is-done" : ""}${i === current ? " is-current" : ""}`;
+        const mark = document.createElement("span");
+        mark.className = "sq-mark";
+        mark.textContent = done.has(i) ? "" : String(i + 1);
+        if (done.has(i)) mark.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>`;
+        const title = Object.assign(document.createElement("span"), { className: "sq-obj-title", textContent: o.title });
+        const task = Object.assign(document.createElement("span"), { className: "sq-obj-task", textContent: o.task });
+        const hint = Object.assign(document.createElement("button"), { type: "button", className: "sq-hint", textContent: "Show a hint" });
+        hint.addEventListener("click", () => {
+          hint.classList.add("is-open");
+          hint.textContent = o.hint;
+        });
+        li.append(mark, title, task, hint);
+        return li;
+      })
+    );
+    $("[data-sq-count]").textContent = done.size === w.objectives.length ? "All five flags found. Server reviewed." : `${done.size} of ${w.objectives.length} flags found`;
+  };
+
+  const submit = (value: string) => {
+    const v = value.trim();
+    const i = w.objectives.findIndex((o) => o.flag === v);
+    msg.className = "caption sq-msg";
+    if (i < 0) {
+      msg.classList.add("is-wrong");
+      msg.textContent = v ? "That isn't one of this server's flags. Flags look like CH{…}." : "Paste a flag first.";
+      return false;
+    }
+    const fresh = !done.has(i);
+    done.add(i);
+    msg.classList.add("is-right");
+    msg.textContent = fresh ? `Flag ${i + 1} accepted: ${w.objectives[i].title}.` : "You already found that one.";
+    if (done.size === w.objectives.length) msg.textContent = "Every flag found. In a real review you'd now write up the backup, the log entry and the unexpected cron job for the incident team.";
+    drawObjectives();
+    return true;
+  };
+
+  const boot = () => {
+    cwd = w.home;
+    done = new Set();
+    out.replaceChildren();
+    $("[data-sq-host]").textContent = host();
+    print(`Read-only copy of ${host()}. Type help to see the commands.`, "sq-res");
+    $("[data-sq-prompt]").textContent = prompt();
+    msg.textContent = "";
+    drawObjectives();
+  };
+
+  $("[data-sq-form]").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const line = input.value;
+    input.value = "";
+    if (line.trim()) history.push(line);
+    back = history.length;
+    const cmd = document.createElement("pre");
+    cmd.className = "sq-cmd";
+    cmd.innerHTML = `<span></span> `;
+    cmd.firstElementChild!.textContent = prompt();
+    cmd.append(line);
+    out.append(cmd);
+    const r = run(w, cwd, line);
+    if (r.clear) out.replaceChildren();
+    cwd = r.cwd;
+    if (r.submit !== undefined) {
+      const ok = submit(r.submit);
+      print(msg.textContent ?? "", ok ? "sq-ok" : "sq-err");
+    } else print(r.out, r.error ? "sq-err" : "sq-res");
+    $("[data-sq-prompt]").textContent = prompt();
+    // keep the prompt in view as the output grows
+    const box = input.getBoundingClientRect();
+    if (box.bottom > innerHeight - 24) scrollToY(window.scrollY + box.bottom - innerHeight + 120);
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+    e.preventDefault();
+    back = Math.max(0, Math.min(history.length, back + (e.key === "ArrowUp" ? -1 : 1)));
+    input.value = history[back] ?? "";
+  });
+  $("[data-sq-term]").addEventListener("click", (e) => {
+    if (!(e.target as HTMLElement).closest("button") && !getSelection()?.toString()) input.focus({ preventScroll: true });
+  });
+  $("[data-sq-flagform]").addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (submit($<HTMLInputElement>("[data-sq-flag]").value)) $<HTMLInputElement>("[data-sq-flag]").value = "";
+  });
+  $("[data-sq-new]").addEventListener("click", () => {
+    w = makeWorld();
+    boot();
+    input.focus({ preventScroll: true });
+  });
+  boot();
+</script>

@@ -4,166 +4,223 @@ import PageHead from "../../components/PageHead.astro";
 import Topbar from "../../components/Topbar.astro";
 import Footer from "../../components/sections/Footer.astro";
 import Icon from "../../components/Icon.astro";
+import DefenderNote from "../../components/DefenderNote.astro";
 import { site } from "../../lib/site";
 import data from "../../data/phishing.json";
 
-// Messages live in src/data/phishing.json. All companies and people in them are made up.
+// Messages live in src/data/phishing.json (CMS: Interactive → Spot the phish). All companies and people
+// in them are made up. The inbox is shuffled on every visit and every replay.
 const { messages } = data;
 ---
-<Base title={`Spot the phish | ${site.name}`} description="A free mini-game: decide whether each message is real or phishing, then learn the clues that give it away.">
+<Base title={`Spot the phish | ${site.name}`} description="A free inbox game: open each message, check the sender and where links really go, then report it as phishing or mark it safe.">
   <Topbar path="/play/phishing" />
   <main>
-    <PageHead title="Spot the phish" lead={`${messages.length} messages landed in your inbox. Some are real, some are phishing. Hover or tap each link to see where it really goes, then make the call.`} />
+    <PageHead title="Spot the phish" lead={`${messages.length} messages just landed. Open each one, check who really sent it and where its links go (hover or tap them), then report it or mark it safe.`}>
+      <a class="text-link body-sb" href="/glossary">Look up a term in the glossary<Icon name="arrow-right" size={18} /></a>
+    </PageHead>
 
-    <section class="ph container" data-ph aria-live="polite">
-      <div class="ph-top" data-ph-top>
-        <p class="caption muted"><span data-ph-count>Message 1 of {messages.length}</span> · Score <span data-ph-score>0</span></p>
-        <div class="ph-progress" aria-hidden="true"><div class="ph-fill" data-ph-fill></div></div>
-      </div>
+    <section class="shell lab ph" data-ph>
+      <DefenderNote />
+      <div class="ph-client">
+        <div class="ph-inbox">
+          <div class="ph-inbox-head">
+            <span class="body-sb">Inbox</span>
+            <span class="caption muted"><span data-ph-score>0</span> of {messages.length} right · <span data-ph-left>{messages.length}</span> left</span>
+          </div>
+          <ul class="ph-list" data-ph-list>
+            {messages.map((m, i) => (
+              <li>
+                <button type="button" class="ph-item" data-open={i} aria-pressed="false">
+                  <span class="ph-dot" aria-hidden="true"></span>
+                  <span class="ph-item-text">
+                    <span class="ph-item-from">{m.fromName}</span>
+                    <span class="ph-item-subject">{m.subject}</span>
+                  </span>
+                  <span class="ph-item-state" data-state></span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-      {messages.map((m, i) => (
-        <article class="ph-round" data-round={i} data-phish={String(m.phish)} hidden={i > 0}>
-          <div class="ph-mail">
-            <p class="ph-kind caption">{m.kind}</p>
-            <dl class="ph-meta">
-              <div><dt>From</dt><dd><b>{m.fromName}</b> <span class="ph-addr">&lt;{m.fromAddress}&gt;</span></dd></div>
-              <div><dt>Subject</dt><dd>{m.subject}</dd></div>
-            </dl>
-            <p class="ph-body">{m.body}</p>
-            {m.linkText && (
-              <span class="ph-link" tabindex="0">
-                <span class="ph-link-text">{m.linkText}</span>
-                <span class="ph-link-url" role="tooltip">Goes to: {m.linkUrl}</span>
-              </span>
-            )}
+        <div class="ph-pane" aria-live="polite">
+          {messages.map((m, i) => (
+            <article class="ph-mail" data-mail={i} data-phish={String(m.phish)} hidden>
+              <header class="ph-mail-head">
+                <p class="ph-subject">{m.subject}</p>
+                <dl class="ph-meta">
+                  <div><dt>From</dt><dd><b>{m.fromName}</b> <span class="ph-addr">&lt;{m.fromAddress}&gt;</span></dd></div>
+                  <div><dt>Type</dt><dd>{m.kind}</dd></div>
+                </dl>
+              </header>
+              <p class="ph-body">{m.body}</p>
+              {m.linkText && (
+                <span class="ph-link" tabindex="0">
+                  <span class="ph-link-text">{m.linkText}</span>
+                  <span class="ph-link-url" role="tooltip">Goes to: {m.linkUrl}</span>
+                </span>
+              )}
+              <div class="ph-actions" data-choices>
+                <button type="button" class="btn btn-sm" data-answer="true">Report phishing</button>
+                <button type="button" class="btn btn-sm btn-ghost" data-answer="false">Looks safe</button>
+              </div>
+              <div class="verdict" data-verdict hidden>
+                <b data-verdict-title></b>
+                <ul class="ph-clues">{m.clues.map((c) => <li class="body muted">{c}</li>)}</ul>
+              </div>
+            </article>
+          ))}
+
+          <div class="ph-empty" data-ph-start>
+            <p class="h4">Pick a message to start.</p>
+            <p class="body muted">Take your time. Phishing works by making you rush.</p>
+            <button type="button" class="btn btn-sm" data-ph-first>Open the first message<Icon name="arrow-right" size={18} /></button>
           </div>
 
-          <div class="ph-choices" data-choices>
-            <button type="button" class="btn btn-ghost" data-answer="false"><span class="body-sb">Looks legit</span></button>
-            <button type="button" class="btn" data-answer="true"><span class="body-sb">It’s phishing</span></button>
+          <div class="ph-empty" data-ph-end hidden>
+            <p class="h3 balance" data-ph-final tabindex="-1"></p>
+            <p class="body muted balance">The habit that beats phishing: slow down, check where links really go, and confirm unusual requests through a channel you already trust.</p>
+            <button type="button" class="btn btn-sm" data-ph-restart>Play again with a new order</button>
           </div>
-
-          <div class="ph-verdict" data-verdict hidden>
-            <p class="h4" data-verdict-title></p>
-            <p class="body muted">{m.phish ? "The clues:" : "Why it's safe:"}</p>
-            <ul>{m.clues.map((c) => <li class="body">{c}</li>)}</ul>
-            <button type="button" class="btn" data-next><span class="body-sb">{i < messages.length - 1 ? "Next message" : "See your score"}</span><Icon name="arrow-right" size={18} /></button>
-          </div>
-        </article>
-      ))}
-
-      <div class="ph-end" data-ph-end hidden>
-        <p class="h2 balance" data-ph-final tabindex="-1"></p>
-        <p class="body muted balance">Phishing works on everyone sometimes. The habit that beats it: slow down, check where links really go, and confirm unusual requests through a channel you already trust.</p>
-        <div class="ph-actions">
-          <button type="button" class="btn" data-ph-restart><span class="body-sb">Play again</span></button>
-          <a class="btn btn-ghost" href="/glossary"><span class="body-sb">Browse the glossary</span><Icon name="arrow-up-right" size={20} /></a>
         </div>
       </div>
-      <p class="caption muted ph-note">Every company, person, address and link in this game is made up for practice.</p>
+      <p class="caption muted">Every company, person, address and link in this game is made up for practice.</p>
     </section>
   </main>
   <Footer />
 </Base>
 
 <style>
-  .ph { padding: 0 20px 120px; display: flex; flex-direction: column; gap: 24px; }
-  .ph > * { max-width: 880px; }
-  .ph-top { display: flex; flex-direction: column; gap: 12px; }
-  .ph-progress { height: 2px; background: var(--white-20); overflow: clip; }
-  .ph-fill { height: 100%; background: var(--white); transform-origin: left; transform: scaleX(0); transition: transform 0.4s var(--ease-out); }
+  .ph-client { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); border-radius: 16px; border: 1px solid var(--white-20); background: var(--grey-50); overflow: clip; min-height: 620px; }
+  .ph-inbox { border-right: 1px solid var(--white-20); display: flex; flex-direction: column; }
+  .ph-inbox-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 20px; border-bottom: 1px solid var(--white-20); }
+  .ph-list { list-style: none; margin: 0; padding: 0; }
+  .ph-list li + li { border-top: 1px solid var(--white-20); }
+  .ph-item { width: 100%; display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 16px 20px; border: 0; background: none; color: var(--grey); text-align: left; cursor: pointer; transition: background 0.3s var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .ph-item:hover { background: rgba(255, 255, 255, 0.04); } }
+  .ph-item[aria-pressed="true"] { background: rgba(255, 255, 255, 0.08); }
+  .ph-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--white); transition: opacity 0.3s var(--ease-out); }
+  .ph-item.is-done .ph-dot { opacity: 0; }
+  .ph-item-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .ph-item-from { font-weight: 600; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ph-item-subject { font-size: 14px; color: var(--white-60); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ph-item.is-done .ph-item-from { color: var(--white-60); font-weight: 400; }
+  .ph-item-state { font-size: 12px; font-weight: 600; }
+  .ph-item-state.is-right { color: rgb(120, 220, 145); }
+  .ph-item-state.is-wrong { color: rgb(255, 130, 136); }
 
-  .ph-round { display: flex; flex-direction: column; gap: 24px; animation: fadeIn 0.4s var(--ease-out); }
-  .ph-round[hidden] { display: none; }
-  .ph-mail { padding: 28px; border-radius: 16px; background: var(--grey-50); border: 1px solid var(--white-20); display: flex; flex-direction: column; gap: 18px; }
-  .ph-kind { color: var(--white-60); }
-  .ph-meta { margin: 0; display: flex; flex-direction: column; gap: 6px; padding-bottom: 18px; border-bottom: 1px solid var(--white-20); }
-  .ph-meta div { display: grid; grid-template-columns: 72px 1fr; gap: 12px; font-size: 15px; }
+  .ph-pane { padding: 32px; display: flex; flex-direction: column; min-width: 0; }
+  .ph-mail { display: flex; flex-direction: column; gap: 24px; animation: fadeIn 0.4s var(--ease-out); }
+  .ph-mail-head { display: flex; flex-direction: column; gap: 14px; padding-bottom: 20px; border-bottom: 1px solid var(--white-20); }
+  .ph-subject { font-size: 24px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.3; color: var(--white); }
+  .ph-meta { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+  .ph-meta div { display: grid; grid-template-columns: 56px 1fr; gap: 12px; font-size: 15px; }
   .ph-meta dt { color: var(--white-60); }
   .ph-meta dd { margin: 0; color: var(--grey); overflow-wrap: anywhere; }
   .ph-meta b { color: var(--white); font-weight: 600; }
   .ph-addr { color: var(--white-60); }
-  .ph-body { white-space: pre-line; color: var(--grey); font-size: 16px; line-height: 1.6; }
-  .ph-link { position: relative; align-self: flex-start; margin-bottom: 36px; cursor: pointer; outline: none; }
+  .ph-body { max-width: 62ch; white-space: pre-line; color: var(--grey); font-size: 16px; line-height: 1.65; }
+  .ph-link { position: relative; align-self: flex-start; margin-bottom: 30px; cursor: pointer; outline: none; }
   .ph-link-text { display: inline-block; padding: 10px 18px; border-radius: 10px; background: var(--white); color: var(--black); font-weight: 600; }
-  .ph-link-url { position: absolute; top: calc(100% + 8px); left: 0; width: max-content; max-width: min(560px, 80vw); font-size: 13px; padding: 6px 10px; border-radius: 8px; background: var(--black); border: 1px solid var(--white-20); color: var(--white); overflow-wrap: anywhere; opacity: 0; transform: translateY(-4px); transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out); }
+  .ph-link-url { position: absolute; top: calc(100% + 8px); left: 0; width: max-content; max-width: min(560px, 80vw); font-family: var(--mono); font-size: 13px; padding: 6px 10px; border-radius: 8px; background: var(--black); border: 1px solid var(--white-20); color: var(--white); overflow-wrap: anywhere; opacity: 0; transform: translateY(-4px); transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out); }
   .ph-link:hover .ph-link-url, .ph-link:focus .ph-link-url, .ph-link.is-open .ph-link-url { opacity: 1; transform: none; }
   .ph-link:focus-visible .ph-link-text { outline: 2px solid var(--white); outline-offset: 3px; }
+  .ph-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: auto; }
+  .ph-clues { margin: 4px 0 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 6px; }
+  .ph-empty { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 16px; max-width: 520px; animation: fadeIn 0.5s var(--ease-out); }
+  .ph-empty .h3 { outline: none; }
+  .ph-empty .btn { display: inline-flex; gap: 8px; }
 
-  .ph-choices, .ph-actions { display: flex; flex-wrap: wrap; gap: 12px; }
-  .ph-verdict { display: flex; flex-direction: column; gap: 12px; padding: 24px; border-radius: 16px; border: 1px solid var(--white-20); animation: fadeIn 0.4s var(--ease-out); }
-  .ph-verdict[hidden] { display: none; }
-  .ph-verdict.is-right { border-color: var(--success); }
-  .ph-verdict.is-wrong { border-color: var(--error); }
-  .ph-verdict ul { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 6px; }
-  .ph-verdict .btn { align-self: flex-start; margin-top: 8px; }
-  .ph-end { display: flex; flex-direction: column; gap: 20px; animation: fadeIn 0.5s var(--ease-out); }
-  .ph-end[hidden] { display: none; }
-  .ph-end .h2 { line-height: 1.15em; outline: none; }
-  .ph-end .body { max-width: 600px; }
-
-  @media (max-width: 809px) {
-    .ph-mail { padding: 20px; }
-    .ph-choices .btn, .ph-actions .btn { flex: 1 1 100%; }
-  }
-  @media (prefers-reduced-motion: reduce) { .ph-round, .ph-verdict, .ph-end { animation: none; } .ph-fill, .ph-link-url { transition-duration: 0.01ms; } }
+  @media (max-width: 1199px) { .ph-client { grid-template-columns: minmax(0, 1fr); min-height: 0; } .ph-inbox { border-right: 0; border-top: 1px solid var(--white-20); order: 2; } }
+  @media (max-width: 809px) { .ph-pane { padding: 20px; } .ph-subject { font-size: 20px; } .ph-actions .btn { flex: 1 1 100%; } }
+  @media (prefers-reduced-motion: reduce) { .ph-mail, .ph-empty { animation: none; } .ph-link-url { transition-duration: 0.01ms; } }
 </style>
 
 <script>
-  const root = document.querySelector<HTMLElement>("[data-ph]")!;
-  const rounds = Array.from(root.querySelectorAll<HTMLElement>("[data-round]"));
-  const top = root.querySelector<HTMLElement>("[data-ph-top]")!;
-  const countEl = root.querySelector<HTMLElement>("[data-ph-count]")!;
-  const scoreEl = root.querySelector<HTMLElement>("[data-ph-score]")!;
-  const fill = root.querySelector<HTMLElement>("[data-ph-fill]")!;
-  const end = root.querySelector<HTMLElement>("[data-ph-end]")!;
-  const final = root.querySelector<HTMLElement>("[data-ph-final]")!;
-  let score = 0;
+  import { shuffle } from "../../lib/random.mjs";
 
-  const show = (i: number) => {
-    rounds.forEach((r, k) => (r.hidden = k !== i));
-    end.hidden = true;
-    top.hidden = false;
-    countEl.textContent = `Message ${i + 1} of ${rounds.length}`;
-    scoreEl.textContent = String(score);
-    fill.style.transform = `scaleX(${i / rounds.length})`;
+  const root = document.querySelector<HTMLElement>("[data-ph]")!;
+  const $ = <T extends HTMLElement = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+  const list = $("[data-ph-list]");
+  const items = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-open]"));
+  const mails = Array.from(root.querySelectorAll<HTMLElement>("[data-mail]"));
+  const start = $("[data-ph-start]");
+  const end = $("[data-ph-end]");
+  const answers = new Map<number, boolean>();
+
+  const order = () => Array.from(list.querySelectorAll<HTMLButtonElement>("[data-open]")).map((b) => Number(b.dataset.open));
+
+  const open = (i: number) => {
+    items.forEach((b) => b.setAttribute("aria-pressed", String(Number(b.dataset.open) === i)));
+    mails.forEach((m, k) => (m.hidden = k !== i));
+    start.hidden = end.hidden = true;
+    if (innerWidth < 1200) mails[i].scrollIntoView({ block: "start" });
   };
 
-  rounds.forEach((round, i) => {
-    const choices = round.querySelector<HTMLElement>("[data-choices]")!;
-    const verdict = round.querySelector<HTMLElement>("[data-verdict]")!;
-    // Tapping a link on touch screens shows where it goes (instead of hover).
-    round.querySelector(".ph-link")?.addEventListener("click", (e) => (e.currentTarget as HTMLElement).classList.toggle("is-open"));
+  const next = () => order().find((i) => !answers.has(i));
+
+  mails.forEach((mail, i) => {
+    const choices = mail.querySelector<HTMLElement>("[data-choices]")!;
+    const verdict = mail.querySelector<HTMLElement>("[data-verdict]")!;
+    mail.querySelector(".ph-link")?.addEventListener("click", (e) => (e.currentTarget as HTMLElement).classList.toggle("is-open"));
     choices.querySelectorAll<HTMLButtonElement>("[data-answer]").forEach((b) =>
       b.addEventListener("click", () => {
-        const phish = round.dataset.phish === "true";
+        const phish = mail.dataset.phish === "true";
         const right = (b.dataset.answer === "true") === phish;
-        if (right) score++;
-        scoreEl.textContent = String(score);
-        choices.hidden = true;
+        answers.set(i, right);
+        choices.innerHTML = "";
+        const nextBtn = document.createElement("button");
+        nextBtn.type = "button";
+        nextBtn.className = "btn btn-sm";
+        const n = next();
+        nextBtn.textContent = n === undefined ? "See your score" : "Next message";
+        nextBtn.addEventListener("click", () => (n === undefined ? finish() : open(n)));
+        choices.append(nextBtn);
         verdict.hidden = false;
         verdict.classList.toggle("is-right", right);
         verdict.classList.toggle("is-wrong", !right);
         verdict.querySelector("[data-verdict-title]")!.textContent = `${right ? "Correct" : "Not this time"}: ${phish ? "this is phishing." : "this one is legit."}`;
-        verdict.querySelector<HTMLElement>("[data-next]")!.focus({ preventScroll: true });
+        const item = items[i];
+        item.classList.add("is-done");
+        const state = item.querySelector<HTMLElement>("[data-state]")!;
+        state.textContent = phish ? "Phish" : "Safe";
+        state.className = `ph-item-state ${right ? "is-right" : "is-wrong"}`;
+        $("[data-ph-score]").textContent = String([...answers.values()].filter(Boolean).length);
+        $("[data-ph-left]").textContent = String(mails.length - answers.size);
+        nextBtn.focus({ preventScroll: true });
       })
     );
-    round.querySelector("[data-next]")!.addEventListener("click", () => {
-      if (i < rounds.length - 1) return show(i + 1);
-      rounds.forEach((r) => (r.hidden = true));
-      top.hidden = true;
-      end.hidden = false;
-      final.textContent = `You spotted ${score} of ${rounds.length}. ${score === rounds.length ? "Flawless." : score >= rounds.length - 2 ? "Sharp eyes." : "Good practice. Try again?"}`;
-      final.focus({ preventScroll: true });
-    });
   });
 
-  root.querySelector("[data-ph-restart]")!.addEventListener("click", () => {
-    score = 0;
-    rounds.forEach((r) => {
-      r.querySelector<HTMLElement>("[data-choices]")!.hidden = false;
-      r.querySelector<HTMLElement>("[data-verdict]")!.hidden = true;
+  const finish = () => {
+    const score = [...answers.values()].filter(Boolean).length;
+    mails.forEach((m) => (m.hidden = true));
+    items.forEach((b) => b.setAttribute("aria-pressed", "false"));
+    end.hidden = false;
+    $("[data-ph-final]").textContent = `You spotted ${score} of ${mails.length}. ${score === mails.length ? "Flawless." : score >= mails.length - 2 ? "Sharp eyes." : "Good practice. Try again?"}`;
+    $("[data-ph-final]").focus({ preventScroll: true });
+  };
+
+  // A fresh inbox in a random order. "Play again" reloads the page, which deals a new one.
+  const deal = () => {
+    answers.clear();
+    list.replaceChildren(...shuffle(items.map((b) => b.parentElement!)));
+    items.forEach((b) => {
+      b.classList.remove("is-done");
+      b.setAttribute("aria-pressed", "false");
+      const s = b.querySelector<HTMLElement>("[data-state]")!;
+      s.textContent = "";
+      s.className = "ph-item-state";
     });
-    show(0);
-  });
+    mails.forEach((m) => (m.hidden = true));
+    $("[data-ph-score]").textContent = "0";
+    $("[data-ph-left]").textContent = String(mails.length);
+    start.hidden = false;
+    end.hidden = true;
+  };
+
+  items.forEach((b) => b.addEventListener("click", () => open(Number(b.dataset.open))));
+  $("[data-ph-first]").addEventListener("click", () => open(next()!));
+  $("[data-ph-restart]").addEventListener("click", () => location.reload());
+  deal();
 </script>

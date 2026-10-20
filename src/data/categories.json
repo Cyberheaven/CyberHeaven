@@ -99,6 +99,12 @@
   ],
   "roles": [
     {
+      "name": "Founder",
+      "plural": "Founder",
+      "description": "Started CyberHeaven.",
+      "onlyOne": true
+    },
+    {
       "name": "Maintainer",
       "plural": "Maintainers",
       "description": "Keep the site, the content and the project running."

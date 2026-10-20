@@ -1,0 +1,59 @@
+{
+  "challenges": [
+    {
+      "title": "Not encryption",
+      "story": "This string was sitting in the config section of a suspicious script. Ends in ==, mostly letters and digits. Seen that before?",
+      "message": "flag=CH{base64_is_not_encryption}",
+      "layers": [
+        "base64"
+      ],
+      "hint": "Trailing = signs are padding, a classic sign of Base64. Add the From Base64 step.",
+      "explain": "Base64 turns any bytes into plain letters and digits so they survive email, URLs and logs. Anyone can reverse it, so it hides nothing. When malware uses it, it's to dodge simple keyword searches, not to keep secrets."
+    },
+    {
+      "title": "Layer cake",
+      "story": "A phishing page stored its exfiltration address like this. Only 0–9 and a–f. Peel it one layer at a time.",
+      "message": "send_to=https://collect.example/drop?id=CH{layers_on_layers}",
+      "layers": [
+        "base64",
+        "hex"
+      ],
+      "hint": "Only 0–9 and a–f means hex. Decode that first, then look at what you get: the second layer has its own tell-tale ending.",
+      "explain": "Stacking encodings is cheap and beats filters that only check one layer. Analysts peel them the same way you just did: recognise the alphabet, decode, look again."
+    },
+    {
+      "title": "Hidden in the URL",
+      "story": "The web server logged this request. Percent signs everywhere, and some of them are encoded twice. What was really asked for?",
+      "message": "/search?q=summer sale&ref=CH{double_url_encoding}",
+      "layers": [
+        "url",
+        "url"
+      ],
+      "hint": "%25 is an encoded percent sign. If you still see %3D or %26 after one URL decode, decode again.",
+      "explain": "Encoding something twice can slip past a filter that only decodes once, while the application behind it decodes twice. Defenders decode until nothing changes before judging a request, and log the fully decoded form."
+    },
+    {
+      "title": "Back to front",
+      "story": "A suspicious macro in a phishing attachment hid a string like this. It looks like Base64, but it doesn't decode into anything readable on its own.",
+      "message": "note=found in macro; ref=CH{reverse_and_rotate}",
+      "layers": [
+        "rot13",
+        "reverse",
+        "base64"
+      ],
+      "hint": "Start with From Base64. The result reads backwards, so add Reverse. Still scrambled letters? Only letters, and only shifted: that's ROT13.",
+      "explain": "Reversing and ROT13 change nothing a computer cares about, but they break naive keyword searches. Watch each step's output: readable fragments tell you which layer to try next, and the decoded text becomes an indicator you can search for across your logs."
+    },
+    {
+      "title": "One-byte key",
+      "story": "A config blob found on an infected laptop, Base64-encoded as usual. Decoding it gives gibberish, because there's an XOR layer underneath. The key is a single byte. Slide through the keys until it reads.",
+      "message": "c2=203.0.113.77:8443;sleep=60;id=CH{xor_keys_are_tiny}",
+      "layers": [
+        "xor:66",
+        "base64"
+      ],
+      "hint": "From Base64 first, then add XOR with key and move the slider. The real config starts with c2=. The key is 66 (0x42).",
+      "explain": "XOR with one byte is a very common way to hide strings. With only 256 possible keys, analysts simply try them all, or XOR the gibberish against text they expect (like c2=) to read the key straight off. The decoded address then goes on a blocklist and into a search of your proxy logs."
+    }
+  ]
+}

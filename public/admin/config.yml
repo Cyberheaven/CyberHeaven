@@ -186,6 +186,165 @@ collections:
               - { name: phish, label: "Is it phishing?", widget: boolean, default: false }
               - { name: clues, label: Clues, widget: list, hint: "The red flags, or why it is safe" }
 
+      # After editing any lab below, a developer can run `node scripts/check-labs.mjs` to check it still works.
+      - name: loghunt
+        label: Log hunt
+        file: src/data/loghunt.json
+        format: json
+        fields:
+          - name: cases
+            label: Cases
+            widget: list
+            summary: "{{fields.title}}"
+            hint: "Use only documentation IP addresses (192.0.2.x, 198.51.100.x, 203.0.113.x) and made-up names."
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: file, label: Log file name, widget: string, hint: "e.g. /var/log/auth.log" }
+              - { name: intro, label: Intro, widget: text }
+              - { name: filters, label: Quick filters, widget: list, field: { name: filter, label: Filter, widget: string }, hint: "Words that are worth searching for" }
+              - { name: lines, label: Log lines, widget: list, field: { name: line, label: Line, widget: string }, hint: "One log line per item, oldest first" }
+              - name: questions
+                label: Questions
+                widget: list
+                summary: "{{fields.question}}"
+                fields:
+                  - { name: question, label: Question, widget: string }
+                  - { name: answers, label: Accepted answers, widget: list, field: { name: answer, label: Answer, widget: string }, hint: "Upper/lower case and extra spaces are ignored" }
+                  - { name: hint, label: Hint, widget: text }
+                  - { name: explain, label: Explanation (shown when correct), widget: text }
+                  - { name: evidence, label: Evidence text, widget: string, required: false, hint: "Lines containing this light up when the answer is right" }
+
+      - name: decode
+        label: Decode the layers
+        file: src/data/decode.json
+        format: json
+        fields:
+          - name: challenges
+            label: Challenges
+            widget: list
+            summary: "{{fields.title}}"
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: story, label: Story, widget: text }
+              - { name: message, label: Hidden message, widget: string, hint: "The plain text learners should end up with. Must contain a flag like CH{something}." }
+              - name: layers
+                label: Layers (applied in this order)
+                widget: list
+                field: { name: layer, label: Layer, widget: string }
+                hint: "base64, hex, url, rot13, reverse, or xor:KEY (0-255, e.g. xor:66). The site encodes the message for you. After xor, finish with base64, hex or url."
+              - { name: hint, label: Hint, widget: text }
+              - { name: explain, label: Explanation (shown when solved), widget: text }
+
+      - name: rules
+        label: Write the rule
+        file: src/data/rules.json
+        format: json
+        fields:
+          - name: rounds
+            label: Rounds
+            widget: list
+            summary: "{{fields.title}}"
+            hint: "Samples must be made up and harmless. The solution has to sort every sample correctly; the starter must not."
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: brief, label: Brief, widget: text }
+              - { name: hint, label: Hint, widget: text }
+              - { name: starter, label: Starter rule, widget: code, output_code_only: true, allow_language_selection: false }
+              - { name: solution, label: Example solution, widget: code, output_code_only: true, allow_language_selection: false }
+              - { name: explain, label: Explanation (shown when solved), widget: text }
+              - name: samples
+                label: Samples
+                widget: list
+                summary: "{{fields.name}}"
+                fields:
+                  - { name: name, label: File name, widget: string }
+                  - { name: malicious, label: "Malicious?", widget: boolean, default: false }
+                  - { name: text, label: Contents, widget: text, hint: "Optional placeholders: {n4} = one random 4-digit number shared by the whole round, {r6} = a new random 6-character token each time" }
+
+      - name: permissions
+        label: Permissions lab
+        file: src/data/permissions.json
+        format: json
+        fields:
+          - name: challenges
+            label: Tasks
+            widget: list
+            summary: "{{fields.file}} ({{fields.answer}})"
+            fields:
+              - { name: file, label: File or folder name, widget: string }
+              - { name: directory, label: "Is it a folder?", widget: boolean, default: false }
+              - { name: group, label: Group, widget: string, default: staff }
+              - { name: task, label: Task, widget: text, hint: "Word it so only one answer fits" }
+              - { name: answer, label: Answer (octal), widget: string, pattern: ["^[0-7]{3}$", "Three digits from 0 to 7, e.g. 750"] }
+              - { name: explain, label: Explanation (shown when correct), widget: text }
+
+      - name: triage
+        label: Alert triage
+        file: src/data/triage.json
+        format: json
+        fields:
+          - name: alerts
+            label: Alert templates
+            widget: list
+            summary: "{{fields.rule}} ({{fields.severity}})"
+            hint: "Each shift deals 4 benign and 4 escalate alerts. Placeholders filled in at random: {user} {host} {ip} {lan} {n} {n4}"
+            fields:
+              - { name: rule, label: Alert name, widget: string }
+              - { name: severity, label: Severity, widget: select, options: [Low, Medium, High, Critical] }
+              - { name: details, label: What the alert shows, widget: text }
+              - { name: escalate, label: "Should it be escalated?", widget: boolean, default: false }
+              - { name: why, label: Why, widget: text }
+              - { name: next, label: What a defender does next, widget: text }
+
+      - name: infections
+        label: Classify the infection
+        file: src/data/infections.json
+        format: json
+        fields:
+          - name: types
+            label: Malware types
+            widget: list
+            summary: "{{fields.label}}"
+            fields:
+              - { name: id, label: ID, widget: string, hint: "Short, lowercase, used by the notes below" }
+              - { name: label, label: Name, widget: string }
+              - { name: about, label: One-line description, widget: string }
+              - { name: respond, label: How defenders respond, widget: list, field: { name: step, label: Step, widget: string } }
+          - name: notes
+            label: Incident notes
+            widget: list
+            summary: "{{fields.type}}: {{fields.note}}"
+            hint: "Describe only what a defender would see (symptoms, timing, network behaviour), never how the malware works inside."
+            fields:
+              - { name: type, label: Type ID, widget: string }
+              - { name: note, label: Note, widget: text }
+
+      - name: query
+        label: Fix the query
+        file: src/data/query.json
+        format: json
+        fields:
+          - name: rounds
+            label: Rounds
+            widget: list
+            summary: "{{fields.title}}"
+            hint: "Exactly one option per round is correct, and each option needs one true/false result per test."
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: context, label: Context, widget: text }
+              - { name: code, label: Unsafe code, widget: code, output_code_only: true, allow_language_selection: false }
+              - { name: why, label: Why it's unsafe, widget: text }
+              - { name: tests, label: Tests, widget: list, field: { name: test, label: Test, widget: string } }
+              - name: options
+                label: Fixes to choose from
+                widget: list
+                fields:
+                  - { name: code, label: Code, widget: code, output_code_only: true, allow_language_selection: false }
+                  - { name: correct, label: "Is this the fix to approve?", widget: boolean, default: false }
+                  - { name: tests, label: Test results (in order), widget: list, field: { name: pass, label: Passes, widget: boolean } }
+                  - { name: feedback, label: Feedback, widget: text }
+              - { name: takeaway, label: Takeaway, widget: text }
+
   - name: settings
     label: Settings
     editor: { preview: false }
@@ -219,6 +378,7 @@ collections:
             fields:
               - { name: name, label: Name, widget: string, hint: "Singular, e.g. Author" }
               - { name: plural, label: Plural, widget: string, hint: "e.g. Authors" }
+              - { name: onlyOne, label: Only one person, widget: boolean, default: false, required: false, hint: "For roles like Founder. The site won't build if two people have it." }
               - { name: description, label: What they do, widget: string }
           - name: glossary
             label: Glossary topics

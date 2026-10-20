@@ -1,0 +1,251 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHead from "../../components/PageHead.astro";
+import Topbar from "../../components/Topbar.astro";
+import Footer from "../../components/sections/Footer.astro";
+import Icon from "../../components/Icon.astro";
+import DefenderNote from "../../components/DefenderNote.astro";
+import { site } from "../../lib/site";
+import data from "../../data/permissions.json";
+
+// Tasks live in src/data/permissions.json (CMS: Interactive → Permissions lab).
+const { challenges } = data;
+const who = [["u", "Owner"], ["g", "Group"], ["o", "Others"]];
+const bits = [["r", "read", 4], ["w", "write", 2], ["x", "execute", 1]] as const;
+---
+<Base title={`Permissions lab | ${site.name}`} description="A free hands-on Linux lab: click rwx to set file permissions, see the octal and chmod commands change live, then solve real-world permission tasks.">
+  <Topbar path="/play/permissions" />
+  <main>
+    <PageHead title="Permissions lab" lead="Every Linux file says who can read, write and run it in nine letters. Click the letters to switch them on and off, watch the numbers and chmod commands follow, then lock files down with least privilege. The tasks change every run.">
+      <a class="text-link body-sb" href="/articles/linux-command-line-cheat-sheet">Read the Linux command line cheat sheet<Icon name="arrow-right" size={18} /></a>
+    </PageHead>
+
+    <section class="shell lab pm" data-pm data-challenges={JSON.stringify(challenges)}>
+      <DefenderNote />
+      <div class="term pm-file">
+        <div class="term-bar"><code>ls -l</code><span data-pm-type>file</span></div>
+        <div class="pm-stage">
+          <div class="pm-line term-body">
+            <span class="pm-kind" data-pm-kind aria-hidden="true">-</span>
+            {who.map(([w, name]) => (
+              <span class="pm-triad" role="group" aria-label={name}>
+                {bits.map(([b, label]) => (
+                  <button type="button" class="pm-bit" data-who={w} data-bit={b} aria-pressed="false" aria-label={`${name} can ${label}`}>-</button>
+                ))}
+              </span>
+            ))}
+          </div>
+          <div class="pm-labels" aria-hidden="true">
+            <span></span>
+            {who.map(([w, name]) => <span class="pm-label"><span class="pm-digit" data-digit={w}>0</span><span>{name}</span></span>)}
+          </div>
+          <p class="term-body pm-rest"><span>1</span><span>maya</span><span data-pm-group>staff</span><span>4.0K</span><span>Oct 14 09:12</span><b data-pm-name>file</b></p>
+        </div>
+        <div class="pm-cmds">
+          <label class="pm-octal">
+            <span class="caption muted">Octal</span>
+            <input class="term-body" data-pm-octal inputmode="numeric" maxlength="3" value="000" aria-describedby="pm-octal-help" autocomplete="off" spellcheck="false" />
+          </label>
+          <p class="term-body pm-cmd"><span class="muted">$</span> <span data-pm-num></span></p>
+          <p class="term-body pm-cmd"><span class="muted">$</span> <span data-pm-sym></span></p>
+        </div>
+        <p class="caption muted pm-help" id="pm-octal-help">r = 4, w = 2, x = 1. Add them up for each of owner, group and others. Type three digits to set them all at once.</p>
+      </div>
+
+      <div class="panel pm-task" aria-live="polite">
+        <div class="pm-progress" aria-hidden="true"><i data-pm-fill></i></div>
+        <p class="caption muted" data-pm-count></p>
+        <p class="panel-title balance" data-pm-task></p>
+        <div class="lab-actions">
+          <button type="button" class="btn btn-sm" data-pm-check>Check</button>
+          <button type="button" class="btn btn-sm btn-ghost" data-pm-show hidden>Show me</button>
+        </div>
+        <div class="verdict" data-pm-verdict hidden><b data-pm-title></b><span class="body muted" data-pm-explain></span></div>
+        <button type="button" class="btn btn-sm pm-next" data-pm-next hidden>Next task<Icon name="arrow-right" size={18} /></button>
+        <div class="pm-done" data-pm-done hidden>
+          <p class="h4">All tasks done.</p>
+          <p class="body muted">The rule of thumb: give each file the least access that still does the job. If a guide says chmod 777, it's almost always wrong.</p>
+          <button type="button" class="btn btn-sm btn-ghost" data-pm-restart>New set of tasks</button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .pm { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: start; gap: 16px; }
+  .pm > :global(.dnote) { grid-column: 1 / -1; }
+  .pm-stage { padding: 48px 32px 32px; display: flex; flex-direction: column; gap: 14px; }
+  .pm-line { display: flex; align-items: baseline; gap: 0; font-size: 56px; line-height: 1; color: var(--white); white-space: nowrap; }
+  .pm-kind { width: 0.62em; color: var(--white-40); }
+  .pm-triad { display: inline-flex; }
+  .pm-triad + .pm-triad { margin-left: 0.18em; }
+  .pm-bit {
+    width: 0.66em; padding: 0.08em 0 0.12em; border: 0; border-radius: 8px; background: none; color: var(--white-40); font: inherit; cursor: pointer;
+    transition: color 0.3s var(--ease-out), background 0.3s var(--ease-out), transform 0.35s var(--ease-out);
+  }
+  .pm-bit[aria-pressed="true"] { color: var(--white); }
+  .pm-bit.is-flip { animation: pm-flip 0.45s var(--ease-out); }
+  @keyframes pm-flip { 40% { transform: translateY(-0.12em); filter: blur(3px); } }
+  @media (hover: hover) and (pointer: fine) { .pm-bit:hover { background: var(--white-20); } }
+  .pm-rest { display: flex; flex-wrap: wrap; gap: 4px 0.8em; padding-top: 18px; border-top: 1px solid var(--white-20); font-size: 15px; color: var(--white-60); overflow-wrap: anywhere; }
+  .pm-rest b { color: var(--white); font-weight: 600; }
+  .pm-labels { display: grid; grid-template-columns: 0.44em repeat(3, 1.98em); column-gap: 0.18em; font-size: 56px; }
+  .pm-label { display: flex; flex-direction: column; align-items: center; gap: 6px; font-family: var(--font); font-size: 13px; color: var(--white-60); }
+  .pm-digit { font-family: var(--mono); font-size: 32px; line-height: 1; color: var(--white); }
+  .pm-cmds { display: grid; grid-template-columns: auto 1fr; gap: 8px 24px; align-items: center; padding: 20px 24px; border-top: 1px solid var(--white-20); }
+  .pm-octal { grid-row: span 2; display: flex; flex-direction: column; gap: 6px; }
+  .pm-octal input { width: 5.2ch; height: 52px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--white-20); background: var(--grey-50); color: var(--white); font-size: 24px; letter-spacing: 0.08em; }
+  .pm-octal input:focus { outline: none; border-color: var(--white); }
+  .pm-cmd { overflow-wrap: anywhere; color: var(--white); }
+  .pm-help { padding: 0 24px 20px; }
+
+  .pm-task { position: sticky; top: 96px; }
+  .pm-progress { height: 2px; background: var(--white-20); overflow: clip; }
+  .pm-progress i { display: block; height: 100%; background: var(--white); transform-origin: left; transform: scaleX(0); transition: transform 0.5s var(--ease-out); }
+  .pm-next { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; }
+  .pm-done { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+
+  @media (max-width: 1199px) { .pm { grid-template-columns: minmax(0, 1fr); } .pm-task { position: static; order: -1; } .pm > :global(.dnote) { order: -2; } }
+  @media (max-width: 809px) {
+    .pm-stage { padding: 36px 20px 28px; }
+    .pm-line, .pm-labels { font-size: 40px; }
+    .pm-rest { font-size: 13px; }
+    .pm-digit { font-size: 24px; }
+    .pm-cmds { grid-template-columns: 1fr; padding: 20px; }
+    .pm-octal { grid-row: auto; }
+    .pm-help { padding: 0 20px 20px; }
+  }
+  @media (max-width: 380px) { .pm-line, .pm-labels { font-size: 34px; } }
+  @media (prefers-reduced-motion: reduce) { .pm-bit.is-flip { animation: none; } .pm-progress i { transition: none; } }
+</style>
+
+<script>
+  import { pick, sample, shuffle } from "../../lib/random.mjs";
+
+  type Task = { file: string; directory: boolean; group: string; task: string; answer: string; explain: string };
+  const root = document.querySelector<HTMLElement>("[data-pm]")!;
+  const names = ["owner", "group", "others"];
+  const scenarios: Task[] = JSON.parse(root.dataset.challenges!);
+
+  // Each run: four real-world tasks from the data file plus three generated ones, in random order.
+  const SAY = ["nothing", "execute only", "write only", "write and execute", "read only", "read and execute", "read and write", "read, write and execute"];
+  const FILES: [string, boolean, string][] = [["report.pdf", false, "finance"], ["run-tests.sh", false, "devs"], ["config.yml", false, "ops"], ["photos", true, "family"], ["logs", true, "adm"], ["notes.md", false, "staff"], ["backup.tar.gz", false, "backup"]];
+  const letters = (d: number) => (d & 4 ? "r" : "-") + (d & 2 ? "w" : "-") + (d & 1 ? "x" : "-");
+  const generated = (): Task => {
+    const [file, directory, group] = pick(FILES);
+    const d = [pick([7, 6, 5, 4]), pick([7, 6, 5, 4, 0]), pick([5, 4, 1, 0])];
+    const mode = (directory ? "d" : "-") + d.map(letters).join("");
+    const task = Math.random() < 0.5
+      ? `Owner: ${SAY[d[0]]}. Group: ${SAY[d[1]]}. Everyone else: ${SAY[d[2]]}.`
+      : `Make ${file} match this ls -l output: ${mode}`;
+    return { file, directory, group, task, answer: d.join(""), explain: `${d.join("")} is ${mode}: ${d.map((x, k) => `${x} for ${names[k]} (${SAY[x]})`).join(", ")}.` };
+  };
+  const deal = () => shuffle([...sample(scenarios, Math.min(4, scenarios.length)), generated(), generated(), generated()]);
+  let tasks: Task[] = [];
+  const $ = <T extends HTMLElement = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+  const bitsEl = Array.from(root.querySelectorAll<HTMLButtonElement>(".pm-bit"));
+  const octal = $<HTMLInputElement>("[data-pm-octal]");
+  const value = { r: 4, w: 2, x: 1 } as Record<string, number>;
+  let i = 0;
+
+  const digits = () => [0, 1, 2].map((t) => bitsEl.slice(t * 3, t * 3 + 3).reduce((s, b) => s + (b.ariaPressed === "true" ? value[b.dataset.bit!] : 0), 0));
+
+  // Draw everything from the nine buttons.
+  const render = (fromInput = false) => {
+    const d = digits();
+    const file = tasks[Math.min(i, tasks.length - 1)].file;
+    bitsEl.forEach((b) => (b.textContent = b.ariaPressed === "true" ? b.dataset.bit! : "-"));
+    root.querySelectorAll<HTMLElement>("[data-digit]").forEach((el, k) => (el.textContent = String(d[k])));
+    if (!fromInput) octal.value = d.join("");
+    $("[data-pm-num]").textContent = `chmod ${d.join("")} ${file}`;
+    const sym = ["u", "g", "o"].map((w, k) => `${w}=${bitsEl.slice(k * 3, k * 3 + 3).filter((b) => b.ariaPressed === "true").map((b) => b.dataset.bit).join("")}`);
+    $("[data-pm-sym]").textContent = `chmod ${sym.join(",")} ${file}`;
+  };
+
+  const set = (oct: string, animate = true) => {
+    bitsEl.forEach((b, k) => {
+      const on = (Number(oct[Math.floor(k / 3)] ?? 0) & value[b.dataset.bit!]) > 0;
+      if (animate && String(on) !== b.ariaPressed) {
+        b.classList.remove("is-flip");
+        void b.offsetWidth;
+        b.classList.add("is-flip");
+      }
+      b.ariaPressed = String(on);
+    });
+  };
+
+  bitsEl.forEach((b) =>
+    b.addEventListener("click", () => {
+      b.ariaPressed = String(b.ariaPressed !== "true");
+      b.classList.remove("is-flip");
+      void b.offsetWidth;
+      b.classList.add("is-flip");
+      render();
+    })
+  );
+  octal.addEventListener("input", () => {
+    octal.value = octal.value.replace(/[^0-7]/g, "").slice(0, 3);
+    if (octal.value.length === 3) {
+      set(octal.value);
+      render(true);
+    }
+  });
+  octal.addEventListener("blur", () => render());
+
+  const verdict = $("[data-pm-verdict]");
+  const show = () => {
+    const t = tasks[i];
+    const done = i >= tasks.length;
+    $("[data-pm-done]").hidden = !done;
+    $("[data-pm-task]").hidden = $("[data-pm-check]").hidden = done;
+    $("[data-pm-count]").textContent = done ? "Finished" : `Task ${i + 1} of ${tasks.length}`;
+    ($("[data-pm-fill]") as HTMLElement).style.transform = `scaleX(${i / tasks.length})`;
+    verdict.hidden = $("[data-pm-next]").hidden = $("[data-pm-show]").hidden = true;
+    if (done) return;
+    $("[data-pm-task]").textContent = t.task;
+    $("[data-pm-name]").textContent = t.file;
+    $("[data-pm-group]").textContent = t.group;
+    $("[data-pm-kind]").textContent = t.directory ? "d" : "-";
+    $("[data-pm-type]").textContent = t.directory ? "folder" : "file";
+    set("000", false);
+    render();
+  };
+
+  $("[data-pm-check]").addEventListener("click", () => {
+    const t = tasks[i];
+    const d = digits();
+    const right = d.join("") === t.answer;
+    verdict.hidden = false;
+    verdict.classList.toggle("is-right", right);
+    verdict.classList.toggle("is-wrong", !right);
+    if (right) {
+      $("[data-pm-title]").textContent = `Correct: ${t.answer}.`;
+      $("[data-pm-explain]").textContent = t.explain;
+    } else {
+      const off = names.filter((_, k) => String(d[k]) !== t.answer[k]);
+      $("[data-pm-title]").textContent = "Not quite.";
+      $("[data-pm-explain]").textContent = `Check ${off.length === 1 ? "the" : "these"} ${off.join(" and ")} ${off.length === 1 ? "digit" : "digits"} against the task.`;
+    }
+    $("[data-pm-show]").hidden = right;
+    $("[data-pm-next]").hidden = !right;
+    if (right) $("[data-pm-next]").focus();
+  });
+  $("[data-pm-show]").addEventListener("click", () => {
+    set(tasks[i].answer);
+    render();
+    $("[data-pm-check]").click();
+  });
+  $("[data-pm-next]").addEventListener("click", () => {
+    i++;
+    show();
+  });
+  $("[data-pm-restart]").addEventListener("click", () => {
+    tasks = deal();
+    i = 0;
+    show();
+  });
+  tasks = deal();
+  show();
+</script>
