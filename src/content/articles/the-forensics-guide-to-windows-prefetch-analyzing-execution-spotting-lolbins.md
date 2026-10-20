@@ -34,10 +34,10 @@ It’s also worth understanding the `PrefetchParameters` registry value itself, 
 
 While discussing the structure of prefetch files is not in the scope of this article, we shall be discussing the important information that can be extracted from them during an incident investigation.
 
-  1. Proof of Execution: Every time an executable is run, normally, the prefetch file is modified (exceptions covered later). Using this, we can prove execution of a file, possibly malicious. The .pf file’s creation and modification times approximate the first and most recent runs. The timestamps stored inside the file (the last 8 runs on Windows 8 and later) are more reliable; Windows also takes a second or so to write to the files.
-  2. Referenced Files and Directories: We can extract an exhaustive list of all files and directories the execution of the executable preloaded. Including the path of the executable itself.
+1. Proof of Execution: Every time an executable is run, normally, the prefetch file is modified (exceptions covered later). Using this, we can prove execution of a file, possibly malicious. The .pf file’s creation and modification times approximate the first and most recent runs. The timestamps stored inside the file (the last 8 runs on Windows 8 and later) are more reliable; Windows also takes a second or so to write to the files.
+2. Referenced Files and Directories: We can extract an exhaustive list of all files and directories the execution of the executable preloaded. Including the path of the executable itself.
 _Note: If two prefetch files with different hashes originate from the same executable, they loaded different files or folders. This may happen due to using different arguments while running the program._
-  3. Execution count: We can extract the number of times an executable has been executed on the system (with a cap of 128 till Windows 7 and 1024 on Windows 8+. The execution of a program too often might suggest automated launches, often seen in persistent malware.
+3. Execution count: We can extract the number of times an executable has been executed on the system (with a cap of 128 till Windows 7 and 1024 on Windows 8+. The execution of a program too often might suggest automated launches, often seen in persistent malware.
 
 ![](/media/2026/10/image-3.png)
 
@@ -45,7 +45,7 @@ _Note: If two prefetch files with different hashes originate from the same execu
 
 The tool we will use is [Winprefetchview](https://www.nirsoft.net/utils/winprefetchview-x64.zip) by NirSoft. The UI is quite self-explanatory. It parses all entries in the default prefetch folder. In case we need to analyze collected prefetch files as artifacts not on the live machine, we can use [PECmd](https://download.ericzimmermanstools.com/net9/PECmd.zip) by Eric Zimmerman. Both of these are demonstrated below:
 
-<iframe allowfullscreen="" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/o305_T7KMDc?feature=oembed" title="Winprefetchview &amp; PECmd"></iframe>
+[Winprefetchview & PECmd](https://www.youtube.com/watch?v=o305_T7KMDc)
 
 ## Using Prefetch to counter LOLBins
 
@@ -54,21 +54,21 @@ Living off the Land Binaries (LOLBins) are native programs already present on th
 Since Prefetch files store all referenced files when an executable is run, for system executables, when they’re run with a malicious script or binary, we can find those in the prefetch file of the legitimate one. A demo is given below using the Windows file rundll32.exe
 This also maps to [this ](https://attack.mitre.org/techniques/T1218/011/)MITRE[ attack technique!](https://attack.mitre.org/techniques/T1218/011/)
 
-<iframe allowfullscreen="" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/NzR8AuQN2oA?feature=oembed" title="Prefetch for LOLbins"></iframe>
+[Prefetch for LOLbins](https://www.youtube.com/watch?v=NzR8AuQN2oA)
 
 ## Interesting Prefetch files:
 
 Some interesting prefetch files we should look out for are:
 
-  1. CONSENT.EXE: Consent.exe is the UAC dialog box that appears when we try to run an executable as administrator. It also references the executable itself. Therefore, we can use this prefetch file to make an exhaustive list of programs that were run with elevated permissions by the user.
-  2. CMD.EXE // POWERSHELL.EXE: Shows programs executed by PowerShell or cmd commands.
-  3. MSHTA.EXE: A common way attackers execute malicious HTA scripts.
+1. CONSENT.EXE: Consent.exe is the UAC dialog box that appears when we try to run an executable as administrator. It also references the executable itself. Therefore, we can use this prefetch file to make an exhaustive list of programs that were run with elevated permissions by the user.
+2. CMD.EXE // POWERSHELL.EXE: Shows programs executed by PowerShell or cmd commands.
+3. MSHTA.EXE: A common way attackers execute malicious HTA scripts.
 
 ## Limitations and Countering Them
 
 There are a lot of anti-forensic methods used by attackers to avoid leaving prefetch as a trace of execution, including:
 
-  1. Disabling the prefetch service
+1. Disabling the prefetch service
 The simplest way to check this is to run `sc query sysmain`
 
 ![](/media/2026/10/image-2.png)
@@ -89,7 +89,15 @@ These anti-forensic behaviors map to [MITRE ATT&CK technique T1070.004 (Indicato
 
 The table below maps the three anti-forensic behaviors covered above (SysMain being stopped, Prefetch being disabled through the registry, and `.pf` files being deleted) to the Windows and Sysmon events that record them.
 
-<table><thead><tr><th>Behavior</th><th>Source</th><th>Event / Field</th><th>Notes</th></tr></thead><tbody><tr><td>SysMain stopped</td><td>Windows System log</td><td>Service Control Manager <strong>7036</strong></td><td>“The SysMain service entered the stopped state.”</td></tr><tr><td>SysMain start type changed (e.g., Disabled)</td><td>Windows System log</td><td><strong>7040</strong></td><td>Records the old and new start type.</td></tr><tr><td>SysMain start type changed in the registry</td><td>Sysmon</td><td><strong>13</strong> (RegistryEvent: SetValue)</td><td>Target: <code>...\Services\SysMain\Start</code>. <code>DWORD (0x00000004)</code> means disabled.</td></tr><tr><td>Prefetch disabled via registry</td><td>Sysmon</td><td><strong>13</strong></td><td>Target: <code>...\Memory Management\PrefetchParameters\EnablePrefetcher</code>.</td></tr><tr><td>Service stopped from the command line</td><td>Sysmon</td><td><strong>1</strong> (ProcessCreate) or Security <strong>4688</strong></td><td>Look for <code>sc</code> or <code>net</code> with <code>sysmain</code>.</td></tr><tr><td><code>.pf</code> file deleted</td><td>Sysmon</td><td><strong>23</strong> (FileDelete, archived) or <strong>26</strong> (FileDeleteDetected)</td><td>Needs a FileDelete rule in your Sysmon config that matches <code>*\Prefetch\*.pf</code>.</td></tr><tr><td><code>.pf</code> file deleted</td><td>Security</td><td><strong>4663</strong> (object access) and <strong>4660</strong> (object deleted)</td><td>Requires auditing on the Prefetch folder for DELETE.</td></tr></tbody></table>
+| Behavior | Source | Event / Field | Notes |
+| --- | --- | --- | --- |
+| SysMain stopped | Windows System log | Service Control Manager **7036** | “The SysMain service entered the stopped state.” |
+| SysMain start type changed (e.g., Disabled) | Windows System log | **7040** | Records the old and new start type. |
+| SysMain start type changed in the registry | Sysmon | **13** (RegistryEvent: SetValue) | Target: `...\Services\SysMain\Start`. `DWORD (0x00000004)` means disabled. |
+| Prefetch disabled via registry | Sysmon | **13** | Target: `...\Memory Management\PrefetchParameters\EnablePrefetcher`. |
+| Service stopped from the command line | Sysmon | **1** (ProcessCreate) or Security **4688** | Look for `sc` or `net` with `sysmain`. |
+| `.pf` file deleted | Sysmon | **23** (FileDelete, archived) or **26** (FileDeleteDetected) | Needs a FileDelete rule in your Sysmon config that matches `*\Prefetch\*.pf`. |
+| `.pf` file deleted | Security | **4663** (object access) and **4660** (object deleted) | Requires auditing on the Prefetch folder for DELETE. |
 
 Sigma is an open, vendor-neutral format for writing detection rules in YAML. A single rule describes the log pattern to look for, and tools like sigma-cli can convert it into queries for Splunk, Elastic, Microsoft Sentinel, and other SIEMs, so you write the logic once and use it on whichever platform you run.
 

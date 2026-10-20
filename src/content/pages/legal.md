@@ -7,7 +7,7 @@ description: "The terms for using CyberHeaven, how we handle your information, a
 
 CyberHeaven (“CyberHeaven”, “we”, “our”, “us”) is a free, community-driven, volunteer-run cybersecurity learning website. This page covers three things: the [terms](#terms) for using the site, our [privacy](#privacy) practices, and [cookies](#cookies). The short version: everything here is free, we don't track you, and we don't set cookies.
 
-* * *
+***
 
 ## Terms
 
@@ -21,10 +21,10 @@ All articles, guides, tools and resources on CyberHeaven are free. There are no 
 
 CyberHeaven teaches cybersecurity for lawful, ethical purposes. You agree not to use anything you learn here to:
 
-  * Attack, scan or access systems you don't own or don't have written permission to test.
-  * Carry out or encourage illegal activity.
-  * Share stolen credentials, personal data or confidential information.
-  * Create or distribute malicious software.
+* Attack, scan or access systems you don't own or don't have written permission to test.
+* Carry out or encourage illegal activity.
+* Share stolen credentials, personal data or confidential information.
+* Create or distribute malicious software.
 
 Practise only in environments you are authorised to use, such as your own lab or a legal training platform. You are responsible for how you apply what you learn.
 
@@ -48,7 +48,7 @@ CyberHeaven is provided “as is” by volunteers. We work hard to keep content 
 
 Disputes should first be raised with us so we can try to resolve them in good faith. If any part of these terms is found to be unenforceable, the rest still applies.
 
-* * *
+***
 
 ## Privacy
 
@@ -56,12 +56,12 @@ Disputes should first be raised with us so we can try to resolve them in good fa
 
 Very little. CyberHeaven is a static website with no CyberHeaven accounts, sign-up forms, newsletters, analytics or advertising trackers.
 
-  * **When you visit:** like almost every website, our hosting provider may keep standard server logs (such as IP address, browser type and the pages requested) for security and to keep the site running. We don't use these logs to identify or profile visitors.
-  * **When you email us:** we receive your email address and whatever you choose to write. We use it only to reply and, if you are contributing, to work with you on your contribution.
-  * **When you join our Discord:** Discord processes your information under its own privacy policy. Messages you post in community spaces may be visible to other members, so don't share more personal information than you need to.
-  * **When you comment on an article:** comments run on [giscus](https://giscus.app), which stores them as GitHub Discussions. You sign in with your GitHub account, and your comment, username and profile picture are public. GitHub's privacy policy applies. The comment box only loads when you scroll down to it.
-  * **When you watch a video:** video previews show a thumbnail image loaded from YouTube. The video player itself (from youtube-nocookie.com) only loads when you press play, and from then on YouTube's privacy policy applies.
-  * **When volunteers edit the site:** contributors who sign in to our content editor do so with their GitHub account. Their name and edits are recorded in the site's public Git history.
+* **When you visit:** like almost every website, our hosting provider may keep standard server logs (such as IP address, browser type and the pages requested) for security and to keep the site running. We don't use these logs to identify or profile visitors.
+* **When you email us:** we receive your email address and whatever you choose to write. We use it only to reply and, if you are contributing, to work with you on your contribution.
+* **When you join our Discord:** Discord processes your information under its own privacy policy. Messages you post in community spaces may be visible to other members, so don't share more personal information than you need to.
+* **When you comment on an article:** comments run on [giscus](https://giscus.app), which stores them as GitHub Discussions. You sign in with your GitHub account, and your comment, username and profile picture are public. GitHub's privacy policy applies. The comment box only loads when you scroll down to it.
+* **When you watch a video:** video previews show a thumbnail image loaded from YouTube. The video player itself (from youtube-nocookie.com) only loads when you press play, and from then on YouTube's privacy policy applies.
+* **When volunteers edit the site:** contributors who sign in to our content editor do so with their GitHub account. Their name and edits are recorded in the site's public Git history.
 
 ### How we use it
 
@@ -79,7 +79,7 @@ CyberHeaven is free for everyone to read. We don't knowingly collect personal in
 
 We link to many free resources run by others. We're not responsible for their content or privacy practices, so check their policies when you visit them.
 
-* * *
+***
 
 ## Cookies
 
@@ -91,7 +91,7 @@ If you are a volunteer using the content editor at /admin, it stores your sign-i
 
 Our interactive tools (such as the career quiz and Spot the phish) run entirely in your browser and don't save or send your answers anywhere.
 
-* * *
+***
 
 ### Changes and contact
 

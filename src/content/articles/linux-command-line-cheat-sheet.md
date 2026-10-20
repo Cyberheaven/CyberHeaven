@@ -184,44 +184,145 @@ Below are some of the most useful Linux commands that you should familiarize you
 
 ### Files & Directories
 
-<table><thead><tr><th>Command</th><th>What it does</th><th>Example</th></tr></thead><tbody><tr><td><code>cat</code></td><td>Displays the contents of a file</td><td><code>cat test.txt</code></td></tr><tr><td><code>less</code></td><td>Lets you read a file one screen at a time</td><td><code>less test.txt</code></td></tr><tr><td><code>head</code></td><td>Displays the beginning of a file</td><td><code>head test.txt</code></td></tr><tr><td><code>tail</code></td><td>Displays the end of a file</td><td><code>tail test.txt</code></td></tr><tr><td><code>file</code></td><td>Determines the type of a file</td><td><code>file test.txt</code></td></tr><tr><td><code>find</code></td><td>Searches for files and directories</td><td><code>find /home -name "test.txt"</code></td></tr><tr><td><code>locate</code></td><td>Quickly searches for files by name</td><td><code>locate test.txt</code></td></tr><tr><td><code>tree</code></td><td>Displays directories in a tree structure</td><td><code>tree /home</code></td></tr><tr><td><code>ln</code></td><td>Creates links to files</td><td><code>ln -s /path/to/file link</code></td></tr><tr><td><code>stat</code></td><td>Displays detailed file information</td><td><code>stat test.txt</code></td></tr></tbody></table>
+| Command | What it does | Example |
+| --- | --- | --- |
+| `cat` | Displays the contents of a file | `cat test.txt` |
+| `less` | Lets you read a file one screen at a time | `less test.txt` |
+| `head` | Displays the beginning of a file | `head test.txt` |
+| `tail` | Displays the end of a file | `tail test.txt` |
+| `file` | Determines the type of a file | `file test.txt` |
+| `find` | Searches for files and directories | `find /home -name "test.txt"` |
+| `locate` | Quickly searches for files by name | `locate test.txt` |
+| `tree` | Displays directories in a tree structure | `tree /home` |
+| `ln` | Creates links to files | `ln -s /path/to/file link` |
+| `stat` | Displays detailed file information | `stat test.txt` |
 
 ### Text Processing
 
-<table><thead><tr><th>Command</th><th>What it does</th><th>Example</th></tr></thead><tbody><tr><td><code>grep</code></td><td>Searches for text inside files or command output</td><td><code>grep "password" file.txt</code></td></tr><tr><td><code>sort</code></td><td>Sorts lines of text</td><td><code>sort names.txt</code></td></tr><tr><td><code>uniq</code></td><td>Removes or identifies repeated lines</td><td><code>uniq names.txt</code></td></tr><tr><td><code>cut</code></td><td>Extracts sections from lines of text</td><td><code>cut -d: -f1 /etc/passwd</code></td></tr><tr><td><code>wc</code></td><td>Counts lines, words, and characters</td><td><code>wc -l file.txt</code></td></tr><tr><td><code>tr</code></td><td>Translates or removes characters</td><td><code>tr 'a-z' 'A-Z'</code></td></tr><tr><td><code>sed</code></td><td>Searches and transforms text</td><td><code>sed 's/foo/bar/g' file.txt</code></td></tr><tr><td><code>awk</code></td><td>Processes and analyzes structured text</td><td><code>awk '{print $1}' file.txt</code></td></tr><tr><td><code>diff</code></td><td>Compares two files</td><td><code>diff file1.txt file2.txt</code></td></tr></tbody></table>
+| Command | What it does | Example |
+| --- | --- | --- |
+| `grep` | Searches for text inside files or command output | `grep "password" file.txt` |
+| `sort` | Sorts lines of text | `sort names.txt` |
+| `uniq` | Removes or identifies repeated lines | `uniq names.txt` |
+| `cut` | Extracts sections from lines of text | `cut -d: -f1 /etc/passwd` |
+| `wc` | Counts lines, words, and characters | `wc -l file.txt` |
+| `tr` | Translates or removes characters | `tr 'a-z' 'A-Z'` |
+| `sed` | Searches and transforms text | `sed 's/foo/bar/g' file.txt` |
+| `awk` | Processes and analyzes structured text | `awk '{print $1}' file.txt` |
+| `diff` | Compares two files | `diff file1.txt file2.txt` |
 
 ### Processes & System
 
-<table><thead><tr><th>Command</th><th>What it does</th><th>Example</th></tr></thead><tbody><tr><td><code>ps</code></td><td>Displays running processes</td><td><code>ps aux</code></td></tr><tr><td><code>top</code></td><td>Displays running processes and system activity</td><td><code>top</code></td></tr><tr><td><code>htop</code></td><td>Interactive process viewer</td><td><code>htop</code></td></tr><tr><td><code>kill</code></td><td>Sends a signal to a process</td><td><code>kill 1234</code></td></tr><tr><td><code>pkill</code></td><td>Sends a signal to processes by name</td><td><code>pkill firefox</code></td></tr><tr><td><code>jobs</code></td><td>Shows jobs running in the current shell</td><td><code>jobs</code></td></tr><tr><td><code>bg</code></td><td>Sends a stopped job to the background</td><td><code>bg</code></td></tr><tr><td><code>fg</code></td><td>Brings a background job to the foreground</td><td><code>fg</code></td></tr><tr><td><code>free</code></td><td>Displays memory usage</td><td><code>free -h</code></td></tr><tr><td><code>df</code></td><td>Displays filesystem disk usage</td><td><code>df -h</code></td></tr><tr><td><code>du</code></td><td>Displays the size of files and directories</td><td><code>du -sh /home</code></td></tr><tr><td><code>uptime</code></td><td>Shows how long the system has been running</td><td><code>uptime</code></td></tr><tr><td><code>uname</code></td><td>Displays system information</td><td><code>uname -a</code></td></tr><tr><td><code>hostname</code></td><td>Displays or changes the system hostname</td><td><code>hostname</code></td></tr><tr><td><code>lsblk</code></td><td>Lists block devices and storage drives</td><td><code>lsblk</code></td></tr><tr><td><code>mount</code></td><td>Mounts a filesystem</td><td><code>mount /dev/sdb1 /mnt</code></td></tr><tr><td><code>umount</code></td><td>Unmounts a filesystem</td><td><code>umount /mnt</code></td></tr></tbody></table>
+| Command | What it does | Example |
+| --- | --- | --- |
+| `ps` | Displays running processes | `ps aux` |
+| `top` | Displays running processes and system activity | `top` |
+| `htop` | Interactive process viewer | `htop` |
+| `kill` | Sends a signal to a process | `kill 1234` |
+| `pkill` | Sends a signal to processes by name | `pkill firefox` |
+| `jobs` | Shows jobs running in the current shell | `jobs` |
+| `bg` | Sends a stopped job to the background | `bg` |
+| `fg` | Brings a background job to the foreground | `fg` |
+| `free` | Displays memory usage | `free -h` |
+| `df` | Displays filesystem disk usage | `df -h` |
+| `du` | Displays the size of files and directories | `du -sh /home` |
+| `uptime` | Shows how long the system has been running | `uptime` |
+| `uname` | Displays system information | `uname -a` |
+| `hostname` | Displays or changes the system hostname | `hostname` |
+| `lsblk` | Lists block devices and storage drives | `lsblk` |
+| `mount` | Mounts a filesystem | `mount /dev/sdb1 /mnt` |
+| `umount` | Unmounts a filesystem | `umount /mnt` |
 
 ### Networking
 
-<table><thead><tr><th>Command</th><th>What it does</th><th>Example</th></tr></thead><tbody><tr><td><code>ping</code></td><td>Tests network connectivity</td><td><code>ping 8.8.8.8</code></td></tr><tr><td><code>ss</code></td><td>Displays network sockets and connections</td><td><code>ss -tuln</code></td></tr><tr><td><code>curl</code></td><td>Transfers data from or to a URL</td><td><code>curl https://example.com</code></td></tr><tr><td><code>wget</code></td><td>Downloads files from the web</td><td><code>wget https://example.com/file.zip</code></td></tr><tr><td><code>dig</code></td><td>Performs DNS lookups</td><td><code>dig example.com</code></td></tr><tr><td><code>nslookup</code></td><td>Performs DNS queries</td><td><code>nslookup example.com</code></td></tr><tr><td><code>traceroute</code></td><td>Shows the route packets take to a destination</td><td><code>traceroute example.com</code></td></tr><tr><td><code>hostnamectl</code></td><td>Displays or manages hostname information</td><td><code>hostnamectl</code></td></tr><tr><td><code>arp</code></td><td>Displays or modifies ARP information</td><td><code>arp -a</code></td></tr></tbody></table>
+| Command | What it does | Example |
+| --- | --- | --- |
+| `ping` | Tests network connectivity | `ping 8.8.8.8` |
+| `ss` | Displays network sockets and connections | `ss -tuln` |
+| `curl` | Transfers data from or to a URL | `curl https://example.com` |
+| `wget` | Downloads files from the web | `wget https://example.com/file.zip` |
+| `dig` | Performs DNS lookups | `dig example.com` |
+| `nslookup` | Performs DNS queries | `nslookup example.com` |
+| `traceroute` | Shows the route packets take to a destination | `traceroute example.com` |
+| `hostnamectl` | Displays or manages hostname information | `hostnamectl` |
+| `arp` | Displays or modifies ARP information | `arp -a` |
 
 ### Users & Permissions
 
-<table><thead><tr><th>Command</th><th>What it does</th><th>Example</th></tr></thead><tbody><tr><td><code>id</code></td><td>Displays user and group information</td><td><code>id</code></td></tr><tr><td><code>groups</code></td><td>Shows the groups a user belongs to</td><td><code>groups</code></td></tr><tr><td><code>sudo</code></td><td>Executes a command with elevated privileges</td><td><code>sudo command</code></td></tr><tr><td><code>su</code></td><td>Switches to another user</td><td><code>su username</code></td></tr><tr><td><code>passwd</code></td><td>Changes a user’s password</td><td><code>passwd</code></td></tr><tr><td><code>chown</code></td><td>Changes the owner of a file</td><td><code>sudo chown user file.txt</code></td></tr><tr><td><code>chgrp</code></td><td>Changes the group ownership of a file</td><td><code>sudo chgrp developers file.txt</code></td></tr><tr><td><code>umask</code></td><td>Displays or changes the default permission mask</td><td><code>umask</code></td></tr></tbody></table>
+| Command | What it does | Example |
+| --- | --- | --- |
+| `id` | Displays user and group information | `id` |
+| `groups` | Shows the groups a user belongs to | `groups` |
+| `sudo` | Executes a command with elevated privileges | `sudo command` |
+| `su` | Switches to another user | `su username` |
+| `passwd` | Changes a user’s password | `passwd` |
+| `chown` | Changes the owner of a file | `sudo chown user file.txt` |
+| `chgrp` | Changes the group ownership of a file | `sudo chgrp developers file.txt` |
+| `umask` | Displays or changes the default permission mask | `umask` |
 
 ### Archives & Compression
 
-<table><thead><tr><th>Command</th><th>What it does</th><th>Example</th></tr></thead><tbody><tr><td><code>tar</code></td><td>Creates or extracts archives</td><td><code>tar -cf archive.tar files/</code></td></tr><tr><td><code>gzip</code></td><td>Compresses files using gzip</td><td><code>gzip file.txt</code></td></tr><tr><td><code>gunzip</code></td><td>Decompresses gzip files</td><td><code>gunzip file.txt.gz</code></td></tr><tr><td><code>zip</code></td><td>Creates ZIP archives</td><td><code>zip archive.zip file.txt</code></td></tr><tr><td><code>unzip</code></td><td>Extracts ZIP archives</td><td><code>unzip archive.zip</code></td></tr></tbody></table>
+| Command | What it does | Example |
+| --- | --- | --- |
+| `tar` | Creates or extracts archives | `tar -cf archive.tar files/` |
+| `gzip` | Compresses files using gzip | `gzip file.txt` |
+| `gunzip` | Decompresses gzip files | `gunzip file.txt.gz` |
+| `zip` | Creates ZIP archives | `zip archive.zip file.txt` |
+| `unzip` | Extracts ZIP archives | `unzip archive.zip` |
 
 ### Package Management
 
 Package management commands depend on the Linux distribution you are using.
 
-<table><thead><tr><th>Command</th><th>What it does</th><th>Example</th></tr></thead><tbody><tr><td><code>apt</code></td><td>Manages packages on Debian-based distributions</td><td><code>sudo apt install nmap</code></td></tr><tr><td><code>dnf</code></td><td>Manages packages on Fedora-based distributions</td><td><code>sudo dnf install nmap</code></td></tr><tr><td><code>pacman</code></td><td>Manages packages on Arch-based distributions</td><td><code>sudo pacman -S nmap</code></td></tr><tr><td><code>rpm</code></td><td>Works with RPM packages</td><td><code>rpm -qa</code></td></tr><tr><td><code>dpkg</code></td><td>Works with Debian packages</td><td><code>dpkg -l</code></td></tr></tbody></table>
+| Command | What it does | Example |
+| --- | --- | --- |
+| `apt` | Manages packages on Debian-based distributions | `sudo apt install nmap` |
+| `dnf` | Manages packages on Fedora-based distributions | `sudo dnf install nmap` |
+| `pacman` | Manages packages on Arch-based distributions | `sudo pacman -S nmap` |
+| `rpm` | Works with RPM packages | `rpm -qa` |
+| `dpkg` | Works with Debian packages | `dpkg -l` |
 
 ### Services & Logs
 
-<table><thead><tr><th>Command</th><th>What it does</th><th>Example</th></tr></thead><tbody><tr><td><code>systemctl</code></td><td>Manages systemd services</td><td><code>systemctl status sshd</code></td></tr><tr><td><code>journalctl</code></td><td>Reads systemd logs</td><td><code>journalctl -u sshd</code></td></tr><tr><td><code>dmesg</code></td><td>Displays kernel messages</td><td><code>dmesg</code></td></tr><tr><td><code>service</code></td><td>Manages services on systems that support it</td><td><code>service ssh status</code></td></tr></tbody></table>
+| Command | What it does | Example |
+| --- | --- | --- |
+| `systemctl` | Manages systemd services | `systemctl status sshd` |
+| `journalctl` | Reads systemd logs | `journalctl -u sshd` |
+| `dmesg` | Displays kernel messages | `dmesg` |
+| `service` | Manages services on systems that support it | `service ssh status` |
 
 ### Shell & Environment
 
-<table><thead><tr><th>Command</th><th>What it does</th><th>Example</th></tr></thead><tbody><tr><td><code>clear</code></td><td>Clears the terminal</td><td><code>clear</code></td></tr><tr><td><code>history</code></td><td>Displays previously executed commands</td><td><code>history</code></td></tr><tr><td><code>alias</code></td><td>Creates command shortcuts</td><td><code>alias ll='ls -la'</code></td></tr><tr><td><code>env</code></td><td>Displays environment variables</td><td><code>env</code></td></tr><tr><td><code>printenv</code></td><td>Prints environment variables</td><td><code>printenv HOME</code></td></tr><tr><td><code>export</code></td><td>Sets an environment variable</td><td><code>export NAME=value</code></td></tr><tr><td><code>which</code></td><td>Shows the location of a command</td><td><code>which python</code></td></tr><tr><td><code>whereis</code></td><td>Locates binaries, source files, and manuals</td><td><code>whereis python</code></td></tr><tr><td><code>type</code></td><td>Shows how the shell interprets a command</td><td><code>type cd</code></td></tr><tr><td><code>echo $PATH</code></td><td>Displays the command search path</td><td><code>echo $PATH</code></td></tr></tbody></table>
+| Command | What it does | Example |
+| --- | --- | --- |
+| `clear` | Clears the terminal | `clear` |
+| `history` | Displays previously executed commands | `history` |
+| `alias` | Creates command shortcuts | `alias ll='ls -la'` |
+| `env` | Displays environment variables | `env` |
+| `printenv` | Prints environment variables | `printenv HOME` |
+| `export` | Sets an environment variable | `export NAME=value` |
+| `which` | Shows the location of a command | `which python` |
+| `whereis` | Locates binaries, source files, and manuals | `whereis python` |
+| `type` | Shows how the shell interprets a command | `type cd` |
+| `echo $PATH` | Displays the command search path | `echo $PATH` |
 
 ### Useful Shortcuts
 
-<table><thead><tr><th>Shortcut</th><th>What it does</th></tr></thead><tbody><tr><td><code>Ctrl + C</code></td><td>Stops the currently running command</td></tr><tr><td><code>Ctrl + D</code></td><td>Exits the current shell or sends EOF</td></tr><tr><td><code>Ctrl + L</code></td><td>Clears the terminal screen</td></tr><tr><td><code>Ctrl + Z</code></td><td>Suspends the current process</td></tr><tr><td><code>Ctrl + R</code></td><td>Searches through command history</td></tr><tr><td><code>Tab</code></td><td>Autocompletes commands, paths, and filenames</td></tr><tr><td><code>↑ / ↓</code></td><td>Moves through command history</td></tr><tr><td><code>!!</code></td><td>Repeats the previous command</td></tr><tr><td><code>&amp;&amp;</code></td><td>Runs the next command only if the previous command succeeds</td></tr><tr><td><code>|</code></td><td>Pipes the output of one command into another</td></tr><tr><td><code>&gt;</code></td><td>Redirects output and overwrites a file</td></tr><tr><td><code>&gt;&gt;</code></td><td>Redirects output and appends to a file</td></tr><tr><td><code>2&gt;</code></td><td>Redirects standard error</td></tr><tr><td><code>2&gt;&amp;1</code></td><td>Redirects standard error to standard output</td></tr></tbody></table>
+| Shortcut | What it does |
+| --- | --- |
+| `Ctrl + C` | Stops the currently running command |
+| `Ctrl + D` | Exits the current shell or sends EOF |
+| `Ctrl + L` | Clears the terminal screen |
+| `Ctrl + Z` | Suspends the current process |
+| `Ctrl + R` | Searches through command history |
+| `Tab` | Autocompletes commands, paths, and filenames |
+| `↑ / ↓` | Moves through command history |
+| `!!` | Repeats the previous command |
+| `&&` | Runs the next command only if the previous command succeeds |
+| `\|` | Pipes the output of one command into another |
+| `>` | Redirects output and overwrites a file |
+| `>>` | Redirects output and appends to a file |
+| `2>` | Redirects standard error |
+| `2>&1` | Redirects standard error to standard output |
 
 This is by no means an exhaustive list of Linux commands. Linux has thousands of commands and utilities, and many of them are designed for very specific tasks. However, learning these commands will give you a much stronger foundation for working with the Linux command line.

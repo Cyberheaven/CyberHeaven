@@ -46,7 +46,21 @@ Common tools for memory analysis include **Volatility** (and Volatility 3), **Re
 
 Once you have a raw memory dump, Volatility 3 is the most famous tool to analyze it. Every command follows the same pattern: `python3 vol.py -f <dump> <plugin>`(python3 -> `python` on Windows). Plugins are namespaced by OS, so Windows plugins start with `windows.`, Linux with `linux.` and so on.
 
-<table><thead><tr><th>Plugin</th><th>What it shows</th><th>Why you’d use it</th></tr></thead><tbody><tr><td><code>windows.info</code></td><td>OS version, build, architecture, kernel base</td><td>Confirms the image is valid and symbols resolve before you do anything else</td></tr><tr><td><code>windows.pslist</code></td><td>Processes from the active process list, with PID, PPID and start time</td><td>First look at what was running</td></tr><tr><td><code>windows.psscan</code></td><td>Processes found by scanning memory pool tags</td><td>Finds hidden or terminated processes that <code>pslist</code> misses. Compare the two outputs</td></tr><tr><td><code>windows.pstree</code></td><td>Parent-child process hierarchy</td><td>Spotting odd lineage such as <code>winword.exe</code> spawning <code>powershell.exe</code>, or a fake <code>svchost.exe</code> with the wrong parent</td></tr><tr><td><code>windows.cmdline</code></td><td>Full command-line arguments per process</td><td>Reveals encoded PowerShell, LOLBin abuse and suspicious paths</td></tr><tr><td><code>windows.netscan</code></td><td>Network connections and listening sockets with owning PID</td><td>Finds C2 connections and unexpected listeners</td></tr><tr><td><code>windows.malfind</code></td><td>Memory regions that are executable and not backed by a file on disk</td><td>Primary plugin for injected code and in-memory payloads</td></tr><tr><td><code>windows.dlllist</code></td><td>DLLs loaded by each process</td><td>Spotting unusual or side-loaded modules. Use <code>--pid</code> to focus on one process</td></tr><tr><td><code>windows.handles</code></td><td>Open handles (files, registry keys, mutexes)</td><td>Malware often creates recognizable mutexes</td></tr><tr><td><code>windows.svcscan</code></td><td>Windows services and their binary paths</td><td>Checking service-based persistence</td></tr><tr><td><code>windows.filescan</code></td><td>File objects cached in memory</td><td>Finding files that existed in memory even if deleted from disk</td></tr><tr><td><code>windows.registry.hivelist</code></td><td>Registry hives loaded in memory</td><td>Starting point for <code>windows.registry.printkey</code>, for example to inspect Run keys</td></tr><tr><td><code>windows.hashdump</code></td><td>Local account NTLM hashes</td><td>Assessing credential exposure</td></tr></tbody></table>
+| Plugin | What it shows | Why you’d use it |
+| --- | --- | --- |
+| `windows.info` | OS version, build, architecture, kernel base | Confirms the image is valid and symbols resolve before you do anything else |
+| `windows.pslist` | Processes from the active process list, with PID, PPID and start time | First look at what was running |
+| `windows.psscan` | Processes found by scanning memory pool tags | Finds hidden or terminated processes that `pslist` misses. Compare the two outputs |
+| `windows.pstree` | Parent-child process hierarchy | Spotting odd lineage such as `winword.exe` spawning `powershell.exe`, or a fake `svchost.exe` with the wrong parent |
+| `windows.cmdline` | Full command-line arguments per process | Reveals encoded PowerShell, LOLBin abuse and suspicious paths |
+| `windows.netscan` | Network connections and listening sockets with owning PID | Finds C2 connections and unexpected listeners |
+| `windows.malfind` | Memory regions that are executable and not backed by a file on disk | Primary plugin for injected code and in-memory payloads |
+| `windows.dlllist` | DLLs loaded by each process | Spotting unusual or side-loaded modules. Use `--pid` to focus on one process |
+| `windows.handles` | Open handles (files, registry keys, mutexes) | Malware often creates recognizable mutexes |
+| `windows.svcscan` | Windows services and their binary paths | Checking service-based persistence |
+| `windows.filescan` | File objects cached in memory | Finding files that existed in memory even if deleted from disk |
+| `windows.registry.hivelist` | Registry hives loaded in memory | Starting point for `windows.registry.printkey`, for example to inspect Run keys |
+| `windows.hashdump` | Local account NTLM hashes | Assessing credential exposure |
 
 Example: `vol.exe -f dump.raw windows.pstree` gives this output:
 
@@ -70,7 +84,25 @@ Common tools include Autopsy/Sleuth Kit, FTK Imager, EnCase, KAPE, and Eric Zimm
 
 Disk artifacts stick around, surviving reboots and even some cleanup attempts. That is why they’re the backbone of most investigations.
 
-<table><thead><tr><th>Artifact</th><th>Location</th><th>Tool</th></tr></thead><tbody><tr><td>Prefetch</td><td><code>C:\Windows\Prefetch</code></td><td><a href="https://www.nirsoft.net/utils/win_prefetch_view.html" rel="noopener" target="_blank">WinPrefetchView</a></td></tr><tr><td>$MFT</td><td><code>C:\$MFT</code></td><td><a href="https://github.com/EricZimmerman/MFTECmd" rel="noopener" target="_blank">MFTECmd</a></td></tr><tr><td>$UsnJrnl</td><td><code>C:\$Extend\$UsnJrnl:$J</code></td><td><a href="https://github.com/EricZimmerman/MFTECmd" rel="noopener" target="_blank">MFTECmd</a></td></tr><tr><td>$LogFile</td><td><code>C:\$LogFile</code></td><td><a href="https://github.com/EricZimmerman/MFTECmd" rel="noopener" target="_blank">MFTECmd</a></td></tr><tr><td>Amcache</td><td><code>C:\Windows\AppCompat\Programs\Amcache.hve</code></td><td><a href="https://github.com/EricZimmerman/AmcacheParser" rel="noopener" target="_blank">AmcacheParser</a></td></tr><tr><td>Shimcache</td><td><code>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache</code></td><td><a href="https://github.com/EricZimmerman/RegistryExplorer" rel="noopener" target="_blank">Registry Explorer</a></td></tr><tr><td>BAM/DAM</td><td><code>HKLM\SYSTEM\CurrentControlSet\Services\bam\State\UserSettings</code></td><td><a href="https://github.com/EricZimmerman/RegistryExplorer" rel="noopener" target="_blank">Registry Explorer</a></td></tr><tr><td>Jump Lists</td><td><code>%APPDATA%\Microsoft\Windows\Recent\AutomaticDestinations</code></td><td><a href="https://github.com/EricZimmerman/JLECmd" rel="noopener" target="_blank">JLECmd</a></td></tr><tr><td>LNK Files</td><td><code>%APPDATA%\Microsoft\Windows\Recent</code></td><td><a href="https://github.com/EricZimmerman/LECmd" rel="noopener" target="_blank">LECmd</a></td></tr><tr><td>NTUSER.DAT</td><td><code>C:\Users\&lt;username&gt;\NTUSER.DAT</code></td><td><a href="https://github.com/EricZimmerman/RegistryExplorer" rel="noopener" target="_blank">Registry Explorer</a></td></tr><tr><td>Windows Event Logs</td><td><code>C:\Windows\System32\winevt\Logs</code></td><td><a href="https://www.eventlogxp.com/" rel="noopener" target="_blank">Event Log Explorer</a></td></tr><tr><td>PowerShell Logs</td><td><code>C:\Windows\System32\winevt\Logs</code></td><td><a href="https://www.eventlogxp.com/" rel="noopener" target="_blank">Event Log Explorer</a></td></tr><tr><td>Sysmon Logs</td><td><code>C:\Windows\System32\winevt\Logs</code></td><td><a href="https://www.eventlogxp.com/" rel="noopener" target="_blank">Event Log Explorer</a></td></tr><tr><td>Scheduled Tasks</td><td><code>C:\Windows\System32\Tasks</code></td><td><a href="https://github.com/EricZimmerman/RegistryExplorer" rel="noopener" target="_blank">Registry Explorer</a></td></tr><tr><td>ShellBags</td><td><code>NTUSER.DAT / UsrClass.dat</code></td><td><a href="https://github.com/EricZimmerman/ShellBagsExplorer" rel="noopener" target="_blank">ShellBags Explorer</a></td></tr><tr><td>Zone.Identifier / ADS</td><td>NTFS Alternate Data Stream</td><td><a href="https://www.nirsoft.net/utils/alternate_data_streams.html" rel="noopener" target="_blank">AlternateStreamView</a></td></tr><tr><td>Disk Image / File System</td><td>Disk image / mounted evidence</td><td><a href="https://www.autopsy.com/download/" rel="noopener" target="_blank">Autopsy</a></td></tr></tbody></table>
+| Artifact | Location | Tool |
+| --- | --- | --- |
+| Prefetch | `C:\Windows\Prefetch` | [WinPrefetchView](https://www.nirsoft.net/utils/win_prefetch_view.html) |
+| $MFT | Root of the `C:` drive | [MFTECmd](https://github.com/EricZimmerman/MFTECmd) |
+| $UsnJrnl | `$Extend` folder at the root of `C:`, `$J` stream | [MFTECmd](https://github.com/EricZimmerman/MFTECmd) |
+| $LogFile | Root of the `C:` drive | [MFTECmd](https://github.com/EricZimmerman/MFTECmd) |
+| Amcache | `C:\Windows\AppCompat\Programs\Amcache.hve` | [AmcacheParser](https://github.com/EricZimmerman/AmcacheParser) |
+| Shimcache | `HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache` | [Registry Explorer](https://github.com/EricZimmerman/RegistryExplorer) |
+| BAM/DAM | `HKLM\SYSTEM\CurrentControlSet\Services\bam\State\UserSettings` | [Registry Explorer](https://github.com/EricZimmerman/RegistryExplorer) |
+| Jump Lists | `%APPDATA%\Microsoft\Windows\Recent\AutomaticDestinations` | [JLECmd](https://github.com/EricZimmerman/JLECmd) |
+| LNK Files | `%APPDATA%\Microsoft\Windows\Recent` | [LECmd](https://github.com/EricZimmerman/LECmd) |
+| NTUSER.DAT | `%USERPROFILE%\NTUSER.DAT` | [Registry Explorer](https://github.com/EricZimmerman/RegistryExplorer) |
+| Windows Event Logs | `C:\Windows\System32\winevt\Logs` | [Event Log Explorer](https://www.eventlogxp.com/) |
+| PowerShell Logs | `C:\Windows\System32\winevt\Logs` | [Event Log Explorer](https://www.eventlogxp.com/) |
+| Sysmon Logs | `C:\Windows\System32\winevt\Logs` | [Event Log Explorer](https://www.eventlogxp.com/) |
+| Scheduled Tasks | `C:\Windows\System32\Tasks` | [Registry Explorer](https://github.com/EricZimmerman/RegistryExplorer) |
+| ShellBags | `NTUSER.DAT / UsrClass.dat` | [ShellBags Explorer](https://github.com/EricZimmerman/ShellBagsExplorer) |
+| Zone.Identifier / ADS | NTFS Alternate Data Stream | [AlternateStreamView](https://www.nirsoft.net/utils/alternate_data_streams.html) |
+| Disk Image / File System | Disk image / mounted evidence | [Autopsy](https://www.autopsy.com/download/) |
 
 ## Network Forensics
 
@@ -88,18 +120,25 @@ The usual tools used for analysis are **Wireshark** and **tshark** when working 
 
 Here is a quick workflow for finding a suspicious host in a PCAP:
 
-  1. **Load the capture.** Just drag the `.pcap` file and drop it into Wireshark.
-  2. **Identify the noisy hosts.** Navigate to `Statistics → Endpoints`, then open the **IPv4** tab and sort according to **Packets**. The hosts at the top are the ones carrying out the most communication. In this case, `194.61.24.102` is particularly noticeable.
-  3. **Filter on that host.** Apply the display filter `ip.addr == 194.61.24.102` so that you can see only the traffic going to and from that host.
-  4. **Look at the timing.** Count the number of packets that this IP address sent and determine the time period involved. Sending a large number of packets over a short period of time, mainly to one destination and port, is characteristic of automated guessing rather than of human activity.
+1. **Load the capture.** Just drag the `.pcap` file and drop it into Wireshark.
+2. **Identify the noisy hosts.** Navigate to `Statistics → Endpoints`, then open the **IPv4** tab and sort according to **Packets**. The hosts at the top are the ones carrying out the most communication. In this case, `194.61.24.102` is particularly noticeable.
+3. **Filter on that host.** Apply the display filter `ip.addr == 194.61.24.102` so that you can see only the traffic going to and from that host.
+4. **Look at the timing.** Count the number of packets that this IP address sent and determine the time period involved. Sending a large number of packets over a short period of time, mainly to one destination and port, is characteristic of automated guessing rather than of human activity.
 
 The fact that so many packets are sent in a short time suggests that it is a **brute force attack** , i.e a tool which tries various username and password combinations against a login service such as SSH, RDP, or a web login. Genuine users never open hundreds of connections in a matter of seconds.
 
 When you have a suspect, you can verify this by looking at a few more views: the `Statistics → Conversations` option tells you which destination ports the IP address contacted, and the `Statistics → I/O Graph` shows the traffic spike over time. These kinds of findings are then directly used in the incident response process, which involves blocking the IP address, checking the authentication logs for a successful login from it, and looking for any sign that the attacker eventually gained access.
 
-<iframe allowfullscreen="" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/MEat6qPvF3U?feature=oembed" title="PCAP FILE"></iframe>
+[PCAP FILE](https://www.youtube.com/watch?v=MEat6qPvF3U)
 
-<table><thead><tr><th>Wireshark feature</th><th>Where</th><th>Why you’d use it</th></tr></thead><tbody><tr><td>Endpoints</td><td><code>Statistics → Endpoints</code></td><td>To identify the hosts that are sending or receiving the highest number of packets</td></tr><tr><td>Conversations</td><td><code>Statistics → Conversations</code></td><td>To see which hosts have communicated with each other and on which ports</td></tr><tr><td>I/O Graph</td><td><code>Statistics → I/O Graphs</code></td><td>To detect traffic spikes over time</td></tr><tr><td>IP filter</td><td><code>ip.addr == x.x.x.x</code></td><td>To isolate all the traffic for one host</td></tr><tr><td>Follow Stream</td><td>Right-click a packet → <code>Follow → TCP Stream</code></td><td>To reconstruct a complete conversation</td></tr><tr><td>Export Objects</td><td><code>File → Export Objects → HTTP</code></td><td>To recover the files that were transferred over HTTP</td></tr></tbody></table>
+| Wireshark feature | Where | Why you’d use it |
+| --- | --- | --- |
+| Endpoints | `Statistics → Endpoints` | To identify the hosts that are sending or receiving the highest number of packets |
+| Conversations | `Statistics → Conversations` | To see which hosts have communicated with each other and on which ports |
+| I/O Graph | `Statistics → I/O Graphs` | To detect traffic spikes over time |
+| IP filter | `ip.addr == x.x.x.x` | To isolate all the traffic for one host |
+| Follow Stream | Right-click a packet → `Follow → TCP Stream` | To reconstruct a complete conversation |
+| Export Objects | `File → Export Objects → HTTP` | To recover the files that were transferred over HTTP |
 
 ## Incident Response
 
@@ -140,7 +179,15 @@ Endpoint Detection and Response (EDR) tools sit on the host and give responders 
 
 SOAR (Security Orchestration, Automation, and Response) platforms like Cortex XSOAR or Splunk SOAR are used for automating repetitive response actions such as isolating a host, disabling an account, or opening a ticket when an alert fires.
 
-<table><thead><tr><th>Function</th><th>Tool</th><th>Notes</th></tr></thead><tbody><tr><td>EDR</td><td>CrowdStrike Falcon / Defender for Endpoint / SentinelOne</td><td>Real-time telemetry, remote isolation, rollback in some products</td></tr><tr><td>SIEM</td><td>Splunk / Elastic Security / Wazuh</td><td>Log aggregation, correlation rules, alerting</td></tr><tr><td>Host-based logging</td><td>Sysmon</td><td>Free, feeds process, network and file event data into a SIEM</td></tr><tr><td>Network monitoring</td><td>Zeek / Suricata</td><td>Traffic analysis, IDS/IPS signatures</td></tr><tr><td>SOAR</td><td>Cortex XSOAR / Splunk SOAR</td><td>Automates containment playbooks</td></tr><tr><td>Threat intel enrichment</td><td>VirusTotal / MISP</td><td>Hash, IP and domain reputation lookups</td></tr><tr><td>Ticketing / case management</td><td>TheHive / Jira</td><td>Tracks investigation timeline and evidence handling</td></tr></tbody></table>
+| Function | Tool | Notes |
+| --- | --- | --- |
+| EDR | CrowdStrike Falcon / Defender for Endpoint / SentinelOne | Real-time telemetry, remote isolation, rollback in some products |
+| SIEM | Splunk / Elastic Security / Wazuh | Log aggregation, correlation rules, alerting |
+| Host-based logging | Sysmon | Free, feeds process, network and file event data into a SIEM |
+| Network monitoring | Zeek / Suricata | Traffic analysis, IDS/IPS signatures |
+| SOAR | Cortex XSOAR / Splunk SOAR | Automates containment playbooks |
+| Threat intel enrichment | VirusTotal / MISP | Hash, IP and domain reputation lookups |
+| Ticketing / case management | TheHive / Jira | Tracks investigation timeline and evidence handling |
 
 None of these tools replace the process. An EDR alert still needs an analyst to scope it, a playbook still needs someone to follow it under pressure, and the forensic artifacts covered earlier on this page are usually what confirms or corrects whatever the tooling reported first.
 

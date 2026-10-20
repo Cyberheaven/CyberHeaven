@@ -76,6 +76,10 @@ and check the dark theme still applies.
 The preview next to the editor shows articles and team members the way the live site will, using the site’s own
 stylesheets. Its markup is in `public/admin/cms.js` and copies `src/pages/articles/[slug].astro` and
 `src/pages/team/[person].astro`: if you change the markup of one of those pages, change it in `cms.js` too.
+`cms.js` also adds “Interactive widget” to the editor’s Insert menu.
+
+The CMS editor rewrites the Markdown when it saves, and some Markdown doesn’t survive that (indented lists, HTML
+tables, `<iframe>` embeds). If you edit content files directly, run `node scripts/check-content.mjs` before pushing.
 
 Some text has placeholders in curly brackets, like `{count} terms`. Keep them as they are: the site fills in the
 real number when it builds, so it never goes out of date. Each field’s hint says which placeholders it supports.
@@ -97,11 +101,12 @@ npm run build     # static site in dist/
 npm run preview   # serve the built site
 ```
 
-Quick checks for the data that drives the interactive bits:
+Quick checks for the data that drives the interactive bits, and for Markdown the CMS would break:
 
 ```sh
 node scripts/check-career.mjs
 node scripts/check-youtube.mjs
+node scripts/check-content.mjs
 ```
 
 ## How it’s built

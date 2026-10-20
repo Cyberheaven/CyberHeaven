@@ -114,9 +114,9 @@ We find the following:
 
 <https://www.fbi.gov/history/cases-and-criminals/boston-marathon-bombing>
 
-  * Names: Dzhokhar and Tamerlan Tsarnaev.
-  * Ages at the time: Dzhokhar was 19, while Tamerlan was 26.
-  * Outcome: Tamerlan died during the manhunt, while Dzhokhar was later convicted.
+* Names: Dzhokhar and Tamerlan Tsarnaev.
+* Ages at the time: Dzhokhar was 19, while Tamerlan was 26.
+* Outcome: Tamerlan died during the manhunt, while Dzhokhar was later convicted.
 
 2\. When and where did the attack take place?
 

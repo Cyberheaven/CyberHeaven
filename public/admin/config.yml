@@ -74,7 +74,7 @@ collections:
       - name: body
         label: Body
         widget: markdown
-        hint: 'To show an interactive widget, add <div data-widget="soc-ladder"></div> or <div data-widget="malware-explorer"></div> on its own line.'
+        hint: "Interactive widget: Insert → Interactive widget. YouTube video: paste the link on its own line."
 
   # The text of every page, one entry per page. Files live in src/content/pages.
   # Text in {curly brackets} is filled in when the site is built, e.g. {count} becomes a number.

@@ -9,6 +9,8 @@
  *
  * Not shown in the preview: animations, the "On this page" list, comments, and interactive widgets
  * (they appear as a labelled box), because the site's scripts don't run here.
+ *
+ * Also adds "Interactive widget" to the article editor's Insert menu (registerEditorComponent below).
  */
 import { youtubeHtml, youtubeId } from "./youtube.mjs";
 
@@ -46,6 +48,7 @@ function Avatar({ name = "", src, size, className }) {
 // to the preview after it's drawn: YouTube links and embeds become the site's player, and widget
 // placeholders become a labelled box.
 const widgetNames = { "soc-ladder": "SOC escalation ladder", "malware-explorer": "Malware family explorer" };
+const widgetBox = (name) => `<div class="cms-widget"><strong>${widgetNames[name] || name}</strong>Interactive widget: it appears here on the live site.</div>`;
 function siteMarkup(root) {
   for (const p of root.querySelectorAll("p")) {
     const only = p.children.length === 1 && p.textContent.trim() === p.children[0].textContent.trim() ? p.children[0] : null;
@@ -56,12 +59,21 @@ function siteMarkup(root) {
     const id = youtubeId(frame.src);
     if (id) frame.outerHTML = youtubeHtml(id, frame.title);
   }
-  for (const w of root.querySelectorAll("[data-widget]:not(.cms-widget)")) {
-    const name = w.dataset.widget;
-    w.className = "cms-widget";
-    w.innerHTML = `<strong>${widgetNames[name] || name}</strong>Interactive widget: it appears here on the live site.`;
-  }
+  for (const w of root.querySelectorAll("[data-widget]")) w.outerHTML = widgetBox(w.dataset.widget);
 }
+
+// In the article editor, a widget is a block with a picker ("Interactive widget" in the + menu), not a
+// line of HTML that looks like a typo. It's saved as the same line the site looks for.
+CMS.registerEditorComponent({
+  id: "widget",
+  label: "Interactive widget",
+  icon: "widgets",
+  fields: [{ name: "name", label: "Widget", widget: "select", options: Object.entries(widgetNames).map(([value, label]) => ({ value, label })) }],
+  pattern: /^<div data-widget="([\w-]+)"><\/div>$/m,
+  fromBlock: (match) => ({ name: match[1] }),
+  toBlock: ({ name }) => `<div data-widget="${name}"></div>`,
+  toPreview: ({ name }) => widgetBox(name),
+});
 
 // The Markdown body as Sveltia draws it, kept in the site's markup. Sveltia wraps the text in a few
 // extra boxes, so the "prose" class goes on the innermost one: the site's spacing rules (".prose > *")
