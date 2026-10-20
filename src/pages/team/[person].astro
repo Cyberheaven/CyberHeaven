@@ -8,6 +8,7 @@ import { render } from "astro:content";
 import { getArticles, getPeople, site } from "../../lib/site";
 import categories from "../../data/categories.json";
 import "../../styles/prose.css";
+import "../../styles/profile.css";
 
 export async function getStaticPaths() {
   return (await getPeople()).map((person) => ({ params: { person: person.id }, props: { person } }));
@@ -96,37 +97,3 @@ const description = p.headline ? `${p.name}: ${p.headline}.` : `${p.name}, ${rol
   <Footer />
 </Base>
 
-<style>
-  .pf { padding-top: 72px; padding-bottom: 96px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 740px); gap: 64px; }
-  .pf-side { position: sticky; top: 100px; align-self: start; display: flex; flex-direction: column; gap: 32px; }
-  .pf-side :global(.pf-avatar) { animation: avatarIn 1.2s var(--ease-out) both; }
-  @keyframes avatarIn { from { opacity: 0; transform: scale(0.88) rotate(-6deg); filter: blur(12px); } }
-  .pf-links { list-style: none; margin: 0; padding: 0; max-width: 280px; border-top: 1px solid var(--white-20); }
-  .pf-links li { border-bottom: 1px solid var(--white-20); }
-  .pf-links a { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 0; color: var(--white); }
-  .pf-links svg { color: var(--white-40); transition: transform 0.4s var(--ease-out), color 0.4s var(--ease-out); }
-  @media (hover: hover) and (pointer: fine) { .pf-links a:hover svg { transform: translate(3px, -3px); color: var(--white); } }
-
-  .pf-main { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
-  .pf-main .phead-title { overflow-wrap: anywhere; }
-  .pf-facts { display: flex; flex-direction: column; gap: 24px; }
-  .pf-roles { display: flex; flex-wrap: wrap; gap: 8px; }
-  .pf-roles .tag { height: 30px; padding: 0 14px; font-size: 13px; color: var(--grey); transition: border-color 0.3s var(--ease-out); }
-  .pf-roles .tag:hover { border-color: var(--white-60); }
-  .pf-meta { margin: 0; display: flex; flex-wrap: wrap; gap: 16px 48px; }
-  .pf-meta div { display: flex; flex-direction: column; gap: 4px; }
-  .pf-meta dt { font-size: 12px; color: var(--white-60); }
-  .pf-meta dd { margin: 0; color: var(--white); font-weight: 600; }
-  .pf-bio { padding-top: 24px; border-top: 1px solid var(--white-20); }
-
-  .pf-articles { padding-bottom: 80px; display: flex; flex-direction: column; gap: 32px; }
-  .pf-back { padding-bottom: 96px; }
-  .pf-back svg { transform: rotate(180deg); }
-
-  @media (max-width: 1023px) {
-    .pf { grid-template-columns: 1fr; gap: 40px; padding-top: 48px; }
-    .pf-side { position: static; }
-    .pf-side :global(.pf-avatar) { --size: 140px !important; }
-  }
-  @media (prefers-reduced-motion: reduce) { .pf-side :global(.pf-avatar) { animation: none; } }
-</style>

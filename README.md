@@ -73,6 +73,10 @@ The CMS has the site’s look: its colours, font and buttons live in `public/adm
 officially support themes yet, so after updating Sveltia (the version is in `public/admin/index.html`), open `/admin`
 and check the dark theme still applies.
 
+The preview next to the editor shows articles and team members the way the live site will, using the site’s own
+stylesheets. Its markup is in `public/admin/cms.js` and copies `src/pages/articles/[slug].astro` and
+`src/pages/team/[person].astro`: if you change the markup of one of those pages, change it in `cms.js` too.
+
 Some text has placeholders in curly brackets, like `{count} terms`. Keep them as they are: the site fills in the
 real number when it builds, so it never goes out of date. Each field’s hint says which placeholders it supports.
 
