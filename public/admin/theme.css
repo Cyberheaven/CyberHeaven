@@ -92,6 +92,36 @@
   --sui-border-color-3-hsl: 0 0% 36%;
 }
 
+/*
+ * Sign-in and loading screen, styled like the site's hero: the logo small (as in the site's top bar),
+ * a big tight Sora heading, and one of the site's streak images, darkened, behind it.
+ * It's the only screen with the logo directly inside ".inner", so nothing else is affected. If a
+ * Sveltia update renames these classes, this screen just falls back to Sveltia's plain layout.
+ * The selectors start with ".container:has(…)" to outrank Sveltia's own rules for this screen.
+ */
+.container:has(> .inner > img.logo) {
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at center, rgb(18 18 18 / 70%) 0%, rgb(18 18 18 / 86%) 55%, rgb(18 18 18 / 96%) 100%),
+    url(/assets/principle-1.webp) center / cover #121212;
+}
+.container:has(> .inner > img.logo) > .inner > img.logo { width: auto; height: 68px; }
+.container:has(> .inner > img.logo) > .inner {
+  gap: 28px;
+  --sui-button-medium-height: 48px;
+  --sui-button-medium-border-radius: 24px;
+  --sui-button-medium-padding: 0 28px;
+  --sui-font-size-default: 16px;
+}
+.container:has(> .inner > img.logo) > .inner > h1 {
+  margin: 0;
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: #fff;
+}
+
 /* Headings (page titles, field labels) get the site's slightly tighter letter spacing */
 :is(h1, h2, h3, h4) { letter-spacing: -0.02em; }
 
