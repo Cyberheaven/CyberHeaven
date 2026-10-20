@@ -52,7 +52,7 @@ Here’s where to find each thing on the site:
 
 | In the CMS | What you can change |
 | --- | --- |
-| **Articles** | Every article: title, category, date, author, summary, cover image and body. Switch on **Draft** to hide one. |
+| **Articles** | Every article: title, category, date, author, summary, cover image and body. New articles start as **Draft** (hidden); switch Draft off and save to publish. |
 | **Pages → Home** | The carousel articles at the top (pick and drag to set the order; leave it empty for the 5 newest), the tagline, the About band, the values cards, the scrolling ticker, the topics, the labs and resources headings, the FAQ and the contact section. |
 | **Pages → Articles** | The heading and intro of the articles list. |
 | **Pages → Interactive** | The heading and intro of the Interactive page, and every lab and tool listed on it: its card, whether it’s featured on the homepage, its topic, and the heading and intro on its own page (this includes the career quiz and the glossary). |
@@ -62,12 +62,16 @@ Here’s where to find each thing on the site:
 | **Pages → Join** | The heading and intro, the “Where to find us” list and the ways to help. |
 | **Pages → Terms, privacy & cookies** | The whole legal page. |
 | **Pages → Page not found** | The 404 page’s text and buttons. |
-| **Team** | Everyone’s profile: photo, roles, bio and links. Articles pick their author from here. |
-| **Resources** | Every recommended resource, its cost and level, and which ones are featured on the homepage. |
+| **Team members** | Everyone’s profile: photo, roles, bio and links. Articles pick their author from here. |
+| **Resource list** | Every recommended resource, its cost and level, and which ones are featured on the homepage. |
 | **Glossary** | Every glossary term. |
-| **Interactive** | The exercises inside the labs: phishing messages, log hunt cases, decoding challenges, detection rule rounds, permission tasks, SOC alerts, malware cases and SQL fixes. |
+| **Lab exercises** | The exercises inside the labs: phishing messages, log hunt cases, decoding challenges, detection rule rounds, permission tasks, SOC alerts, malware cases and SQL fixes. |
 | **Settings → Site** | The site name, contact email, Discord link, top menu, footer menu, social links, footer note and copyright year. |
 | **Settings → Categories** | The categories for articles and resources, the glossary topics and the team roles. |
+
+The CMS has the site’s look: its colours, font and buttons live in `public/admin/theme.css`. Sveltia doesn’t
+officially support themes yet, so after updating Sveltia (the version is in `public/admin/index.html`), open `/admin`
+and check the dark theme still applies.
 
 Some text has placeholders in curly brackets, like `{count} terms`. Keep them as they are: the site fills in the
 real number when it builds, so it never goes out of date. Each field’s hint says which placeholders it supports.

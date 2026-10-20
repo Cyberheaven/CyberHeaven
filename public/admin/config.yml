@@ -13,14 +13,30 @@ logo:
   src: /admin/logo.webp
 display_url: /
 
+# The sidebar: writing first, then the site's text, then the lists and labs, then settings.
+# "divider: true" draws a line between groups. Icons are Material Symbols names (fonts.google.com/icons).
 collections:
   - name: articles
     label: Articles
+    label_singular: Article
+    icon: article
+    description: "Guides and tutorials. New articles start as drafts: switch Draft off when one is ready to go live."
     folder: src/content/articles
     create: true
     slug: "{{slug}}"
     extension: md
     format: frontmatter
+    summary: "{{title}} · {{category}} · {{date | date('D MMM YYYY')}}{{draft | ternary(' · Draft', '')}}"
+    sortable_fields:
+      fields: [date, title, category]
+      default: { field: date, direction: descending }
+    view_filters:
+      filters:
+        - { name: drafts, label: Drafts, field: draft, eq: true }
+        - { name: live, label: Live on the site, field: draft, eq: false }
+    view_groups:
+      groups:
+        - { name: category, label: Category, field: category }
     fields:
       - { name: title, label: Title, widget: string, required: true }
       - name: category
@@ -46,15 +62,15 @@ collections:
         value_field: "{{slug}}"
         search_fields: [name]
         display_fields: [name]
-        hint: Pick a person from Team. New author? Add them under Team first.
-      - { name: excerpt, label: Excerpt, widget: text, hint: Short summary }
+        hint: Pick a person from Team members. New author? Add them under Team members first.
+      - { name: excerpt, label: Excerpt, widget: text, hint: "One or two sentences. Shown on the articles list and in Google results." }
       - { name: cover, label: Cover image, widget: image }
       - name: coverAlt
         label: Cover alt text
         widget: string
         hint: Describes the cover image for screen reader users
       - { name: tags, label: Tags, widget: list, required: false, default: [] }
-      - { name: draft, label: Draft, widget: boolean, default: false, hint: "To show an article at the top of the homepage, add it under Pages → Home." }
+      - { name: draft, label: Draft, widget: boolean, default: true, required: false, hint: "On: hidden from the site. Switch it off when the article is ready: saving then publishes it to the live site. To feature it at the top of the homepage, add it under Pages → Home." }
       - name: body
         label: Body
         widget: markdown
@@ -64,6 +80,9 @@ collections:
   # Text in {curly brackets} is filled in when the site is built, e.g. {count} becomes a number.
   - name: pages
     label: Pages
+    label_singular: Page
+    icon: web
+    description: "The text on every page of the site, one entry per page. Text in {curly brackets} is filled in automatically: keep it as it is."
     editor: { preview: false }
     files:
       - name: home
@@ -74,6 +93,7 @@ collections:
           - { name: tagline, label: Tagline, widget: text, hint: "The line under the big carousel at the top." }
           - name: heroArticles
             label: Carousel articles
+            label_singular: Carousel article
             widget: list
             required: false
             max: 6
@@ -82,6 +102,8 @@ collections:
           - name: about
             label: About section
             widget: object
+            collapsed: true
+            summary: "{{fields.statement}}"
             hint: "Also shown on the About page."
             fields:
               - { name: label, label: Small label, widget: string }
@@ -93,7 +115,9 @@ collections:
           - { name: principlesHeading, label: Values heading, widget: string, hint: "{count} is the number of values. Also shown on the About page." }
           - name: principles
             label: Values
+            label_singular: Value
             widget: list
+            collapsed: auto
             summary: "{{fields.title}}"
             fields:
               - { name: title, label: Title, widget: string }
@@ -105,22 +129,26 @@ collections:
           - { name: topicsHeading, label: Topics heading, widget: string }
           - name: topics
             label: Topics
+            label_singular: Topic
             widget: list
+            collapsed: auto
             summary: "{{fields.name}}"
             hint: "Labs on the Interactive page are grouped by these topics, in this order."
             fields:
               - { name: name, label: Name, widget: string }
               - { name: image, label: Image, widget: image }
               - { name: alt, label: Image description, widget: string, required: false }
-              - { name: captions, label: Captions, widget: list, hint: "The three lines shown next to the image." }
+              - { name: captions, label: Captions, label_singular: Caption, widget: list, hint: "The three lines shown next to the image." }
           - { name: toolsHeading, label: Labs heading, widget: string, hint: "The labs shown are the ones marked Featured under Pages → Interactive." }
           - { name: toolsLink, label: Labs link text, widget: string }
-          - { name: picksHeading, label: Resources heading, widget: string, hint: "The resources shown are the ones marked Featured under Resources." }
+          - { name: picksHeading, label: Resources heading, widget: string, hint: "The resources shown are the ones marked “Show on homepage” in the Resource list." }
           - { name: picksLink, label: Resources link text, widget: string, hint: "{count} is the number of resources." }
           - { name: faqHeading, label: FAQ heading, widget: string, hint: "Also shown on the Join page." }
           - name: faq
             label: FAQ
+            label_singular: Question
             widget: list
+            collapsed: auto
             summary: "{{fields.q}}"
             fields:
               - { name: q, label: Question, widget: string }
@@ -128,6 +156,8 @@ collections:
           - name: contact
             label: Contact section
             widget: object
+            collapsed: true
+            summary: "{{fields.heading}}"
             hint: "Also shown on the About page. The buttons link to the Discord and email set under Settings → Site."
             fields:
               - { name: heading, label: Heading, widget: text }
@@ -159,14 +189,16 @@ collections:
           - { name: startText, label: '"Start here" text', widget: text }
           - name: tools
             label: Labs and tools
+            label_singular: Lab or tool
             widget: list
-            summary: "{{fields.title}}"
-            hint: "Each one's card, and the heading and intro on its own page. The lab exercises themselves are under Interactive."
+            collapsed: auto
+            summary: "{{fields.title}} · {{fields.href}}"
+            hint: "Each one's card, and the heading and intro on its own page. The exercises inside the labs are under Lab exercises."
             fields:
               - { name: title, label: Title, widget: string, hint: "On the card, and the page heading too unless one is set below." }
               - { name: heading, label: Page heading, widget: string, required: false, hint: "Only if the page heading should differ from the title." }
               - { name: description, label: Card text, widget: text }
-              - { name: href, label: Link, widget: string, hint: "e.g. /play/soc. Every lab page needs an entry here, or the site won't build." }
+              - { name: href, label: Link, widget: string, pattern: ["^/", "Must be a page on this site, starting with /"], hint: "e.g. /play/soc. Every lab page needs an entry here, or the site won't build." }
               - { name: topic, label: Topic, widget: string, required: false, hint: "One of the topics under Pages → Home, or a lab topic below. Leave empty to show it under \"Start here\"." }
               - { name: featured, label: Featured on the homepage, widget: boolean, default: false, required: false }
               - { name: specimen, label: Sample line, widget: string, required: false, hint: "A line of data from the lab, shown in code style on the card." }
@@ -174,7 +206,9 @@ collections:
               - { name: seo, label: Search engine description, widget: text, hint: "{count} works on Glossary." }
           - name: labTopics
             label: Lab topics
+            label_singular: Lab topic
             widget: list
+            collapsed: auto
             summary: "{{fields.name}}"
             hint: "Extra topics for labs that aren't homepage topics, with their image."
             fields:
@@ -205,13 +239,15 @@ collections:
           - { name: waysHeading, label: '"Ways in" heading', widget: string, hint: "{count} is the number of ways, as a word." }
           - name: ways
             label: Ways in
+            label_singular: Way in
             widget: list
-            summary: "{{fields.name}}"
+            collapsed: auto
+            summary: "{{fields.name}} · {{fields.href}}"
             fields:
               - { name: name, label: Name, widget: string }
               - { name: sub, label: Subtitle, widget: string, hint: "{articles} is the number of articles." }
               - { name: text, label: Text, widget: string }
-              - { name: href, label: Link, widget: string }
+              - { name: href, label: Link, widget: string, pattern: ["^/", "Must be a page on this site, starting with /"] }
 
       - name: team
         label: Team
@@ -237,7 +273,9 @@ collections:
           - { name: seo, label: Search engine description, widget: text, hint: "Shown in Google results and link previews." }
           - name: channels
             label: Where to find us
+            label_singular: Channel
             widget: list
+            collapsed: auto
             summary: "{{fields.name}}"
             hint: "The first one is highlighted."
             fields:
@@ -248,7 +286,9 @@ collections:
           - { name: waysHeading, label: Ways to help heading, widget: string, hint: "{count} is the number of ways, as a word." }
           - name: ways
             label: Ways to help
+            label_singular: Way to help
             widget: list
+            collapsed: auto
             summary: "{{fields.title}}"
             fields:
               - { name: title, label: Title, widget: string }
@@ -275,9 +315,13 @@ collections:
           - { name: homeButton, label: Home button, widget: string }
           - { name: articlesButton, label: Articles button, widget: string }
 
+  - divider: true
+
   - name: people
-    label: Team
+    label: Team members
     label_singular: Person
+    icon: groups
+    description: "Everyone on the team page, and the authors articles can pick."
     folder: src/content/people
     create: true
     slug: "{{name}}"
@@ -304,8 +348,10 @@ collections:
       - { name: joined, label: Joined CyberHeaven, widget: datetime, required: false, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, picker_utc: true }
       - name: links
         label: Links
+        label_singular: Link
         widget: list
         required: false
+        collapsed: auto
         summary: "{{fields.label}}"
         hint: "Website, GitHub, LinkedIn, X, Mastodon, Bluesky, YouTube, TryHackMe… For email use mailto:name@example.com"
         fields:
@@ -315,22 +361,26 @@ collections:
       - { name: body, label: Bio, widget: markdown, required: false }
 
   - name: resources
-    label: Resources
+    label: Resource list
+    icon: bookmarks
+    description: "The courses, labs, tools and books on /resources. The page's own text is under Pages → Resources."
     editor: { preview: false }
     files:
       - name: resources
-        label: Resources page
+        label: All resources
         file: src/data/resources.json
         format: json
         fields:
           - name: items
             label: Resources
+            label_singular: Resource
             widget: list
-            summary: "{{fields.name}} ({{fields.category}})"
+            collapsed: auto
+            summary: "{{fields.name}} ({{fields.category}} · {{fields.cost}})"
             fields:
               - { name: name, label: Name, widget: string }
               - { name: provider, label: Provider, widget: string, required: false, hint: "Who makes it, e.g. Harvard or TryHackMe" }
-              - { name: url, label: Link, widget: string }
+              - { name: url, label: Link, widget: string, pattern: ["^https?://", "Must be a full web address starting with https://"] }
               - { name: description, label: Description, widget: text, hint: "One or two sentences on why it's worth it" }
               - name: category
                 label: Category
@@ -346,6 +396,8 @@ collections:
 
   - name: glossary
     label: Glossary
+    icon: menu_book
+    description: "The terms on /glossary."
     editor: { preview: false }
     files:
       - name: glossary
@@ -355,8 +407,10 @@ collections:
         fields:
           - name: terms
             label: Terms
+            label_singular: Term
             widget: list
-            summary: "{{fields.term}}"
+            collapsed: auto
+            summary: "{{fields.term}} ({{fields.category}})"
             fields:
               - { name: term, label: Term, widget: string }
               - { name: definition, label: Definition, widget: text, hint: "Plain English, one or two sentences" }
@@ -372,7 +426,9 @@ collections:
 
   # Data for the interactive tools. The career quiz (src/data/career.json) is edited in code.
   - name: interactive
-    label: Interactive
+    label: Lab exercises
+    icon: experiment
+    description: "The exercises inside each lab. Each lab's card and page intro are under Pages → Interactive."
     editor: { preview: false }
     files:
       - name: phishing
@@ -382,6 +438,8 @@ collections:
         fields:
           - name: messages
             label: Messages
+            label_singular: Message
+            collapsed: auto
             widget: list
             summary: "{{fields.subject}}"
             hint: Use made-up companies and people only.
@@ -404,6 +462,8 @@ collections:
         fields:
           - name: cases
             label: Cases
+            label_singular: Case
+            collapsed: auto
             widget: list
             summary: "{{fields.title}}"
             hint: "Use only documentation IP addresses (192.0.2.x, 198.51.100.x, 203.0.113.x) and made-up names."
@@ -415,6 +475,8 @@ collections:
               - { name: lines, label: Log lines, widget: list, field: { name: line, label: Line, widget: string }, hint: "One log line per item, oldest first" }
               - name: questions
                 label: Questions
+                label_singular: Question
+                collapsed: auto
                 widget: list
                 summary: "{{fields.question}}"
                 fields:
@@ -431,6 +493,8 @@ collections:
         fields:
           - name: challenges
             label: Challenges
+            label_singular: Challenge
+            collapsed: auto
             widget: list
             summary: "{{fields.title}}"
             fields:
@@ -439,6 +503,7 @@ collections:
               - { name: message, label: Hidden message, widget: string, hint: "The plain text learners should end up with. Must contain a flag like CH{something}." }
               - name: layers
                 label: Layers (applied in this order)
+                label_singular: Layer
                 widget: list
                 field: { name: layer, label: Layer, widget: string }
                 hint: "base64, hex, url, rot13, reverse, or xor:KEY (0-255, e.g. xor:66). The site encodes the message for you. After xor, finish with base64, hex or url."
@@ -452,6 +517,8 @@ collections:
         fields:
           - name: rounds
             label: Rounds
+            label_singular: Round
+            collapsed: auto
             widget: list
             summary: "{{fields.title}}"
             hint: "Samples must be made up and harmless. The solution has to sort every sample correctly; the starter must not."
@@ -464,6 +531,8 @@ collections:
               - { name: explain, label: Explanation (shown when solved), widget: text }
               - name: samples
                 label: Samples
+                label_singular: Sample
+                collapsed: auto
                 widget: list
                 summary: "{{fields.name}}"
                 fields:
@@ -478,6 +547,8 @@ collections:
         fields:
           - name: challenges
             label: Tasks
+            label_singular: Task
+            collapsed: auto
             widget: list
             summary: "{{fields.file}} ({{fields.answer}})"
             fields:
@@ -495,6 +566,8 @@ collections:
         fields:
           - name: alerts
             label: Alert templates
+            label_singular: Alert template
+            collapsed: auto
             widget: list
             summary: "{{fields.rule}} ({{fields.severity}})"
             hint: "Each shift deals 4 benign and 4 escalate alerts. Placeholders filled in at random: {user} {host} {ip} {lan} {n} {n4}"
@@ -513,6 +586,8 @@ collections:
         fields:
           - name: types
             label: Malware types
+            label_singular: Malware type
+            collapsed: auto
             widget: list
             summary: "{{fields.label}}"
             fields:
@@ -522,6 +597,8 @@ collections:
               - { name: respond, label: How defenders respond, widget: list, field: { name: step, label: Step, widget: string } }
           - name: notes
             label: Incident notes
+            label_singular: Incident note
+            collapsed: auto
             widget: list
             summary: "{{fields.type}}: {{fields.note}}"
             hint: "Describe only what a defender would see (symptoms, timing, network behaviour), never how the malware works inside."
@@ -536,6 +613,8 @@ collections:
         fields:
           - name: rounds
             label: Rounds
+            label_singular: Round
+            collapsed: auto
             widget: list
             summary: "{{fields.title}}"
             hint: "Exactly one option per round is correct, and each option needs one true/false result per test."
@@ -547,6 +626,8 @@ collections:
               - { name: tests, label: Tests, widget: list, field: { name: test, label: Test, widget: string } }
               - name: options
                 label: Fixes to choose from
+                label_singular: Fix
+                collapsed: auto
                 widget: list
                 fields:
                   - { name: code, label: Code, widget: code, output_code_only: true, allow_language_selection: false }
@@ -555,8 +636,12 @@ collections:
                   - { name: feedback, label: Feedback, widget: text }
               - { name: takeaway, label: Takeaway, widget: text }
 
+  - divider: true
+
   - name: settings
     label: Settings
+    icon: settings
+    description: "Site name, contact details, menus and footer, plus the categories used across the site."
     editor: { preview: false }
     files:
       - name: site
@@ -571,6 +656,8 @@ collections:
           - { name: discord, label: Discord invite link, widget: string }
           - name: nav
             label: Top menu
+            label_singular: Menu item
+            collapsed: auto
             widget: list
             summary: "{{fields.label}} → {{fields.href}}"
             hint: "The item linking to /join is shown as a button."
@@ -579,6 +666,8 @@ collections:
               - { name: href, label: Link, widget: string }
           - name: footerNav
             label: Footer menu
+            label_singular: Menu item
+            collapsed: auto
             widget: list
             summary: "{{fields.label}} → {{fields.href}}"
             fields:
@@ -586,6 +675,8 @@ collections:
               - { name: href, label: Link, widget: string }
           - name: socials
             label: Social links
+            label_singular: Social link
+            collapsed: auto
             widget: list
             summary: "{{fields.label}}"
             hint: "In the footer."
@@ -614,6 +705,8 @@ collections:
         fields:
           - name: articles
             label: Article categories
+            label_singular: Category
+            collapsed: auto
             widget: list
             summary: "{{fields.name}}"
             hint: "Each category with at least one article gets a filter button on /articles, in this order."
@@ -622,6 +715,8 @@ collections:
               - { name: description, label: Description, widget: string, required: false }
           - name: resources
             label: Resource categories
+            label_singular: Category
+            collapsed: auto
             widget: list
             summary: "{{fields.name}}"
             hint: "Sections of the /resources page, in this order."
@@ -630,6 +725,8 @@ collections:
               - { name: description, label: Description, widget: string, required: false }
           - name: roles
             label: Team roles
+            label_singular: Role
+            collapsed: auto
             widget: list
             summary: "{{fields.name}}"
             hint: "Roles people can have on the team page, in this order."
@@ -640,6 +737,8 @@ collections:
               - { name: description, label: What they do, widget: string }
           - name: glossary
             label: Glossary topics
+            label_singular: Topic
+            collapsed: auto
             widget: list
             summary: "{{fields.name}}"
             fields:

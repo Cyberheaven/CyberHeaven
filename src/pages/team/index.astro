@@ -10,7 +10,7 @@ import { getArticles, getPeople, site } from "../../lib/site";
 import categories from "../../data/categories.json";
 import page from "../../content/pages/team.json";
 
-// People live in src/content/people (CMS: Team). Roles and their order: src/data/categories.json "roles".
+// People live in src/content/people (CMS: Team members). Roles and their order: src/data/categories.json "roles".
 const people = await getPeople();
 const articles = await getArticles();
 const current = people.filter((p) => !p.data.alumni);

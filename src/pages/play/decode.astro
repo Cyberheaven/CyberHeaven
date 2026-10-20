@@ -9,7 +9,7 @@ import { site, tool } from "../../lib/site";
 import { encode, OPS } from "../../lib/decode-ops.mjs";
 import data from "../../data/decode.json";
 
-// Challenges live in src/data/decode.json (CMS: Interactive → Decode the layers). Each one stores the
+// Challenges live in src/data/decode.json (CMS: Lab exercises → Decode the layers). Each one stores the
 // plain message and its layers; the scrambled string is made here at build time, so editors never
 // have to encode anything by hand.
 const challenges = data.challenges.map((c) => ({ ...c, input: encode(c.message, c.layers), flag: c.message.match(/CH\{[^}]+\}/)![0] }));

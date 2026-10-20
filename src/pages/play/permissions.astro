@@ -8,7 +8,7 @@ import DefenderNote from "../../components/DefenderNote.astro";
 import { site, tool } from "../../lib/site";
 import data from "../../data/permissions.json";
 
-// Tasks live in src/data/permissions.json (CMS: Interactive → Permissions lab).
+// Tasks live in src/data/permissions.json (CMS: Lab exercises → Permissions lab).
 const { challenges } = data;
 const who = [["u", "Owner"], ["g", "Group"], ["o", "Others"]];
 const bits = [["r", "read", 4], ["w", "write", 2], ["x", "execute", 1]] as const;
