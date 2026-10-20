@@ -48,6 +48,7 @@ collections:
         hint: Describes the cover image for screen reader users
       - { name: tags, label: Tags, widget: list, required: false, default: [] }
       - { name: draft, label: Draft, widget: boolean, default: false }
+      - { name: hero, label: Show in homepage hero, widget: boolean, default: false, required: false, hint: "The big scrolling carousel at the top of the homepage shows switched-on articles, newest first (up to 6). If none are switched on, it shows the 5 newest." }
       - name: body
         label: Body
         widget: markdown

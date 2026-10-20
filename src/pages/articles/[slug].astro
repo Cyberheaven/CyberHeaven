@@ -99,7 +99,7 @@ const hasWidget = (name: string) => (article.body ?? "").includes(`data-widget="
     if (slot) slot.replaceWith(...src.children);
   }
   // Links like /articles/...#soc-ladder point at a widget that only just arrived, so scroll to it now.
-  const target = location.hash && document.getElementById(location.hash.slice(1));
+  const target = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
   if (target?.closest(".prose")) scrollToY(target.getBoundingClientRect().top + window.scrollY - 100);
 
   // Reading progress: the thin bar at the top fills as you read through the article text.

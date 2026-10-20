@@ -16,6 +16,8 @@ const articles = defineCollection({
     coverAlt: z.string(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
+    // Show in the homepage hero carousel (see components/sections/Hero.astro).
+    hero: z.boolean().default(false),
   }),
 });
 

@@ -2,7 +2,11 @@
 import { getArticles, site } from "../../lib/site";
 import Icon from "../Icon.astro";
 
-const articles = (await getArticles()).slice(0, 5);
+// Articles switched on with "Show in homepage hero" in the CMS, newest first (at most 6).
+// If none are switched on, the 5 newest articles are shown instead.
+const all = await getArticles();
+const picked = all.filter((a) => a.data.hero);
+const articles = picked.length ? picked.slice(0, 6) : all.slice(0, 5);
 const slides = articles.map((a) => ({
   src: a.data.cover,
   alt: a.data.coverAlt,
