@@ -43,7 +43,7 @@
     {"title": "Permissions lab", "description": "Set Linux file permissions with least privilege. Watch ls -l, octal and chmod change live. New tasks every run.", "href": "/play/permissions", "topic": "Linux", "specimen": "-rwxr-x--- maya devops deploy.sh"},
     {"title": "Hash and salt", "description": "See how websites should store passwords: a live SHA-256 hash, why salting matters and how strong a password really is.", "href": "/play/hashing", "topic": "Web & account security", "specimen": "sha256(\"sunshine2026\") = 5d6180aa498ee7335f2899c3e818a2f4"},
     {"title": "Fix the query", "description": "Review code that builds SQL from user input, pick the fix a security reviewer would approve and watch the tests run.", "href": "/play/query", "topic": "Web & account security", "specimen": "db.get(\"... WHERE name = ?\", [name])"},
-    {"title": "Find your path", "description": "Eight quick questions that match what you enjoy to a cybersecurity career, with free guides to start.", "href": "/career"},
+    {"title": "Find your path", "description": "A personal quiz for beginners: every question adapts to your last answer. Get your path, why it fits you and your first three steps.", "href": "/career"},
     {"title": "Glossary", "description": "Plain-English definitions of the cybersecurity terms you’ll run into, from APT to zero trust. Searchable and filterable.", "href": "/glossary"}
   ],
   "socials": [

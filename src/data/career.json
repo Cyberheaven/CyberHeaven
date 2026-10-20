@@ -3,9 +3,11 @@
     {
       "id": "soc",
       "name": "SOC Analyst",
-      "summary": "The front line of defence. You watch for attacks as they happen, separate real threats from noise and act fast when something is wrong.",
-      "day": ["Triage alerts in a SIEM", "Investigate suspicious logins and processes", "Escalate real incidents with clear notes"],
-      "start": ["Learn how Windows and Linux logs work", "Practise on free blue-team challenges", "Get comfortable with MITRE ATT&CK"],
+      "tagline": "The front line of defence",
+      "summary": "You watch for attacks as they happen, separate real threats from noise and act fast when something is wrong. It's one of the most common first jobs in cybersecurity.",
+      "day": ["Review security alerts and decide which ones are real", "Look into suspicious sign-ins and programs", "Hand real incidents to responders with clear notes"],
+      "start": ["Learn what normal Windows and Linux logs look like", "Practise triage on free blue-team challenges"],
+      "labs": ["/play/soc", "/play/phishing", "/play/logs"],
       "guides": ["career-guide-how-to-become-a-soc-analyst", "introduction-to-digital-forensics-and-incident-response"],
       "links": [
         { "label": "CyberDefenders", "href": "https://cyberdefenders.org/" },
@@ -15,33 +17,39 @@
     {
       "id": "dfir",
       "name": "Digital Forensics & Incident Response",
-      "summary": "The detective after the break-in. You rebuild exactly what happened, contain the damage and make sure the attacker is really gone.",
-      "day": ["Build timelines from disk, memory and logs", "Contain compromised hosts and accounts", "Write up what happened and how to stop it next time"],
-      "start": ["Learn the incident response lifecycle", "Explore Windows artefacts like Prefetch", "Try memory forensics with Volatility"],
+      "tagline": "The detective after the break-in",
+      "summary": "You rebuild exactly what happened from the clues left behind, contain the damage and make sure the attacker is really gone.",
+      "day": ["Build timelines from logs, disks and memory", "Lock down compromised computers and accounts", "Write up what happened and how to stop it next time"],
+      "start": ["Learn the incident response lifecycle", "Practise reading logs and building a timeline"],
+      "labs": ["/play/logs", "/play/decode", "/play/shell"],
       "guides": ["introduction-to-digital-forensics-and-incident-response", "the-forensics-guide-to-windows-prefetch-analyzing-execution-spotting-lolbins"],
       "links": [
-        { "label": "Volatility", "href": "https://volatilityfoundation.org/" },
-        { "label": "Autopsy", "href": "https://www.autopsy.com/" }
+        { "label": "Autopsy", "href": "https://www.autopsy.com/" },
+        { "label": "Volatility", "href": "https://volatilityfoundation.org/" }
       ]
     },
     {
       "id": "malware",
       "name": "Malware Analyst",
-      "summary": "You take hostile code apart in a safe lab to learn what it does, how it hides and how to detect it everywhere.",
-      "day": ["Run samples in an isolated sandbox", "Reverse engineer binaries", "Write YARA rules and share indicators"],
-      "start": ["Set up a safe analysis lab", "Learn static and dynamic analysis basics", "Read assembly with a free disassembler"],
+      "tagline": "The one who takes threats apart",
+      "summary": "You study suspicious programs in a safe lab to learn what they do and how they hide, then turn that into detections that protect everyone.",
+      "day": ["Run suspicious files in an isolated sandbox", "Work out what a program really does", "Write detection rules and share what you found"],
+      "start": ["Set up a safe, isolated practice lab", "Learn the basics of static and dynamic analysis"],
+      "labs": ["/play/rules", "/play/malware", "/play/decode"],
       "guides": ["a-beginners-guide-to-malware-analysis", "linux-command-line-cheat-sheet"],
       "links": [
-        { "label": "Ghidra", "href": "https://ghidra-sre.org/" },
-        { "label": "CyberChef", "href": "https://gchq.github.io/CyberChef/" }
+        { "label": "CyberChef", "href": "https://gchq.github.io/CyberChef/" },
+        { "label": "Ghidra", "href": "https://ghidra-sre.org/" }
       ]
     },
     {
       "id": "osint",
       "name": "OSINT & Threat Intelligence",
-      "summary": "You find answers hiding in plain sight. Public data, photos and forums become intelligence that tells defenders who is coming and how.",
-      "day": ["Investigate people, domains and infrastructure", "Track threat actors and campaigns", "Turn findings into clear intelligence reports"],
-      "start": ["Learn the OSINT cycle", "Practise verifying photos and locations", "Build a toolkit of free OSINT sources"],
+      "tagline": "The investigator of public clues",
+      "summary": "You find answers hiding in plain sight. Public websites, photos and records become intelligence that tells defenders who is coming and how.",
+      "day": ["Investigate websites, accounts and online infrastructure", "Track scam and attack campaigns over time", "Turn findings into clear, careful reports"],
+      "start": ["Learn the OSINT cycle and how to stay ethical", "Practise verifying photos, places and websites"],
+      "labs": ["/play/links", "/play/phishing", "/play/malware"],
       "guides": ["osint-for-beginners-getting-started-with-open-source-intelligence"],
       "links": [
         { "label": "OSINT Framework", "href": "https://osintframework.com/" },
@@ -51,9 +59,11 @@
     {
       "id": "pentest",
       "name": "Penetration Tester",
-      "summary": "You break in before the bad guys do. With permission, you attack systems and apps, then explain how to fix every hole you found.",
-      "day": ["Scan and map a target's attack surface", "Exploit web, network and Active Directory weaknesses", "Write reports developers can act on"],
-      "start": ["Get fluent on the Linux command line", "Learn the OWASP Top 10", "Solve beginner CTF challenges"],
+      "tagline": "The ethical hacker",
+      "summary": "With written permission, you test systems the way a real attacker would, then show the owners exactly how to fix every weakness you found.",
+      "day": ["Map what a system exposes to the internet", "Test websites and networks for weaknesses, with permission", "Write reports developers can act on"],
+      "start": ["Get fluent on the Linux command line", "Learn the most common web weaknesses (the OWASP Top 10)"],
+      "labs": ["/play/query", "/play/shell", "/play/links"],
       "guides": ["linux-command-line-cheat-sheet"],
       "links": [
         { "label": "OverTheWire", "href": "https://overthewire.org/wargames/" },
@@ -61,89 +71,199 @@
       ]
     },
     {
+      "id": "cloud",
+      "name": "Cloud & Security Engineering",
+      "tagline": "The builder of safe systems",
+      "summary": "You design and run the systems everything else depends on, and build security in from the start: access, configuration, automation and monitoring.",
+      "day": ["Set up servers and cloud services securely", "Automate checks so mistakes get caught early", "Decide who can access what"],
+      "start": ["Learn how networks and the cloud fit together", "Practise Linux permissions and least privilege"],
+      "labs": ["/play/permissions", "/play/shell", "/play/hashing"],
+      "guides": ["linux-command-line-cheat-sheet"],
+      "links": [
+        { "label": "AWS Skill Builder", "href": "https://skillbuilder.aws/" },
+        { "label": "Microsoft Learn", "href": "https://learn.microsoft.com/training/" }
+      ]
+    },
+    {
       "id": "grc",
       "name": "Governance, Risk & Compliance",
-      "summary": "You make security work for the whole organisation: the policies, risk decisions and frameworks that stop problems before they start.",
-      "day": ["Assess risks and recommend controls", "Map the organisation to frameworks like NIST CSF", "Explain security to people outside IT"],
-      "start": ["Read the NIST Cybersecurity Framework", "Learn common risk assessment methods", "Practise explaining technical risks simply"],
+      "tagline": "The strategist",
+      "summary": "You make security work for the whole organisation: the policies, risk decisions and plans that stop problems before they start.",
+      "day": ["Assess risks and recommend sensible fixes", "Check the organisation against frameworks like NIST", "Explain security to people outside IT"],
+      "start": ["Read the NIST Cybersecurity Framework overview", "Practise explaining a technical risk in plain words"],
+      "labs": ["/play/hashing", "/play/phishing", "/play/permissions"],
       "guides": [],
       "links": [
         { "label": "NIST CSF", "href": "https://www.nist.gov/cyberframework" },
-        { "label": "CISA KEV catalogue", "href": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog" }
+        { "label": "CISA resources", "href": "https://www.cisa.gov/resources-tools" }
       ]
     }
   ],
+
+  "levels": [
+    { "id": "new", "a": "I'm completely new to tech", "step": "Start with the basics of how computers and networks work. Keep our Glossary open and don't worry about jargon yet." },
+    { "id": "user", "a": "I use computers a lot, but I've never worked in IT", "step": "Get comfortable with the command line first. Shell quest is a gentle way in." },
+    { "id": "it", "a": "I work or study in IT", "step": "Turn your IT experience into security experience: ask to help with security tasks at work and write down what you learn." },
+    { "id": "dev", "a": "I can already write code", "step": "Use your coding: build small scripts that automate a security task, and share them on GitHub." }
+  ],
+
   "questions": [
     {
-      "q": "A friend's laptop is acting strange. What's your first instinct?",
+      "id": "level",
+      "stage": "start",
+      "q": "Where are you starting from?",
+      "sub": "No wrong answers. This only changes your first steps.",
       "options": [
-        { "a": "Check what's running and when it started", "score": { "dfir": 2, "soc": 1 } },
-        { "a": "Grab the suspicious file and work out exactly what it does", "score": { "malware": 2 } },
-        { "a": "Figure out how the attacker got in", "score": { "pentest": 2 } },
-        { "a": "Make sure there are backups and a plan so it never happens again", "score": { "grc": 2, "soc": 1 } }
+        { "a": "I'm completely new to tech", "level": "new", "score": {} },
+        { "a": "I use computers a lot, but I've never worked in IT", "level": "user", "score": {} },
+        { "a": "I work or study in IT", "level": "it", "score": { "soc": 1, "cloud": 1 } },
+        { "a": "I can already write code", "level": "dev", "score": { "malware": 1, "pentest": 1, "cloud": 1 } }
       ]
     },
     {
-      "q": "Which puzzle would you enjoy most?",
+      "id": "puzzle",
+      "stage": "start",
+      "q": "Which kind of puzzle pulls you in?",
       "options": [
-        { "a": "Finding where a photo was taken from tiny clues", "score": { "osint": 2 } },
-        { "a": "Breaking into a deliberately vulnerable web app", "score": { "pentest": 2 } },
-        { "a": "Spotting the one strange event in thousands of log lines", "score": { "soc": 2, "dfir": 1 } },
-        { "a": "Taking a program apart to see how it works inside", "score": { "malware": 2 } }
+        { "a": "A mystery: piecing together what happened", "score": { "dfir": 2, "osint": 1, "soc": 1 }, "next": "mystery" },
+        { "a": "A lock: finding the way in", "score": { "pentest": 2, "malware": 1 }, "next": "lock" },
+        { "a": "A machine: taking something apart to see how it works", "score": { "malware": 2, "cloud": 1 }, "next": "machine" },
+        { "a": "A system: making something run safely for everyone", "score": { "grc": 2, "cloud": 2 }, "next": "system" }
       ]
     },
     {
-      "q": "What does your ideal working week look like?",
+      "id": "mystery",
+      "stage": "follow",
+      "q": "Which mystery would you rather solve?",
       "options": [
-        { "a": "Fast-paced: lots of quick decisions with a team around me", "score": { "soc": 2 } },
-        { "a": "Deep focus: one hard problem for days", "score": { "malware": 2, "dfir": 1 } },
-        { "a": "Projects: a new target every few weeks", "score": { "pentest": 2 } },
-        { "a": "Research: digging through sources and writing up findings", "score": { "osint": 2 } },
-        { "a": "Structured: frameworks, policies and people across the business", "score": { "grc": 2 } }
+        { "a": "Who is behind a fake online shop, using only public information", "score": { "osint": 3 } },
+        { "a": "How someone got into a company, from the clues they left", "score": { "dfir": 3 } },
+        { "a": "Which of today's thousand security alerts is the real attack", "score": { "soc": 3 } }
       ]
     },
     {
-      "q": "Which of these would feel most satisfying?",
+      "id": "lock",
+      "stage": "follow",
+      "q": "Where would you look for the way in?",
       "options": [
-        { "a": "Stopping an attack while it's happening", "score": { "soc": 2, "dfir": 1 } },
-        { "a": "Rebuilding exactly what happened after a breach", "score": { "dfir": 2 } },
-        { "a": "Getting a dangerous security hole fixed", "score": { "pentest": 2, "grc": 1 } },
-        { "a": "Exposing who is behind a scam campaign", "score": { "osint": 2 } },
-        { "a": "Writing a rule that catches a new malware family everywhere", "score": { "malware": 2, "soc": 1 } }
+        { "a": "A website's login page and forms", "score": { "pentest": 3 } },
+        { "a": "The people: would someone fall for a fake email?", "score": { "osint": 1, "grc": 1, "pentest": 1 } },
+        { "a": "A strange program: what is it really doing?", "score": { "malware": 3 } }
       ]
     },
     {
-      "q": "How do you feel about writing code?",
+      "id": "machine",
+      "stage": "follow",
+      "q": "What would you most like to take apart?",
       "options": [
-        { "a": "I love it", "score": { "malware": 2, "pentest": 1 } },
-        { "a": "Happy to write small scripts", "score": { "soc": 1, "dfir": 1, "pentest": 1 } },
-        { "a": "I'd rather not", "score": { "grc": 2, "osint": 1 } }
+        { "a": "A suspicious program, safely, to see what it does", "score": { "malware": 3 } },
+        { "a": "A whole network, to see how the pieces connect", "score": { "cloud": 2, "soc": 1 } },
+        { "a": "A hard drive, to recover what someone deleted", "score": { "dfir": 3 } }
       ]
     },
     {
-      "q": "How about explaining technical things to non-technical people?",
+      "id": "system",
+      "stage": "follow",
+      "q": "Which sounds most satisfying?",
       "options": [
-        { "a": "I enjoy it, even presenting to leadership", "score": { "grc": 2 } },
-        { "a": "Fine in small doses", "score": { "soc": 1, "dfir": 1, "osint": 1 } },
+        { "a": "Setting up cloud servers that are secure from day one", "score": { "cloud": 3 } },
+        { "a": "Deciding who gets access to what, and why", "score": { "grc": 3 } },
+        { "a": "Planning what everyone does when something goes wrong", "score": { "grc": 1, "dfir": 2 } }
+      ]
+    },
+    {
+      "id": "pace",
+      "stage": "start",
+      "q": "How do you like your work to feel?",
+      "options": [
+        { "a": "Fast and busy, with a team around me", "score": { "soc": 2, "dfir": 1 } },
+        { "a": "Calm and deep, one hard problem at a time", "score": { "malware": 2, "dfir": 1, "osint": 1 } },
+        { "a": "Varied, with a new project every few weeks", "score": { "pentest": 2, "cloud": 1 } },
+        { "a": "Organised, with plans and people to work with", "score": { "grc": 2, "cloud": 1 } }
+      ]
+    },
+    {
+      "id": "side",
+      "stage": "pick",
+      "q": "Breaking in, protecting, or investigating?",
+      "sub": "All three are defence. Breaking in is always done with permission, to find weaknesses first.",
+      "options": [
+        { "a": "Breaking in, so I can show where it's weak", "score": { "pentest": 3 } },
+        { "a": "Protecting, so nothing gets in", "score": { "soc": 1, "cloud": 2 } },
+        { "a": "Investigating, after something already got in", "score": { "dfir": 2, "osint": 1 } }
+      ]
+    },
+    {
+      "id": "night",
+      "stage": "pick",
+      "q": "It's 2 a.m. and something is going wrong. How do you feel?",
+      "options": [
+        { "a": "Let me at it. I want to be the one who answers", "score": { "soc": 2, "dfir": 2 } },
+        { "a": "I'd rather study it calmly in the morning", "score": { "malware": 2, "osint": 1 } },
+        { "a": "I'd rather have stopped it from happening at all", "score": { "grc": 2, "cloud": 1 } }
+      ]
+    },
+    {
+      "id": "proud",
+      "stage": "pick",
+      "q": "At the end of a job, what would make you proudest?",
+      "options": [
+        { "a": "A clear timeline of exactly what happened", "score": { "dfir": 2 } },
+        { "a": "A list of weak spots, each with how to fix it", "score": { "pentest": 2 } },
+        { "a": "A report that reveals who is behind an attack", "score": { "osint": 2 } },
+        { "a": "Knowing nothing got past me today", "score": { "soc": 2 } },
+        { "a": "A system that just works, safely, for everyone", "score": { "cloud": 2, "grc": 1 } }
+      ]
+    },
+    {
+      "id": "code",
+      "stage": "pick",
+      "q": "How do you feel about learning to code?",
+      "options": [
+        { "a": "Excited. I want to build things", "score": { "cloud": 2, "malware": 1, "pentest": 1 } },
+        { "a": "Happy to learn small scripts", "score": { "soc": 1, "dfir": 1, "pentest": 1 } },
+        { "a": "I'd rather focus on other skills", "score": { "grc": 2, "osint": 1 } }
+      ]
+    },
+    {
+      "id": "people",
+      "stage": "pick",
+      "q": "How do you feel about explaining tech to people who aren't technical?",
+      "options": [
+        { "a": "I enjoy it, even presenting to bosses", "score": { "grc": 2, "osint": 1 } },
+        { "a": "Fine now and then", "score": { "soc": 1, "dfir": 1, "cloud": 1 } },
         { "a": "I'd rather let my work speak for itself", "score": { "malware": 1, "pentest": 1 } }
       ]
     },
     {
-      "q": "Which tool would you open first?",
+      "id": "open",
+      "stage": "pick",
+      "q": "Which would you open first?",
       "options": [
-        { "a": "Wireshark, to see what's on the network", "score": { "soc": 1, "dfir": 1 } },
-        { "a": "A disassembler like Ghidra", "score": { "malware": 2 } },
-        { "a": "A terminal with nmap and Burp Suite", "score": { "pentest": 2 } },
-        { "a": "Search engines, maps and social media", "score": { "osint": 2 } },
-        { "a": "A spreadsheet and a risk register", "score": { "grc": 2 } }
+        { "a": "A search engine and a map", "score": { "osint": 2 } },
+        { "a": "A record of everything that happened on a computer", "score": { "dfir": 1, "soc": 1 } },
+        { "a": "A safe sandbox to run something suspicious", "score": { "malware": 2 } },
+        { "a": "A checklist of what every system should have", "score": { "grc": 2 } },
+        { "a": "A dashboard full of cloud servers", "score": { "cloud": 2 } }
       ]
     },
     {
-      "q": "It's 2 a.m. and something is on fire. How do you feel?",
+      "id": "depth",
+      "stage": "pick",
+      "q": "Would you rather go wide or deep?",
       "options": [
-        { "a": "Bring it on, I want to be the one who answers the call", "score": { "soc": 2, "dfir": 2 } },
-        { "a": "I'd rather analyse it calmly in the morning", "score": { "malware": 1, "osint": 1 } },
-        { "a": "I'd rather have prevented it in the first place", "score": { "grc": 1, "pentest": 1 } }
+        { "a": "Wide: lots of different things every day", "score": { "soc": 2, "osint": 1, "cloud": 1 } },
+        { "a": "Deep: become the expert in one hard thing", "score": { "malware": 2, "dfir": 1 } }
+      ]
+    },
+    {
+      "id": "gadget",
+      "stage": "pick",
+      "q": "You get a shiny new app or gadget. What do you wonder first?",
+      "options": [
+        { "a": "How could someone misuse this?", "score": { "pentest": 2 } },
+        { "a": "What is it collecting about me?", "score": { "osint": 1, "grc": 1 } },
+        { "a": "How is it built and run behind the scenes?", "score": { "cloud": 2, "malware": 1 } }
       ]
     }
   ]
