@@ -44,7 +44,7 @@
   /* Borders: field outlines stay at 3:1 or more so fields are easy to find; dividers match the site's subtle lines */
   --sui-border-color-1-hsl: 0 0% 42%;
   --sui-border-color-2-hsl: 0 0% 26%;
-  --sui-border-color-3-hsl: 0 0% 18%;
+  --sui-border-color-3-hsl: 0 0% 14%;       /* also the header bar and outline of list items: kept quiet */
   --sui-shadow-color: 0 0% 0%;
 
   /* Accent: white, like the site's buttons and chips. Text on a white button is #121212. */
@@ -70,7 +70,8 @@
 
   /* Shape: pill buttons like the site; softer corners on fields and small controls */
   --sui-button-small-border-radius: 999px;
-  --sui-button-medium-border-radius: 999px;
+  /* Half the button height: still a pill, but the image drop zone (which shares this value) stays a soft box */
+  --sui-button-medium-border-radius: calc(var(--sui-control-medium-height, 32px) / 2);
   --sui-button-large-border-radius: 999px;
   --sui-textbox-border-radius: 12px;
   --sui-control-small-border-radius: 8px;
@@ -90,6 +91,9 @@
   --sui-border-color-2-hsl: 0 0% 48%;
   --sui-border-color-3-hsl: 0 0% 36%;
 }
+
+/* Headings (page titles, field labels) get the site's slightly tighter letter spacing */
+:is(h1, h2, h3, h4) { letter-spacing: -0.02em; }
 
 /* Browser defaults, themed to match */
 ::selection { background: #fff; color: #121212; }
