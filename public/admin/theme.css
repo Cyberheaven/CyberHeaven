@@ -212,6 +212,32 @@ nav.primary-sidebar :is([role="treeitem"] > .row, [role="option"]) > .count { fo
 /* The group headings ("Collections", "Your Site"), in the site's small caption style */
 nav.primary-sidebar [role="group"] > .label { font-size: 12px; }
 
+/*
+ * The one colour in the CMS: when an entry has unsaved changes, its Save button gets a ring in the site's
+ * footer colours (--c1 to --c5 in global.css) and a soft glow. The ring is a pseudo-element just outside the
+ * button, masked down to a 2px band, so it can't move the toolbar or cover the button.
+ */
+[role="toolbar"][aria-label="Primary"] button[data-label="Save"] {
+  position: relative;
+  transition: box-shadow 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+[role="toolbar"][aria-label="Primary"] button[data-label="Save"]::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  padding: 2px;
+  border-radius: 999px;
+  background: linear-gradient(100deg, rgb(245 121 74), rgb(245 96 120), rgb(233 86 154), rgb(154 95 208), rgb(90 78 200));
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+[role="toolbar"][aria-label="Primary"] button[data-label="Save"][aria-disabled="false"] {
+  box-shadow: -6px 0 18px -6px rgb(245 96 120 / 55%), 6px 0 18px -6px rgb(90 78 200 / 60%);
+}
+[role="toolbar"][aria-label="Primary"] button[data-label="Save"][aria-disabled="false"]::after { opacity: 1; }
+
 /* Headings (page titles, field labels) get the site's slightly tighter letter spacing */
 :is(h1, h2, h3, h4) { letter-spacing: -0.02em; }
 
