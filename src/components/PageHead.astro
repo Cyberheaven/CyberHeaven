@@ -1,0 +1,19 @@
+---
+// Heading block for every inner page. On load the title's words rise out of a blur one after
+// another (like the homepage hero letters), then the lead and anything in the slot follow.
+interface Props {
+  title: string;
+  lead?: string;
+  class?: string;
+}
+const { title, lead, class: className } = Astro.props;
+const words = title.split(" ");
+const after = words.length * 60 + 120;
+---
+<header class:list={["phead shell", className]}>
+  <h1 class="h1 balance phead-title">
+    {words.map((w, i) => <>{i > 0 && " "}<span class="phead-w" style={`--d: ${i * 60}ms`}>{w}</span></>)}
+  </h1>
+  {lead && <p class="phead-lead balance" style={`--d: ${after}ms`}>{lead}</p>}
+  {Astro.slots.has("default") && <div class="phead-extra" style={`--d: ${after + 120}ms`}><slot /></div>}
+</header>

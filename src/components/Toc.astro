@@ -1,0 +1,52 @@
+---
+// "On this page" list of an article's or page's ## headings. The section you're reading is highlighted.
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+const items = Astro.props.headings.filter((h) => h.depth === 2);
+---
+{items.length > 1 && (
+  <nav class="toc" aria-label="On this page" data-toc>
+    <p class="caption muted">On this page</p>
+    <ol>
+      {items.map((h) => <li><a href={`#${h.slug}`} data-toc-link={h.slug}>{h.text}</a></li>)}
+    </ol>
+  </nav>
+)}
+
+<style>
+  .toc { display: flex; flex-direction: column; gap: 14px; }
+  .toc ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border-left: 1px solid var(--white-20); }
+  .toc a {
+    display: block; padding: 6px 0 6px 16px; margin-left: -1px; border-left: 1px solid transparent; font-size: 14px; line-height: 1.4;
+    color: var(--white-60); transition: color 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
+  }
+  .toc a:hover { color: var(--white); }
+  .toc a.is-on { color: var(--white); border-left-color: var(--white); }
+</style>
+
+<script>
+  import { onScrollFrame, scrollToY } from "../scripts/lib";
+
+  const toc = document.querySelector<HTMLElement>("[data-toc]");
+  if (toc) {
+    const links = Array.from(toc.querySelectorAll<HTMLAnchorElement>("[data-toc-link]"));
+    const targets = links.map((l) => document.getElementById(l.dataset.tocLink!)).filter(Boolean) as HTMLElement[];
+    onScrollFrame(() => {
+      const line = window.innerHeight * 0.3;
+      let current = "";
+      for (const t of targets) if (t.getBoundingClientRect().top < line) current = t.id;
+      links.forEach((l) => l.classList.toggle("is-on", l.dataset.tocLink === current));
+    });
+    // Smooth-scroll (through Lenis) instead of jumping.
+    links.forEach((l) =>
+      l.addEventListener("click", (e) => {
+        const t = document.getElementById(l.dataset.tocLink!);
+        if (!t) return;
+        e.preventDefault();
+        history.replaceState(null, "", `#${t.id}`);
+        scrollToY(t.getBoundingClientRect().top + window.scrollY - 100);
+      })
+    );
+  }
+</script>

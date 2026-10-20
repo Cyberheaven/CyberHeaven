@@ -1,0 +1,24 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHead from "../components/PageHead.astro";
+import Topbar from "../components/Topbar.astro";
+import Footer from "../components/sections/Footer.astro";
+import Contact from "../components/sections/Contact.astro";
+import ToolCards from "../components/ToolCards.astro";
+import { site } from "../lib/site";
+---
+<Base title={`Interactive | ${site.name}`} description="Free interactive cybersecurity tools: a career quiz, a phishing game, SOC and malware explorers, and a beginner glossary.">
+  <Topbar path="/interactive" />
+  <main>
+    <PageHead title="Learn by doing" lead="Free hands-on tools to find your direction and practise the basics. Everything runs in your browser, with no sign-up." />
+    <section class="hub shell">
+      <ToolCards />
+    </section>
+    <Contact />
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .hub { padding-bottom: 100px; }
+</style>

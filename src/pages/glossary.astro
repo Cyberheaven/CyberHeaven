@@ -1,0 +1,104 @@
+---
+import Base from "../layouts/Base.astro";
+import Topbar from "../components/Topbar.astro";
+import Footer from "../components/sections/Footer.astro";
+import PageHead from "../components/PageHead.astro";
+import Icon from "../components/Icon.astro";
+import { site } from "../lib/site";
+import glossary from "../data/glossary.json";
+import categories from "../data/categories.json";
+
+// Terms live in src/data/glossary.json (CMS: Glossary). Categories in src/data/categories.json.
+const terms = [...glossary.terms].sort((a, b) => a.term.localeCompare(b.term, "en", { sensitivity: "base" }));
+const letterOf = (t: string) => (/[a-z]/i.test(t[0]) ? t[0].toUpperCase() : "#");
+const letters = [...new Set(terms.map((t) => letterOf(t.term)))];
+const cats = [...new Set([...categories.glossary.map((c) => c.name), ...terms.map((t) => t.category ?? "")])].filter(
+  (c) => c && terms.some((t) => t.category === c)
+);
+---
+<Base title={`Cybersecurity glossary | ${site.name}`} description={`${terms.length} cybersecurity terms explained in plain English, from APT to zero trust.`}>
+  <Topbar path="/glossary" />
+  <main data-list>
+    <PageHead title="Cybersecurity glossary" lead={`${terms.length} terms explained in plain English. Search, pick a topic, or jump to a letter.`}>
+      <div class="gl-controls">
+        <label class="search">
+          <span class="visually-hidden">Search the glossary</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+          <input type="search" placeholder="Search, e.g. phishing or SIEM" autocomplete="off" data-q />
+        </label>
+        <div class="chips" role="group" aria-label="Filter by topic" data-filter="category">
+          <button type="button" class="chip" data-value="" aria-pressed="true">All topics <small>{terms.length}</small></button>
+          {cats.map((c) => <button type="button" class="chip" data-value={c} aria-pressed="false">{c} <small>{terms.filter((t) => t.category === c).length}</small></button>)}
+        </div>
+      </div>
+    </PageHead>
+
+    <nav class="gl-letters shell" aria-label="Jump to letter">
+      {letters.map((l) => <a href={`#gl-${l}`} data-gl-letter={l}>{l}</a>)}
+      <p class="caption muted gl-count" aria-live="polite"><span data-count>{terms.length}</span> terms</p>
+    </nav>
+
+    <section class="gl shell">
+      {letters.map((l) => (
+        <div class="gl-group" id={`gl-${l}`} data-group data-letter={l}>
+          <p class="gl-letter h2" aria-hidden="true">{l}</p>
+          <dl>
+            {terms.filter((t) => letterOf(t.term) === l).map((t) => (
+              <div class="gl-item" data-item data-category={t.category ?? ""} data-text={`${t.term} ${t.definition} ${t.category ?? ""}`.toLowerCase()}>
+                <dt class="h4">{t.term}</dt>
+                <dd class="body">
+                  {t.definition}
+                  <span class="gl-foot">
+                    {t.category && <span class="tag">{t.category}</span>}
+                    {t.link && <a class="text-link gl-more" href={t.link}>Learn more<Icon name="arrow-right" size={16} /></a>}
+                  </span>
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      ))}
+      <div class="gl-empty" data-empty hidden>
+        <p class="h4">No terms match that.</p>
+        <p class="body muted"><button type="button" class="gl-reset" data-reset>Clear the search</button> or <a class="text-link" href={`mailto:${site.email}?subject=${encodeURIComponent("Glossary suggestion")}`}>suggest a term<Icon name="arrow-right" size={16} /></a></p>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .gl-controls { display: flex; flex-direction: column; gap: 16px; padding-top: 8px; }
+  .gl-letters { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; padding-top: 12px; padding-bottom: 12px; }
+  .gl-letters a { min-width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--white-60); transition: background 0.2s, color 0.2s, opacity 0.2s; }
+  .gl-letters a:hover { background: var(--grey-50); color: var(--white); }
+  .gl-letters a.is-off { opacity: 0.2; pointer-events: none; }
+  .gl-count { margin-left: auto; }
+
+  .gl { padding-bottom: 120px; display: flex; flex-direction: column; }
+  .gl-group { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); gap: 40px; padding: 40px 0; border-top: 1px solid var(--white-20); scroll-margin-top: 80px; }
+  .gl-letter { color: var(--white-20); position: sticky; top: 90px; align-self: start; line-height: 1; }
+  .gl dl { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 40px; }
+  .gl-item { display: flex; flex-direction: column; gap: 8px; }
+  .gl dd { margin: 0; color: var(--white-60); display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+  .gl-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .gl-more { font-size: 14px; }
+  .gl-empty { padding: 48px 0; display: flex; flex-direction: column; gap: 12px; }
+  .gl-reset { padding: 0; border: 0; background: none; color: var(--white); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+  @media (max-width: 1023px) { .gl dl { grid-template-columns: 1fr; } }
+  @media (max-width: 809px) {
+    .gl-group { grid-template-columns: 1fr; gap: 16px; }
+    .gl-letter { position: static; }
+  }
+</style>
+
+<script>
+  import { filterList } from "../scripts/filter-list";
+  // Letters with no matching terms fade out in the jump bar.
+  filterList(document.querySelector<HTMLElement>("[data-list]")!, () => {
+    for (const g of document.querySelectorAll<HTMLElement>("[data-letter]")) {
+      document.querySelector(`[data-gl-letter="${g.dataset.letter}"]`)?.classList.toggle("is-off", g.hidden);
+    }
+  });
+</script>

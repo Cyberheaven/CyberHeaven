@@ -7,7 +7,7 @@ const FADE =
 <footer class="footer">
   <div class="footer-shader" aria-hidden="true"><canvas data-shader></canvas></div>
   <div class="footer-fade" aria-hidden="true" style={`background: ${FADE}`}></div>
-  <div class="footer-top container">
+  <div class="footer-top shell">
     <div class="footer-email">
       <a class="body" href={`mailto:${site.email}`}>{site.email}</a>
       <div class="footer-available">
@@ -26,7 +26,7 @@ const FADE =
     <span aria-hidden="true" data-probe style="position: absolute; visibility: hidden; white-space: nowrap; font-size: 100px; font-weight: 700; letter-spacing: 0">{site.name}</span>
     <p style="font-weight: 700; line-height: 1em">{site.name}</p>
   </div>
-  <div class="footer-bottom container">
+  <div class="footer-bottom shell">
     <p class="caption"><span class="muted">© {site.year} {site.name}. All rights reserved.</span></p>
   </div>
 </footer>

@@ -5,22 +5,36 @@
   "tagline": "Free, community-driven cybersecurity learning. Practical guides for every aspiring defender, written and kept alive by volunteers.",
   "email": "cyberheavenhq@proton.me",
   "discord": "https://discord.gg/QH8mRSCdW9",
+  "comments": {
+    "repo": "Cyberheaven/CyberHeaven",
+    "repoId": "R_kgDOVQalrA",
+    "category": "Announcements",
+    "categoryId": "DIC_kwDOVQalrM4DJJjj"
+  },
   "year": "2026",
   "nav": [
     { "label": "Home", "href": "/" },
     { "label": "Articles", "href": "/articles" },
-    { "label": "About", "href": "/about" },
+    { "label": "Interactive", "href": "/interactive" },
     { "label": "Resources", "href": "/resources" },
-    { "label": "Join", "href": "/#contact" }
+    { "label": "About", "href": "/about" },
+    { "label": "Join", "href": "/join" }
   ],
   "footerNav": [
     { "label": "Articles", "href": "/articles" },
     { "label": "About", "href": "/about" },
     { "label": "Resources", "href": "/resources" },
-    { "label": "Join the community", "href": "/#contact" },
-    { "label": "Privacy", "href": "/privacy" },
-    { "label": "Terms", "href": "/terms" },
-    { "label": "Cookies", "href": "/cookies" }
+    { "label": "Join the community", "href": "/join" },
+    { "label": "Interactive", "href": "/interactive" },
+    { "label": "Glossary", "href": "/glossary" },
+    { "label": "Terms, privacy & cookies", "href": "/legal" }
+  ],
+  "tools": [
+    { "title": "Find your path", "description": "Eight quick questions that match what you enjoy to a cybersecurity career, with free guides to start.", "href": "/career" },
+    { "title": "Spot the phish", "description": "Real or fake? Sort eight messages and learn the clues that give phishing away.", "href": "/play/phishing" },
+    { "title": "Route the alert", "description": "Climb the SOC escalation ladder, then decide which tier should handle each alert.", "href": "/play/soc" },
+    { "title": "Know your enemy", "description": "Explore six malware families, what they do and the real attacks they're known for.", "href": "/play/malware" },
+    { "title": "Glossary", "description": "Plain-English definitions of the cybersecurity terms you’ll run into, from APT to zero trust. Searchable and filterable.", "href": "/glossary" }
   ],
   "socials": [
     { "label": "Discord", "href": "https://discord.gg/QH8mRSCdW9" },
@@ -42,11 +56,11 @@
   ],
   "ticker": "LEARN · DEFEND · SHARE · GROW TOGETHER ·",
   "topics": [
-    { "name": "OSINT", "image": "/assets/topic-osint.webp", "alt": "Cover of the Introduction to OSINT article", "captions": ["The OSINT cycle", "Investigation mindset", "Intelligence vs information"] },
-    { "name": "DFIR & Forensics", "image": "/assets/topic-dfir.webp", "alt": "Cover of the Introduction to DFIR article", "captions": ["Memory, disk & network forensics", "Incident response lifecycle", "Windows Prefetch & LOLBins"] },
-    { "name": "Malware Analysis", "image": "/assets/topic-malware.webp", "alt": "Cover of A Beginner’s Guide to Malware Analysis", "captions": ["Setting up a safe lab", "Static analysis", "Dynamic analysis"] },
-    { "name": "SOC Careers", "image": "/assets/topic-soc.webp", "alt": "Cover of the Career Guide: How to Become a SOC Analyst", "captions": ["What a SOC does", "Where SOC analysts fit in", "Becoming a SOC analyst"] },
-    { "name": "Linux", "image": "/assets/topic-linux.webp", "alt": "Cover of the Linux Command-Line Cheat Sheet", "captions": ["File management & navigation", "Permissions", "Networking commands"] }
+    { "name": "OSINT", "image": "/assets/streak-osint.webp", "alt": "", "captions": ["The OSINT cycle", "Investigation mindset", "Intelligence vs information"] },
+    { "name": "DFIR & Forensics", "image": "/assets/streak-dfir.webp", "alt": "", "captions": ["Memory, disk & network forensics", "Incident response lifecycle", "Windows Prefetch & LOLBins"] },
+    { "name": "Malware Analysis", "image": "/assets/streak-malware.webp", "alt": "", "captions": ["Setting up a safe lab", "Static analysis", "Dynamic analysis"] },
+    { "name": "SOC Careers", "image": "/assets/streak-soc.webp", "alt": "", "captions": ["What a SOC does", "Where SOC analysts fit in", "Becoming a SOC analyst"] },
+    { "name": "Linux", "image": "/assets/streak-linux.webp", "alt": "", "captions": ["File management & navigation", "Permissions", "Networking commands"] }
   ],
   "faq": [
     { "q": "Is CyberHeaven really free?", "a": "Yes. There is no pricing, no paid courses and no paid learning paths. Every article and resource on the site is free for everyone." },

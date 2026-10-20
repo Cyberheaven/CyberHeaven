@@ -1,0 +1,267 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHead from "../components/PageHead.astro";
+import Topbar from "../components/Topbar.astro";
+import Footer from "../components/sections/Footer.astro";
+import Icon from "../components/Icon.astro";
+import { getArticles, site } from "../lib/site";
+import career from "../data/career.json";
+
+// Questions, answers and career paths live in src/data/career.json.
+// Each answer adds points to one or more paths; the path with the highest share of its possible points wins.
+const { paths, questions } = career;
+const articles = await getArticles();
+const titleOf = (slug: string) => articles.find((a) => a.id === slug)?.data.title;
+---
+<Base title={`Find your path in cybersecurity | ${site.name}`} description="A free two-minute quiz that matches what you enjoy to a cybersecurity career, with free guides to get started.">
+  <Topbar path="/career" />
+  <main>
+    <PageHead title="Find your path in cybersecurity" lead="Eight quick questions about what you enjoy. You’ll get the role that fits you best, what the job looks like day to day, and free guides to start with." />
+
+    <section class="quiz container" data-quiz aria-live="polite">
+      <div class="quiz-card">
+        <div class="quiz-top" data-quiz-top>
+          <p class="caption muted" data-count>Question 1 of {questions.length}</p>
+          <div class="quiz-progress" aria-hidden="true"><div class="quiz-fill" data-fill></div></div>
+        </div>
+
+        {questions.map((q, i) => (
+          <fieldset class="quiz-step" data-step={i} hidden={i > 0}>
+            <legend class="h3 balance" tabindex="-1">{q.q}</legend>
+            <div class="quiz-options">
+              {q.options.map((o) => (
+                <button type="button" class="quiz-opt" data-score={JSON.stringify(o.score)}>
+                  <span class="body">{o.a}</span>
+                  <Icon name="arrow-right" size={18} />
+                </button>
+              ))}
+            </div>
+          </fieldset>
+        ))}
+
+        <div class="quiz-result-wrap" data-results hidden>
+          {paths.map((p) => (
+            <article class="quiz-result" data-result={p.id} hidden>
+              <h2 class="h2 balance" tabindex="-1">You’d thrive as a {p.name} specialist</h2>
+              <p class="body balance quiz-summary">{p.summary}</p>
+              <div class="quiz-cols">
+                <div>
+                  <h3 class="h4">What you’d do</h3>
+                  <ul>{p.day.map((d) => <li class="body">{d}</li>)}</ul>
+                </div>
+                <div>
+                  <h3 class="h4">Where to start</h3>
+                  <ul>{p.start.map((d) => <li class="body">{d}</li>)}</ul>
+                </div>
+              </div>
+              <div class="quiz-cols">
+                <div>
+                  <h3 class="h4">Free guides on {site.name}</h3>
+                  {p.guides.length > 0 ? (
+                    <ul class="quiz-links">
+                      {p.guides.map((g) => titleOf(g) && <li><a class="text-link body" href={`/articles/${g}`}>{titleOf(g)}<Icon name="arrow-right" size={16} /></a></li>)}
+                    </ul>
+                  ) : (
+                    <p class="body muted">No guide on this path yet. <a class="text-link" href={`mailto:${site.email}?subject=${encodeURIComponent(`Writing a ${p.name} guide`)}`}>Want to write the first one?</a></p>
+                  )}
+                </div>
+                <div>
+                  <h3 class="h4">Free resources</h3>
+                  <ul class="quiz-links">
+                    {p.links.map((l) => <li><a class="text-link body" href={l.href} target="_blank" rel="noreferrer">{l.label}<Icon name="arrow-up-right" size={16} /></a></li>)}
+                  </ul>
+                </div>
+              </div>
+            </article>
+          ))}
+
+          <div class="quiz-bars" data-bars>
+            <h3 class="h4">How you matched</h3>
+            <ul>
+              {paths.map((p) => (
+                <li data-bar={p.id}>
+                  <span class="body">{p.name}</span>
+                  <span class="quiz-bar"><i></i></span>
+                  <span class="caption muted" data-pct>0%</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="quiz-actions">
+            <button type="button" class="btn" data-restart><span class="body-sb">Take it again</span></button>
+            <button type="button" class="btn btn-ghost" data-share><span class="body-sb" data-share-label>Copy link to result</span></button>
+            <a class="btn btn-ghost" href="/resources"><span class="body-sb">More free resources</span><Icon name="arrow-up-right" size={20} /></a>
+          </div>
+        </div>
+
+        <div class="quiz-nav" data-nav>
+          <button type="button" class="quiz-back body-sb" data-back hidden><Icon name="arrow-right" size={16} />Back</button>
+        </div>
+      </div>
+      <p class="caption muted quiz-note">Just a starting point, not a verdict. Most people move between roles during their career, and every path here is open to beginners.</p>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .quiz { padding: 0 20px 120px; display: flex; flex-direction: column; gap: 16px; }
+  .quiz-card { background: var(--grey-50); border: 1px solid var(--grey-50); border-radius: 16px; padding: 40px; display: flex; flex-direction: column; gap: 32px; min-height: 520px; }
+  .quiz-top { display: flex; flex-direction: column; gap: 12px; }
+  .quiz-progress { height: 2px; background: var(--white-20); overflow: clip; }
+  .quiz-fill { height: 100%; background: var(--white); transform-origin: left; transform: scaleX(0); transition: transform 0.4s var(--ease-out); }
+
+  .quiz-step { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-direction: column; gap: 28px; animation: fadeIn 0.4s var(--ease-out); }
+  .quiz-step legend { padding: 0; margin-bottom: 28px; max-width: 760px; outline: none; }
+  .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .quiz-opt {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; text-align: left;
+    padding: 22px 24px; border-radius: 14px; border: 1px solid var(--white-20); background: var(--black); color: var(--grey); cursor: pointer;
+    transition: background 0.3s var(--ease-out), color 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
+  }
+  .quiz-opt .body { color: inherit; }
+  .quiz-opt svg { flex: none; opacity: 0.4; transition: transform 0.3s var(--ease-out), opacity 0.3s; }
+  .quiz-opt.is-picked { border-color: var(--white); }
+  @media (hover: hover) and (pointer: fine) {
+    .quiz-opt:hover { background: var(--white); color: var(--black); border-color: var(--white); }
+    .quiz-opt:hover svg { opacity: 1; transform: translateX(4px); }
+  }
+  .quiz-nav { margin-top: auto; }
+  .quiz-back { display: inline-flex; align-items: center; gap: 8px; padding: 8px 0; border: 0; background: none; color: var(--white-60); cursor: pointer; }
+  .quiz-back svg { transform: rotate(180deg); }
+  .quiz-back:hover { color: var(--white); }
+
+  .quiz-result-wrap { display: flex; flex-direction: column; gap: 48px; animation: fadeIn 0.5s var(--ease-out); }
+  .quiz-result { display: flex; flex-direction: column; gap: 32px; }
+  .quiz-result h2 { max-width: 900px; line-height: 1.1em; outline: none; }
+  .quiz-summary { max-width: 640px; font-size: 18px; }
+  .quiz-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .quiz-cols > div { display: flex; flex-direction: column; gap: 14px; padding-top: 20px; border-top: 1px solid var(--white-20); }
+  .quiz-cols ul { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 8px; }
+  .quiz-cols ul.quiz-links { list-style: none; padding: 0; }
+  .quiz-links .text-link { width: auto; }
+
+  .quiz-bars { display: flex; flex-direction: column; gap: 16px; }
+  .quiz-bars ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .quiz-bars li { display: grid; grid-template-columns: minmax(0, 260px) 1fr 44px; align-items: center; gap: 16px; }
+  .quiz-bars li .body { color: var(--white-60); }
+  .quiz-bars li.is-top .body { color: var(--white); }
+  .quiz-bar { height: 6px; border-radius: 6px; background: var(--white-20); overflow: clip; }
+  .quiz-bar i { display: block; height: 100%; border-radius: 6px; background: var(--white-60); transform-origin: left; transform: scaleX(0); transition: transform 0.8s var(--ease-out); }
+  .quiz-bars li.is-top .quiz-bar i { background: var(--white); }
+  .quiz-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .quiz-note { max-width: 560px; }
+
+  @media (max-width: 809px) {
+    .quiz-card { padding: 24px 20px; min-height: 0; }
+    .quiz-cols, .quiz-options { grid-template-columns: 1fr; }
+    .quiz-bars li { grid-template-columns: 1fr 44px; }
+    .quiz-bars li .quiz-bar { grid-column: 1 / -1; grid-row: 2; }
+    .quiz-actions .btn { width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .quiz-step, .quiz-result-wrap { animation: none; }
+    .quiz-fill, .quiz-bar i, .quiz-opt { transition-duration: 0.01ms; }
+  }
+</style>
+
+<script>
+  import { scrollToY } from "../scripts/lib";
+
+  const root = document.querySelector<HTMLElement>("[data-quiz]")!;
+  const steps = Array.from(root.querySelectorAll<HTMLFieldSetElement>("[data-step]"));
+  const results = root.querySelector<HTMLElement>("[data-results]")!;
+  const top = root.querySelector<HTMLElement>("[data-quiz-top]")!;
+  const nav = root.querySelector<HTMLElement>("[data-nav]")!;
+  const back = root.querySelector<HTMLButtonElement>("[data-back]")!;
+  const count = root.querySelector<HTMLElement>("[data-count]")!;
+  const fill = root.querySelector<HTMLElement>("[data-fill]")!;
+  const bars = root.querySelector<HTMLElement>("[data-bars]")!;
+  const shareLabel = root.querySelector<HTMLElement>("[data-share-label]")!;
+  const pathIds = Array.from(root.querySelectorAll<HTMLElement>("[data-result]")).map((r) => r.dataset.result!);
+  const answers: Record<string, number>[] = [];
+  const picked: number[] = [];
+  let current = 0;
+
+  // Most points each path could possibly get, so paths with fewer chances aren't disadvantaged.
+  const maxFor: Record<string, number> = {};
+  for (const step of steps) {
+    const options = Array.from(step.querySelectorAll<HTMLElement>(".quiz-opt")).map((b) => JSON.parse(b.dataset.score!));
+    for (const id of pathIds) maxFor[id] = (maxFor[id] ?? 0) + Math.max(...options.map((o) => o[id] ?? 0));
+  }
+
+  const showStep = (i: number) => {
+    current = i;
+    steps.forEach((s, k) => (s.hidden = k !== i));
+    results.hidden = true;
+    top.hidden = nav.hidden = false;
+    back.hidden = i === 0;
+    count.textContent = `Question ${i + 1} of ${steps.length}`;
+    fill.style.transform = `scaleX(${i / steps.length})`;
+    steps[i].querySelectorAll(".quiz-opt").forEach((b, k) => b.classList.toggle("is-picked", picked[i] === k));
+    steps[i].querySelector("legend")!.focus({ preventScroll: true });
+  };
+
+  const showResult = (id: string, pct?: Record<string, number>) => {
+    steps.forEach((s) => (s.hidden = true));
+    top.hidden = nav.hidden = true;
+    results.hidden = false;
+    results.querySelectorAll<HTMLElement>("[data-result]").forEach((r) => (r.hidden = r.dataset.result !== id));
+    bars.hidden = !pct;
+    if (pct) {
+      const list = bars.querySelector("ul")!;
+      const items = Array.from(list.querySelectorAll<HTMLElement>("[data-bar]"));
+      items.sort((a, b) => pct[b.dataset.bar!] - pct[a.dataset.bar!]).forEach((li) => {
+        list.appendChild(li);
+        const v = pct[li.dataset.bar!];
+        li.classList.toggle("is-top", li.dataset.bar === id);
+        li.querySelector<HTMLElement>("[data-pct]")!.textContent = `${v}%`;
+        requestAnimationFrame(() => (li.querySelector<HTMLElement>("i")!.style.transform = `scaleX(${v / 100})`));
+      });
+    }
+    history.replaceState(null, "", `#${id}`);
+    results.querySelector<HTMLElement>(`[data-result="${id}"] h2`)!.focus({ preventScroll: true });
+    scrollToY(root.getBoundingClientRect().top + window.scrollY - 100);
+  };
+
+  const finish = () => {
+    const pct: Record<string, number> = {};
+    for (const id of pathIds) {
+      const total = answers.reduce((sum, a) => sum + (a[id] ?? 0), 0);
+      pct[id] = Math.round((total / (maxFor[id] || 1)) * 100);
+    }
+    const best = pathIds.reduce((a, b) => (pct[b] > pct[a] ? b : a));
+    showResult(best, pct);
+  };
+
+  steps.forEach((step, i) =>
+    step.querySelectorAll<HTMLElement>(".quiz-opt").forEach((b, k) =>
+      b.addEventListener("click", () => {
+        answers[i] = JSON.parse(b.dataset.score!);
+        picked[i] = k;
+        if (i < steps.length - 1) showStep(i + 1);
+        else finish();
+      })
+    )
+  );
+  back.addEventListener("click", () => current > 0 && showStep(current - 1));
+  root.querySelector("[data-restart]")!.addEventListener("click", () => {
+    answers.length = picked.length = 0;
+    history.replaceState(null, "", location.pathname);
+    showStep(0);
+  });
+  root.querySelector("[data-share]")!.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(location.href);
+      shareLabel.textContent = "Link copied";
+    } catch {
+      shareLabel.textContent = location.href;
+    }
+    setTimeout(() => (shareLabel.textContent = "Copy link to result"), 2500);
+  });
+
+  // A shared link (/career#soc) opens straight on that result.
+  const shared = location.hash.slice(1);
+  if (pathIds.includes(shared)) showResult(shared);
+</script>

@@ -1,0 +1,55 @@
+---
+import ScrollWords from "../ScrollWords.astro";
+import ScrollFade from "../ScrollFade.astro";
+import Icon from "../Icon.astro";
+import data from "../../data/resources.json";
+// Resources marked "Featured" in the CMS (src/data/resources.json) show here.
+const picks = data.items.filter((r) => r.featured).slice(0, 6);
+---
+<section id="practise" class="picks container">
+  <div class="picks-head">
+    <ScrollWords as="h2" class="h2 balance" text="Free places to start practising today" />
+    <a class="body-sb text-link" href="/resources">All {data.items.length} resources<Icon name="arrow-right" size={18} /></a>
+  </div>
+  <ul class="picks-list">
+    {picks.map((r) => (
+      <li>
+        <ScrollFade>
+          <a class="pick" href={r.url} target="_blank" rel="noreferrer">
+            <span class="pick-name">
+              <span class="caption muted">{r.provider}</span>
+              <span class="h3 balance">{r.name}</span>
+            </span>
+            <span class="body muted balance pick-desc">{r.description}</span>
+            <span class="round-btn pick-btn" aria-hidden="true"><Icon name="arrow-up-right" size={22} /></span>
+          </a>
+        </ScrollFade>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .picks { padding: 100px 20px; display: flex; flex-direction: column; gap: 48px; }
+  .picks-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+  .picks-head :global(h2) { max-width: 760px; }
+  .picks-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--white-20); }
+  .picks-list li { border-bottom: 1px solid var(--white-20); }
+  .pick { position: relative; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 4fr) auto; align-items: center; gap: 40px; padding: 32px 0; isolation: isolate; }
+  .pick::before { content: ""; position: absolute; inset: 0 -20px; z-index: -1; background: var(--grey-50); border-radius: 12px; clip-path: inset(50% 0 50% 0 round 12px); transition: clip-path 0.6s var(--ease-out); }
+  .pick-name { display: flex; flex-direction: column; gap: 6px; transition: transform 0.6s var(--ease-out); }
+  .pick-desc { max-width: 460px; }
+  @media (hover: hover) and (pointer: fine) {
+    .pick:hover::before { clip-path: inset(0 0 0 0 round 12px); }
+    .pick:hover .pick-name { transform: translateX(12px); }
+    .pick:hover .pick-btn { background: var(--white); color: var(--black); }
+  }
+  .pick:active .pick-btn { background: var(--white); color: var(--black); }
+  @media (max-width: 1199px) { .picks { padding: 80px 20px; } }
+  @media (max-width: 809px) {
+    .pick { grid-template-columns: 1fr auto; gap: 12px 20px; padding: 24px 0; }
+    .pick-desc { grid-column: 1 / -1; grid-row: 2; }
+    .pick-btn { width: 48px; height: 48px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .pick::before, .pick-name { transition-duration: 0.01ms; } }
+</style>

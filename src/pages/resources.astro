@@ -1,0 +1,146 @@
+---
+import Base from "../layouts/Base.astro";
+import Topbar from "../components/Topbar.astro";
+import Footer from "../components/sections/Footer.astro";
+import PageHead from "../components/PageHead.astro";
+import Icon from "../components/Icon.astro";
+import { site } from "../lib/site";
+import data from "../data/resources.json";
+import categories from "../data/categories.json";
+
+// Resources live in src/data/resources.json and their categories in src/data/categories.json,
+// both editable in the CMS. A resource whose category isn't in the list still shows, at the end.
+const items = data.items;
+const names = [...new Set([...categories.resources.map((c) => c.name), ...items.map((r) => r.category)])];
+const groups = names
+  .map((name) => ({
+    name,
+    description: categories.resources.find((c) => c.name === name)?.description ?? "",
+    items: items.filter((r) => r.category === name),
+  }))
+  .filter((g) => g.items.length > 0);
+const costs = ["Free", "Free tier", "Paid"].filter((c) => items.some((r) => r.cost === c));
+const freeCount = items.filter((r) => r.cost === "Free").length;
+const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+---
+<Base title={`Resources | ${site.name}`} description="Hand-picked cybersecurity courses, labs, tools, certifications, books and communities. Mostly free, with a few paid ones worth their price.">
+  <Topbar path="/resources" />
+  <main>
+    <PageHead
+      title="Everything you need to learn cybersecurity"
+      lead={`${items.length} hand-picked courses, labs, tools and references from across the web. ${freeCount} are completely free, most others have a free tier, and the few paid ones are here because they’re worth it.`}
+    />
+
+    <section class="rs shell" data-list>
+      <div class="rs-controls">
+        <div class="rs-top">
+          <label class="search">
+            <span class="visually-hidden">Search resources</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+            <input type="search" placeholder="Search, e.g. forensics, Splunk or OSCP" autocomplete="off" data-q />
+          </label>
+          <div class="seg" role="group" aria-label="Filter by cost" data-filter="cost" data-seg>
+            <span class="seg-thumb" aria-hidden="true"></span>
+            <span class="seg-label" aria-hidden="true">Cost</span>
+            <button type="button" data-value="" aria-pressed="true">Any</button>
+            {costs.map((c) => <button type="button" data-value={c} aria-pressed="false">{c}</button>)}
+          </div>
+        </div>
+        <div class="rs-row">
+          <div class="chips" role="group" aria-label="Filter by category" data-filter="category">
+            <button type="button" class="chip" data-value="" aria-pressed="true">Everything <small>{items.length}</small></button>
+            {groups.map((g) => <button type="button" class="chip" data-value={g.name} aria-pressed="false">{g.name} <small>{g.items.length}</small></button>)}
+          </div>
+        </div>
+        <p class="caption muted" aria-live="polite">Showing <span data-count>{items.length}</span> of {items.length}</p>
+      </div>
+
+      {groups.map((g) => (
+        <div class="rs-group" id={slug(g.name)} data-group>
+          <div class="rs-group-head">
+            <h2 class="h3 balance">{g.name}</h2>
+            {g.description && <p class="body muted balance">{g.description}</p>}
+          </div>
+          <ul class="rs-list">
+            {g.items.map((r) => (
+              <li
+                class="sf"
+                data-item
+                data-category={r.category}
+                data-cost={r.cost}
+                data-text={[r.name, r.provider, r.description, r.category, r.cost, r.level].join(" ").toLowerCase()}
+              >
+                <a class="rs-item" href={r.url} target="_blank" rel="noreferrer">
+                  <span class="rs-name">
+                    <span class="body-sb">{r.name}</span>
+                    <Icon name="arrow-up-right" size={18} />
+                  </span>
+                  {r.provider && r.provider !== r.name && <span class="caption muted">{r.provider}</span>}
+                  <span class="body muted rs-desc">{r.description}</span>
+                  <span class="rs-tags">
+                    <span class:list={["tag", { "is-free": r.cost === "Free" }]}>{r.cost}</span>
+                    <span class="tag">{r.level}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+
+      <div class="rs-empty" data-empty hidden>
+        <p class="h4">Nothing matches that.</p>
+        <p class="body muted">Try another word or <button type="button" class="rs-reset" data-reset>show everything</button>. Know a great resource we’re missing? <a class="text-link" href={`mailto:${site.email}?subject=${encodeURIComponent("Resource suggestion")}`}>Suggest it<Icon name="arrow-right" size={16} /></a></p>
+      </div>
+
+      <p class="caption muted rs-note">Every link goes to an outside site. We don’t earn anything from them, and prices and free tiers change, so check before you sign up.</p>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .rs { padding-bottom: 120px; display: flex; flex-direction: column; }
+  .rs-controls { display: flex; flex-direction: column; gap: 16px; padding-bottom: 40px; }
+  .rs-top { display: flex; align-items: center; gap: 12px 16px; flex-wrap: wrap; }
+  .rs-top .search { flex: 1 1 320px; }
+  .rs-row { padding-top: 8px; }
+
+  .rs-group { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 40px; padding: 48px 0; border-top: 1px solid var(--white-20); scroll-margin-top: 90px; }
+  .rs-group-head { position: sticky; top: 100px; align-self: start; display: flex; flex-direction: column; gap: 12px; max-width: 340px; }
+  .rs-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 40px; }
+  .rs-item { display: flex; flex-direction: column; gap: 6px; padding: 20px 0 24px; border-bottom: 1px solid var(--grey-50); height: 100%; }
+  .rs-name { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; color: var(--white); }
+  .rs-name svg { flex: none; margin-top: 2px; color: var(--white-40); transition: transform 0.4s var(--ease-out), color 0.4s var(--ease-out); }
+  .rs-desc { font-size: 15px; line-height: 1.5em; }
+  .rs-tags { display: flex; gap: 6px; flex-wrap: wrap; padding-top: 6px; }
+  @media (hover: hover) and (pointer: fine) {
+    .rs-item:hover .rs-name svg { transform: translate(3px, -3px); color: var(--white); }
+    .rs-item:hover .rs-desc { color: var(--grey); }
+  }
+  .rs-empty { padding: 48px 0; border-top: 1px solid var(--white-20); display: flex; flex-direction: column; gap: 12px; }
+  .rs-reset { padding: 0; border: 0; background: none; color: var(--white); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .rs-note { padding-top: 32px; border-top: 1px solid var(--white-20); max-width: 640px; }
+
+  @media (max-width: 1023px) {
+    .rs-group { grid-template-columns: 1fr; gap: 16px; padding: 40px 0; }
+    .rs-group-head { position: static; max-width: 560px; }
+  }
+  @media (max-width: 640px) { .rs-list { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  import { filterList } from "../scripts/filter-list";
+  // Slide the cost control's white thumb under whichever option is on.
+  const seg = document.querySelector<HTMLElement>("[data-seg]")!;
+  const thumb = seg.querySelector<HTMLElement>(".seg-thumb")!;
+  const place = () => {
+    const on = seg.querySelector<HTMLElement>('[aria-pressed="true"]');
+    if (!on) return;
+    thumb.style.setProperty("--x", `${on.offsetLeft}px`);
+    thumb.style.setProperty("--w", `${on.offsetWidth}px`);
+  };
+  filterList(document.querySelector<HTMLElement>("[data-list]")!, place);
+  // Re-place it whenever the control changes size (fonts loading, the "Cost" label hiding on phones).
+  new ResizeObserver(place).observe(seg);
+</script>

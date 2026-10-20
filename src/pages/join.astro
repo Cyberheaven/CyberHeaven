@@ -1,0 +1,85 @@
+---
+import Base from "../layouts/Base.astro";
+import Topbar from "../components/Topbar.astro";
+import Footer from "../components/sections/Footer.astro";
+import PageHead from "../components/PageHead.astro";
+import ScrollWords from "../components/ScrollWords.astro";
+import ScrollFade from "../components/ScrollFade.astro";
+import FAQ from "../components/sections/FAQ.astro";
+import Icon from "../components/Icon.astro";
+import { site } from "../lib/site";
+
+const mail = (subject: string) => `mailto:${site.email}?subject=${encodeURIComponent(subject)}`;
+const channels = [
+  { name: "Discord", handle: "discord.gg/QH8mRSCdW9", href: site.discord, text: "Where the community lives. Ask questions, share what you’re learning, find study partners and help plan what we write next." },
+  { name: "X (Twitter)", handle: "@cyberheaven0x", href: "https://twitter.com/cyberheaven0x", text: "New guides and resources as they land." },
+  { name: "LinkedIn", handle: "company/cyberheaven", href: "https://www.linkedin.com/company/cyberheaven", text: "Follow along and connect with other learners and practitioners." },
+  { name: "GitHub", handle: "github.com/cyberheaven", href: "https://github.com/cyberheaven", text: "Follow CyberHeaven’s projects on GitHub." },
+  { name: "Email", handle: site.email, href: `mailto:${site.email}`, text: "For anything else, or if you’d rather not use social media." },
+];
+const ways = [
+  { title: "Write an article", text: "Know something a beginner would find useful? Pitch a topic and we’ll help you shape it. Published free, with your name on it.", action: "Pitch an idea", href: mail("Article idea") },
+  { title: "Suggest a resource", text: "Found a free course, lab or tool that helped you? Tell us and it can go on the resources page.", action: "Suggest a resource", href: mail("Resource suggestion") },
+  { title: "Review and edit", text: "Fix a typo, check a technical detail or bring an old guide up to date. Every correction helps the next learner.", action: "Offer to review", href: mail("Reviewing articles") },
+  { title: "Help on Discord", text: "Answer questions, welcome new members and share what you’ve learned. You don’t need to be an expert to be helpful.", action: "Open Discord", href: site.discord },
+  { title: "Improve the site", text: "Designers and developers welcome. The site is built with Astro and plain Markdown, so small fixes are easy to make.", action: "Offer to help", href: mail("Helping with the website") },
+];
+---
+<Base title={`Join the community | ${site.name}`} description="Join the CyberHeaven community on Discord and social media, and find out how to write, review or volunteer.">
+  <Topbar path="/join" />
+  <main>
+    <PageHead title="Join the community" lead={`${site.name} is free and run by the people who use it. Here’s where to find us, and how to help keep it going.`} />
+
+    <section class="shell jn-channels" aria-label="Where to find us">
+      <ul class="bigrows">
+        {channels.map((c, i) => (
+          <li>
+            <a class:list={["bigrow", { "is-main": i === 0 }]} href={c.href} target={c.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer">
+              <span class="bigrow-name">{c.name}</span>
+              <span class="bigrow-info">
+                <span class="body-sb bigrow-sub">{c.handle}</span>
+                <span class="body bigrow-text">{c.text}</span>
+              </span>
+              <span class="round-btn bigrow-btn" aria-hidden="true"><Icon name="arrow-up-right" size={24} /></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="shell jn-ways">
+      <ScrollWords as="h2" class="h2 balance jn-ways-title" text="Five ways to help keep it going" />
+      <ul class="jn-ways-list">
+        {ways.map((w) => (
+          <li>
+            <ScrollFade>
+              <h3 class="h4">{w.title}</h3>
+              <p class="body muted">{w.text}</p>
+              <a class="text-link body-sb" href={w.href} target={w.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer">{w.action}<Icon name="arrow-right" size={18} /></a>
+            </ScrollFade>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <FAQ />
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .jn-channels { padding-bottom: 120px; }
+  .jn-ways { padding-bottom: 80px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 40px; }
+  .jn-ways-title { position: sticky; top: 100px; align-self: start; }
+  .jn-ways-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 40px; }
+  .jn-ways-list li { padding: 28px 0 32px; border-top: 1px solid var(--white-20); }
+  .jn-ways-list :global(.sf) { gap: 12px; align-items: flex-start; }
+
+  @media (max-width: 1199px) {
+    .jn-ways { grid-template-columns: 1fr; }
+    .jn-ways-title { position: static; }
+  }
+  @media (max-width: 809px) {
+    .jn-ways-list { grid-template-columns: 1fr; }
+  }
+</style>

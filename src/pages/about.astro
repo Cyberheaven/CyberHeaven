@@ -1,0 +1,76 @@
+---
+import Base from "../layouts/Base.astro";
+import Topbar from "../components/Topbar.astro";
+import Footer from "../components/sections/Footer.astro";
+import PageHead from "../components/PageHead.astro";
+import ScrollWords from "../components/ScrollWords.astro";
+import ScrollFade from "../components/ScrollFade.astro";
+import About from "../components/sections/About.astro";
+import Principles from "../components/sections/Principles.astro";
+import Ticker from "../components/sections/Ticker.astro";
+import Contact from "../components/sections/Contact.astro";
+import Icon from "../components/Icon.astro";
+import { getCollection, getEntry, render } from "astro:content";
+import { site } from "../lib/site";
+import "../styles/prose.css";
+
+// The story text comes from src/content/pages/about.md (CMS: Pages > About).
+// The statement, values and ticker come from src/content/site.json, shared with the homepage.
+const page = (await getEntry("pages", "about"))!;
+const { Content } = await render(page);
+const articleCount = (await getCollection("articles", (a) => !a.data.draft)).length;
+const ways = [
+  { name: "Learn", sub: `${articleCount} free guides`, text: "Practical articles on OSINT, forensics, malware analysis, SOC careers and Linux.", href: "/articles" },
+  { name: "Practise", sub: "Interactive tools", text: "Find your path, spot the phish, route SOC alerts and explore malware families.", href: "/interactive" },
+  { name: "Explore", sub: "Curated resources", text: "Hand-picked courses, labs, tools and communities from across the web.", href: "/resources" },
+  { name: "Contribute", sub: "Join the community", text: "Write, review, suggest resources or help others on Discord.", href: "/join" },
+];
+---
+<Base title={`${page.data.title} | ${site.name}`} description={page.data.description}>
+  <Topbar path="/about" />
+  <main>
+    <PageHead title="Eight years of free cybersecurity guides, now run by the community" lead={page.data.description} />
+
+    <About more={false} />
+
+    <section class="shell ab-story">
+      <ScrollWords as="h2" class="h2 balance ab-story-title" text="Built by practitioners, for practitioners" />
+      <ScrollFade><div class="prose"><Content /></div></ScrollFade>
+    </section>
+
+    <Ticker />
+    <Principles />
+
+    <section class="shell ab-ways">
+      <ScrollWords as="h2" class="h2 balance" text="Four ways in" />
+      <ul class="bigrows">
+        {ways.map((w) => (
+          <li>
+            <a class="bigrow" href={w.href}>
+              <span class="bigrow-name">{w.name}</span>
+              <span class="bigrow-info">
+                <span class="body-sb bigrow-sub">{w.sub}</span>
+                <span class="body bigrow-text">{w.text}</span>
+              </span>
+              <span class="round-btn bigrow-btn" aria-hidden="true"><Icon name="arrow-right" size={24} /></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <Contact />
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .ab-story { padding-top: 160px; padding-bottom: 120px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 740px); gap: 64px; }
+  .ab-story-title { position: sticky; top: 100px; align-self: start; max-width: 420px; }
+  .ab-ways { padding-top: 120px; padding-bottom: 60px; display: flex; flex-direction: column; gap: 48px; }
+  @media (max-width: 1023px) {
+    .ab-story { grid-template-columns: 1fr; gap: 32px; padding-top: 100px; }
+    .ab-story-title { position: static; }
+  }
+  @media (max-width: 809px) { .ab-story { padding-top: 80px; padding-bottom: 80px; } .ab-ways { padding-top: 80px; } }
+</style>

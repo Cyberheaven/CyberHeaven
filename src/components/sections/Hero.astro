@@ -11,6 +11,16 @@ const slides = articles.map((a) => ({
   link: `/articles/${a.id}`,
 }));
 const n = slides.length;
+// Title letters, grouped by word so a word never splits across lines. Each letter keeps its
+// position in the whole title, which sets its animation delay.
+const words = (title: string) => {
+  let i = 0;
+  return title.split(" ").map((w) => {
+    const letters = w.split("").map((ch) => [ch, i++] as const);
+    i++;
+    return letters;
+  });
+};
 ---
 <section id="hero" class="hero container">
   <div class="hero-stage">
@@ -24,8 +34,10 @@ const n = slides.length;
                 <a class="pc-ref-link" href={s.link} aria-label={`Open ${s.title}`}>
                   <span class="pc-ref-ltr pc-cat">{s.category}</span>
                   <h2 class="pc-title">
-                    {s.title.split("").map((ch, li) => (
-                      <span class="pc-ref-ltr" style={`transition-delay: ${(0.12 + li * 0.03).toFixed(2)}s`}>{ch}</span>
+                    {words(s.title).map((w, wi) => (
+                      <>{wi > 0 && " "}<span class="pc-word">{w.map(([ch, li]) => (
+                        <span class="pc-ref-ltr" style={`transition-delay: ${(0.12 + li * 0.03).toFixed(2)}s`}>{ch}</span>
+                      ))}</span></>
                     ))}
                   </h2>
                   <span class="pc-ref-btn" aria-hidden="true"><Icon name="carousel-arrow" size={22} /></span>
@@ -50,7 +62,7 @@ const n = slides.length;
               <div class="pc-center">
                 <a class="pc-ref-link" href={s.link} aria-label={`Open ${s.title}`}>
                   <span class="pc-ref-ltr pc-cat">{s.category}</span>
-                  <h2 class="pc-title">{s.title.split("").map((ch) => <span class="pc-ref-ltr">{ch}</span>)}</h2>
+                  <h2 class="pc-title">{words(s.title).map((w, wi) => <>{wi > 0 && " "}<span class="pc-word">{w.map(([ch]) => <span class="pc-ref-ltr">{ch}</span>)}</span></>)}</h2>
                   <span class="pc-ref-btn" aria-hidden="true"><Icon name="carousel-arrow" size={22} /></span>
                 </a>
               </div>

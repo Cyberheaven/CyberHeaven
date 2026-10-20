@@ -1,0 +1,12 @@
+---
+// A YouTube video in the site's style. Usage: <YouTube url="https://youtu.be/…" title="What it shows" />
+// (or id="…"). In Markdown, paste the YouTube link on its own line instead.
+import { youtubeHtml, youtubeId } from "../lib/youtube.mjs";
+interface Props {
+  url?: string;
+  id?: string;
+  title?: string;
+}
+const { url, id = youtubeId(url), title } = Astro.props;
+---
+{id && <Fragment set:html={youtubeHtml(id, title)} />}

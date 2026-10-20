@@ -18,8 +18,13 @@ collections:
       - { name: title, label: Title, widget: string, required: true }
       - name: category
         label: Category
-        widget: select
-        options: [Tutorials, Career Guides, Cheat Sheets, Cybersecurity News, Free Resources, Learning Roadmaps]
+        widget: relation
+        collection: settings
+        file: categories
+        value_field: "articles.*.name"
+        search_fields: ["articles.*.name"]
+        display_fields: ["articles.*.name"]
+        hint: Add or rename categories under Settings → Categories.
       - name: date
         label: Date
         widget: datetime
@@ -36,7 +41,10 @@ collections:
         hint: Describes the cover image for screen reader users
       - { name: tags, label: Tags, widget: list, required: false, default: [] }
       - { name: draft, label: Draft, widget: boolean, default: false }
-      - { name: body, label: Body, widget: markdown }
+      - name: body
+        label: Body
+        widget: markdown
+        hint: 'To show an interactive widget, add <div data-widget="soc-ladder"></div> or <div data-widget="malware-explorer"></div> on its own line.'
 
   - name: pages
     label: Pages
@@ -49,3 +57,117 @@ collections:
       - { name: title, label: Title, widget: string }
       - { name: description, label: Description, widget: string }
       - { name: body, label: Body, widget: markdown }
+
+  - name: resources
+    label: Resources
+    editor: { preview: false }
+    files:
+      - name: resources
+        label: Resources page
+        file: src/data/resources.json
+        format: json
+        fields:
+          - name: items
+            label: Resources
+            widget: list
+            summary: "{{fields.name}} ({{fields.category}})"
+            fields:
+              - { name: name, label: Name, widget: string }
+              - { name: provider, label: Provider, widget: string, required: false, hint: "Who makes it, e.g. Harvard or TryHackMe" }
+              - { name: url, label: Link, widget: string }
+              - { name: description, label: Description, widget: text, hint: "One or two sentences on why it's worth it" }
+              - name: category
+                label: Category
+                widget: relation
+                collection: settings
+                file: categories
+                value_field: "resources.*.name"
+                search_fields: ["resources.*.name"]
+                display_fields: ["resources.*.name"]
+              - { name: cost, label: Cost, widget: select, options: [Free, Free tier, Paid], default: Free, hint: "Never list prices, they change" }
+              - { name: level, label: Level, widget: select, options: [Beginner, Intermediate, Advanced, All levels], default: Beginner }
+              - { name: featured, label: Show on homepage, widget: boolean, default: false, required: false, hint: "Up to six featured resources appear on the homepage" }
+
+  - name: glossary
+    label: Glossary
+    editor: { preview: false }
+    files:
+      - name: glossary
+        label: Glossary terms
+        file: src/data/glossary.json
+        format: json
+        fields:
+          - name: terms
+            label: Terms
+            widget: list
+            summary: "{{fields.term}}"
+            fields:
+              - { name: term, label: Term, widget: string }
+              - { name: definition, label: Definition, widget: text, hint: "Plain English, one or two sentences" }
+              - name: category
+                label: Topic
+                widget: relation
+                collection: settings
+                file: categories
+                value_field: "glossary.*.name"
+                search_fields: ["glossary.*.name"]
+                display_fields: ["glossary.*.name"]
+              - { name: link, label: Learn-more link, widget: string, required: false, hint: "Optional, e.g. /articles/linux-command-line-cheat-sheet" }
+
+  # Data for the interactive tools. The career quiz (src/data/career.json) is edited in code.
+  - name: interactive
+    label: Interactive
+    editor: { preview: false }
+    files:
+      - name: phishing
+        label: Spot the phish
+        file: src/data/phishing.json
+        format: json
+        fields:
+          - name: messages
+            label: Messages
+            widget: list
+            summary: "{{fields.subject}}"
+            hint: Use made-up companies and people only.
+            fields:
+              - { name: kind, label: Type, widget: select, options: [Email, Text message] }
+              - { name: fromName, label: Sender name, widget: string }
+              - { name: fromAddress, label: Sender address or number, widget: string }
+              - { name: subject, label: Subject, widget: string }
+              - { name: body, label: Message, widget: text }
+              - { name: linkText, label: Link text, widget: string, required: false }
+              - { name: linkUrl, label: Where the link really goes, widget: string, required: false }
+              - { name: phish, label: "Is it phishing?", widget: boolean, default: false }
+              - { name: clues, label: Clues, widget: list, hint: "The red flags, or why it is safe" }
+
+  - name: settings
+    label: Settings
+    editor: { preview: false }
+    files:
+      - name: categories
+        label: Categories
+        file: src/data/categories.json
+        format: json
+        fields:
+          - name: articles
+            label: Article categories
+            widget: list
+            summary: "{{fields.name}}"
+            hint: "Each category with at least one article gets a filter button on /articles, in this order."
+            fields:
+              - { name: name, label: Name, widget: string }
+              - { name: description, label: Description, widget: string, required: false }
+          - name: resources
+            label: Resource categories
+            widget: list
+            summary: "{{fields.name}}"
+            hint: "Sections of the /resources page, in this order."
+            fields:
+              - { name: name, label: Name, widget: string }
+              - { name: description, label: Description, widget: string, required: false }
+          - name: glossary
+            label: Glossary topics
+            widget: list
+            summary: "{{fields.name}}"
+            fields:
+              - { name: name, label: Name, widget: string }

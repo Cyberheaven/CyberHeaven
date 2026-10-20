@@ -1,0 +1,68 @@
+---
+// Comments under articles, powered by giscus (comments are stored as GitHub Discussions; readers
+// sign in with GitHub to post). Turned on by filling "comments" in src/content/site.json:
+//   1. Use a PUBLIC GitHub repo with Discussions turned on (Settings > Features > Discussions).
+//   2. Install the giscus app on it: https://github.com/apps/giscus
+//   3. Go to https://giscus.app, enter the repo, pick the category, and copy repo, repoId,
+//      category and categoryId from the generated script into site.json.
+// The look comes from public/giscus-theme.css.
+import { site } from "../lib/site";
+const c = site.comments;
+const ready = Boolean(c.repo && c.repoId && c.categoryId);
+---
+{(ready || import.meta.env.DEV) && (
+  <section class="shell post-layout comments" id="comments" aria-labelledby="comments-title">
+    <div class="comments-head">
+      <h2 class="h3" id="comments-title">Discussion</h2>
+      <p class="body muted balance">Questions, corrections or something to add? Sign in with GitHub to join in. Be kind and follow the <a href="/legal#community-guidelines">community guidelines</a>.</p>
+    </div>
+    {ready ? (
+      <div class="giscus" data-giscus data-repo={c.repo} data-repo-id={c.repoId} data-category={c.category} data-category-id={c.categoryId}></div>
+    ) : (
+      <p class="body muted comments-off">Comments aren’t set up yet. See the steps at the top of <code>src/components/Comments.astro</code>. (This note only shows in development.)</p>
+    )}
+  </section>
+)}
+
+<style>
+  .comments { padding-top: 64px; padding-bottom: 96px; border-top: 1px solid var(--white-20); }
+  .comments-head { display: flex; flex-direction: column; gap: 12px; max-width: 320px; position: sticky; top: 100px; align-self: start; }
+  .comments-head a { color: var(--white); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--white-40); }
+  .giscus { min-height: 240px; }
+  .comments-off { padding: 24px; border-radius: 14px; border: 1px dashed var(--white-20); }
+  .comments-off code { color: var(--white); }
+  @media (max-width: 1023px) { .comments-head { position: static; max-width: 560px; } }
+</style>
+
+<script>
+  import { whenNear } from "../scripts/lib";
+
+  // Load giscus only when the reader gets close to the comments.
+  const box = document.querySelector<HTMLElement>("[data-giscus]");
+  if (box) {
+    whenNear(box, () => {
+      const d = box.dataset;
+      const s = document.createElement("script");
+      s.src = "https://giscus.app/client.js";
+      s.async = true;
+      s.crossOrigin = "anonymous";
+      const attrs: Record<string, string> = {
+        "data-repo": d.repo!,
+        "data-repo-id": d.repoId!,
+        "data-category": d.category!,
+        "data-category-id": d.categoryId!,
+        "data-mapping": "pathname",
+        "data-strict": "1",
+        "data-reactions-enabled": "1",
+        "data-emit-metadata": "0",
+        "data-input-position": "top",
+        // giscus fetches the custom theme from the live site; on localhost it can't, so use its own dark theme.
+        "data-theme": location.hostname === "localhost" ? "transparent_dark" : `${location.origin}/giscus-theme.css`,
+        "data-lang": "en",
+        "data-loading": "lazy",
+      };
+      for (const [k, v] of Object.entries(attrs)) s.setAttribute(k, v);
+      box.append(s);
+    }, 1);
+  }
+</script>

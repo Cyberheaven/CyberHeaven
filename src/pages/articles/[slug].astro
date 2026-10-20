@@ -3,7 +3,12 @@ import Base from "../../layouts/Base.astro";
 import Topbar from "../../components/Topbar.astro";
 import Contact from "../../components/sections/Contact.astro";
 import Footer from "../../components/sections/Footer.astro";
+import PageHead from "../../components/PageHead.astro";
+import Toc from "../../components/Toc.astro";
+import Comments from "../../components/Comments.astro";
 import Icon from "../../components/Icon.astro";
+import SocLadder from "../../components/widgets/SocLadder.astro";
+import MalwareExplorer from "../../components/widgets/MalwareExplorer.astro";
 import { render } from "astro:content";
 import { getArticles, site } from "../../lib/site";
 import "../../styles/prose.css";
@@ -18,42 +23,74 @@ export async function getStaticPaths() {
 
 const { article, next, prev } = Astro.props;
 const a = article.data;
-const { Content } = await render(article);
+const { Content, headings } = await render(article);
 const minutes = Math.max(1, Math.ceil((article.body ?? "").split(/\s+/).filter(Boolean).length / 200));
 const fmt = (d: Date) => d.toLocaleDateString("en-GB", { dateStyle: "long", timeZone: "UTC" });
+// Interactive widgets: an article opts in by putting <div data-widget="name"></div> in its body.
+const hasWidget = (name: string) => (article.body ?? "").includes(`data-widget="${name}"`);
 ---
 <Base title={`${a.title} | ${site.name}`} description={a.excerpt}>
   <Topbar path={`/articles/${article.id}`} />
+  <div class="read-progress" aria-hidden="true"><i data-progress></i></div>
   <main>
     <article>
-      <header class="article-head">
-        <p class="body">{a.category}</p>
-        <h1>{a.title}</h1>
-        <p class="article-meta">
+      <PageHead title={a.title} class="post-head">
+        <p class="post-meta body">
+          <a href={`/articles?category=${encodeURIComponent(a.category)}`}>{a.category}</a>
           <time datetime={a.date.toISOString()}>{fmt(a.date)}</time>
           <span>By {a.author}</span>
           <span>{minutes} min read</span>
         </p>
-      </header>
-      {a.cover && <div class="article-cover"><img src={a.cover} alt={a.coverAlt} /></div>}
-      <div class="prose"><Content /></div>
-      {a.tags.length > 0 && <ul class="tag-list" aria-label="Tags">{a.tags.map((t) => <li>{t}</li>)}</ul>}
+      </PageHead>
+      {a.cover && <div class="shell post-cover"><div class="post-cover-clip"><img src={a.cover} alt={a.coverAlt} /></div></div>}
+      <div class="shell post-layout">
+        <aside class="post-aside">
+          <Toc headings={headings} />
+          {a.tags.length > 0 && <ul class="tag-list" aria-label="Tags">{a.tags.map((t) => <li><a href={`/articles?q=${encodeURIComponent(t)}`}>{t}</a></li>)}</ul>}
+        </aside>
+        <div class="prose"><Content /></div>
+      </div>
+      {hasWidget("soc-ladder") && <div hidden data-widget-src="soc-ladder"><SocLadder /></div>}
+      {hasWidget("malware-explorer") && <div hidden data-widget-src="malware-explorer"><MalwareExplorer /></div>}
     </article>
+    <Comments />
     {(next || prev) && (
       <section class="next-project">
         {next && (
           <a class="next-link" href={`/articles/${next.id}`} aria-label={`Next article: ${next.data.title}`}>
             <span class="next-text">
-              <span class="body">Next · {next.data.category}</span>
-              <span class="h2">{next.data.title}</span>
+              <span class="body muted">Next · {next.data.category}</span>
+              <span class="h2 balance">{next.data.title}</span>
             </span>
             <span class="round-btn" aria-hidden="true"><Icon name="arrow-up-right" size={24} /></span>
           </a>
         )}
-        {prev && <a class="body prose-link" href={`/articles/${prev.id}`}>Previous: {prev.data.title}</a>}
+        {prev && <a class="body muted prose-link" href={`/articles/${prev.id}`}>Previous: {prev.data.title}</a>}
       </section>
     )}
     <Contact />
   </main>
   <Footer />
 </Base>
+
+<script>
+  import { scrollToY, onScrollFrame } from "../../scripts/lib";
+
+  // Move each widget into its placeholder inside the article text.
+  for (const src of document.querySelectorAll<HTMLElement>("[data-widget-src]")) {
+    const slot = document.querySelector(`.prose [data-widget="${src.dataset.widgetSrc}"]`);
+    if (slot) slot.replaceWith(...src.children);
+  }
+  // Links like /articles/...#soc-ladder point at a widget that only just arrived, so scroll to it now.
+  const target = location.hash && document.getElementById(location.hash.slice(1));
+  if (target?.closest(".prose")) scrollToY(target.getBoundingClientRect().top + window.scrollY - 100);
+
+  // Reading progress: the thin bar at the top fills as you read through the article text.
+  const bar = document.querySelector<HTMLElement>("[data-progress]")!;
+  const prose = document.querySelector<HTMLElement>(".prose")!;
+  onScrollFrame(() => {
+    const r = prose.getBoundingClientRect();
+    const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - window.innerHeight * 0.6)));
+    bar.style.transform = `scaleX(${p.toFixed(4)})`;
+  });
+</script>

@@ -4,6 +4,8 @@ import ScrollWords from "../ScrollWords.astro";
 import ScrollFade from "../ScrollFade.astro";
 import Icon from "../Icon.astro";
 const { about } = site;
+// On the /about page itself the "More about" link is left out.
+const { more = true } = Astro.props as { more?: boolean };
 ---
 <section id="about" class="about">
   <div class="about-stage">
@@ -14,12 +16,12 @@ const { about } = site;
     </div>
     <div class="about-scrim" aria-hidden="true"></div>
     <div class="about-content">
-      <div class="about-statement-row container">
+      <div class="about-statement-row shell">
         <div class="about-statement">
           <ScrollWords as="h2" class="h2 balance" style="text-align: end" text={about.statement} />
         </div>
       </div>
-      <div class="about-bio-row container">
+      <div class="about-bio-row shell">
         <div class="about-bio-col">
           <p class="body muted">ABOUT</p>
           <ScrollFade>
@@ -30,7 +32,7 @@ const { about } = site;
               </p>
             </div>
           </ScrollFade>
-          <a class="body-sb text-link" href="/about">More about {site.name}<Icon name="arrow-right" size={18} /></a>
+          {more && <a class="body-sb text-link" href="/about">More about {site.name}<Icon name="arrow-right" size={18} /></a>}
         </div>
       </div>
     </div>

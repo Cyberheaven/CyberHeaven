@@ -1,0 +1,24 @@
+---
+import Base from "../../layouts/Base.astro";
+import Topbar from "../../components/Topbar.astro";
+import Footer from "../../components/sections/Footer.astro";
+import PageHead from "../../components/PageHead.astro";
+import Icon from "../../components/Icon.astro";
+import SocLadder from "../../components/widgets/SocLadder.astro";
+import { site } from "../../lib/site";
+---
+<Base title={`Route the alert | ${site.name}`} description="Climb the SOC escalation ladder, then decide which tier should handle each alert. A free interactive for aspiring SOC analysts.">
+  <Topbar path="/play/soc" />
+  <main>
+    <PageHead title="Route the alert" lead="See how a Security Operations Centre splits the work, then play triage: read each alert and send it to the tier that should handle it first.">
+      <a class="text-link body-sb" href="/articles/career-guide-how-to-become-a-soc-analyst">Read the full SOC career guide<Icon name="arrow-right" size={18} /></a>
+    </PageHead>
+    <section class="shell play"><SocLadder /></section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .play { padding-bottom: 120px; }
+  .play :global(.soc) { margin: 0; }
+</style>

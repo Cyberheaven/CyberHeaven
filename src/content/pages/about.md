@@ -1,32 +1,12 @@
 ---
 title: "About"
-description: "CyberHeaven was founded by cybersecurity professionals to close the industry's skills gap through practical, hands-on training accessible to everyone."
+description: "CyberHeaven was founded by cybersecurity professionals to help close the skills gap with practical, hands-on learning that is free for everyone."
 ---
 
-The cybersecurity skills gap is one of the greatest challenges of our time. We’re here to close that gap by making professional-grade training accessible to everyone.
+The cybersecurity skills gap is one of the greatest challenges of our time. We’re here to help close that gap with practical cybersecurity learning that is free for everyone.
 
-## Built by practitioners, for practitioners
+CyberHeaven was founded by cybersecurity professionals who recognized a growing gap between traditional education and the skills required in the real world. Too much learning material focused on theory while leaving students unprepared for practical challenges.
 
-CyberHeaven was founded by cybersecurity professionals who recognized a growing gap between traditional education and the skills required in the real world. Too many courses focused on theory while leaving students unprepared for practical challenges.
+We built CyberHeaven to bridge that gap. Our guides take learners from IT fundamentals like Linux into specialised disciplines such as OSINT, digital forensics, malware analysis and SOC work, with a hands-on approach. Not sure where to start? [Find your path](/career).
 
-We built CyberHeaven to bridge that gap. Our learning paths guide students from IT fundamentals through Linux, networking, cloud technologies, and into specialized cybersecurity disciplines using a structured, hands-on approach.
-
-Every lesson is designed with a single objective: equip learners with practical knowledge, confidence, and problem-solving skills that are immediately valuable in the workplace.
-
-## Our values
-
-### Practical First
-
-Every lesson emphasizes hands-on experience that reflects real-world security operations.
-
-### Accessible
-
-High-quality cybersecurity education should be available to everyone, regardless of background.
-
-### Always Current
-
-Our curriculum evolves alongside the cybersecurity landscape, tools, and emerging threats.
-
-### Community Driven
-
-Learning is stronger together through mentorship, collaboration, and an active community.
+Every guide is written with a single objective: equip learners with practical knowledge, confidence, and problem-solving skills that are immediately valuable in the workplace. And they evolve alongside the field, its tools and its emerging threats.

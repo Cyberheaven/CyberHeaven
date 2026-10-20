@@ -1,0 +1,48 @@
+---
+import { site } from "../lib/site";
+import Icon from "./Icon.astro";
+// Interactive tools (list in site.json "tools"). Used on the home page and /interactive.
+---
+<ul class="tools">
+  {site.tools.map((t) => (
+    <li>
+      <a class="tool" href={t.href}>
+        <span class="tool-text">
+          <span class="h4 balance">{t.title}</span>
+          <span class="body muted balance">{t.description}</span>
+        </span>
+        <span class="round-btn tool-btn" aria-hidden="true"><Icon name="arrow-up-right" size={22} /></span>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .tools { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+  .tools li { grid-column: span 2; }
+  .tools li:nth-child(-n + 2) { grid-column: span 3; }
+  .tool {
+    height: 100%; min-height: 260px; padding: 28px; border-radius: 16px; background: var(--grey-50); border: 1px solid var(--grey-50);
+    display: flex; flex-direction: column; justify-content: space-between; gap: 32px;
+    transition: border-color 0.4s var(--ease-out), background 0.4s var(--ease-out);
+  }
+  .tools li:nth-child(-n + 2) .tool { min-height: 320px; }
+  .tool-text { display: flex; flex-direction: column; gap: 12px; max-width: 420px; }
+  .tools li:nth-child(-n + 2) .h4 { font-size: 36px; line-height: 1.2em; }
+  .tool-btn { align-self: flex-end; }
+  @media (hover: hover) and (pointer: fine) {
+    .tool:hover { border-color: var(--white-20); background: rgba(230, 230, 230, 0.08); }
+    .tool:hover .tool-btn { background: var(--white); color: var(--black); }
+  }
+  .tool:active .tool-btn { background: var(--white); color: var(--black); }
+  @media (max-width: 1199px) {
+    .tools { grid-template-columns: 1fr 1fr; }
+    .tools li, .tools li:nth-child(-n + 2) { grid-column: span 1; }
+    .tools li:first-child { grid-column: 1 / -1; }
+    .tools li:nth-child(-n + 2) .h4 { font-size: 28px; }
+  }
+  @media (max-width: 809px) {
+    .tools { grid-template-columns: 1fr; }
+    .tool, .tools li:nth-child(-n + 2) .tool { min-height: 220px; }
+  }
+</style>

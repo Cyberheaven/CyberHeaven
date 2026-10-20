@@ -2,23 +2,30 @@
 import Base from "../layouts/Base.astro";
 import Topbar from "../components/Topbar.astro";
 import Footer from "../components/sections/Footer.astro";
+import PageHead from "../components/PageHead.astro";
+import Toc from "../components/Toc.astro";
 import { render } from "astro:content";
 import { getPages, site } from "../lib/site";
 import "../styles/prose.css";
 
+// Plain text pages from src/content/pages (e.g. /legal). "about" has its own designed page
+// (src/pages/about.astro), which still reads its text from about.md.
 export async function getStaticPaths() {
-  const pages = (await getPages()).filter((p) => !p.id.startsWith("_"));
+  const pages = (await getPages()).filter((p) => !p.id.startsWith("_") && p.id !== "about");
   return pages.map((page) => ({ params: { page: page.id }, props: { page } }));
 }
 
 const { page } = Astro.props;
-const { Content } = await render(page);
+const { Content, headings } = await render(page);
 ---
 <Base title={`${page.data.title} | ${site.name}`} description={page.data.description}>
   <Topbar path={`/${page.id}`} />
   <main>
-    <header class="article-head"><h1>{page.data.title}</h1></header>
-    <div class="prose"><Content /></div>
+    <PageHead title={page.data.title} lead={page.data.description} />
+    <div class="shell post-layout">
+      <aside class="post-aside"><Toc headings={headings} /></aside>
+      <div class="prose"><Content /></div>
+    </div>
   </main>
   <Footer />
 </Base>

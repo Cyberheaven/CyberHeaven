@@ -17,4 +17,5 @@ import "./fx/ticker";
 import "./fx/services";
 import "./fx/faq";
 import "./fx/footer";
+import "./fx/youtube";
 import "./smooth-scroll";

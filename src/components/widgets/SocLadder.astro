@@ -1,0 +1,269 @@
+---
+// "Climb the escalation ladder" + "Route the alert" (restored from the original WordPress article).
+// Shown inside an article wherever its body contains: <div data-widget="soc-ladder"></div>
+const tiers = [
+  {
+    id: "mgr", short: "SOC manager", level: "Leadership",
+    blurb: "Coordinates the team, owns the metrics, and speaks for the SOC to leadership, legal and IT during major incidents. Often a separate management track rather than a rung on the analyst ladder.",
+    skills: [["Triage", 30], ["Investigate", 35], ["Hunt", 25], ["Lead", 95]],
+    tasks: ["Declare and command incidents", "Brief executives and legal", "Track MTTD and MTTR"],
+    tools: ["Dashboards", "Case management", "Playbooks"],
+    certs: ["CISSP", "CISM", "GSLC"],
+  },
+  {
+    id: "t3", short: "Tier 3", level: "Senior · Threat hunter",
+    blurb: "Hunts what detection missed, reverse engineers malware, and turns every finding into a new detection.",
+    skills: [["Triage", 40], ["Investigate", 90], ["Hunt", 95], ["Lead", 50]],
+    tasks: ["Reverse engineer payloads", "Hunt with hypotheses", "Write YARA and Sigma rules"],
+    tools: ["Ghidra", "Volatility", "YARA", "Sigma"],
+    certs: ["GCFA", "GREM", "OSCP"],
+  },
+  {
+    id: "t2", short: "Tier 2", level: "Mid level · Incident responder",
+    blurb: "Investigates escalated alerts, works out scope and impact, and contains the threat.",
+    skills: [["Triage", 70], ["Investigate", 70], ["Hunt", 35], ["Lead", 30]],
+    tasks: ["Build host timelines", "Isolate hosts, reset accounts", "Correlate logs across sources"],
+    tools: ["EDR", "Sysmon", "Wireshark", "SOAR"],
+    certs: ["GCIH", "BTL2"],
+  },
+  {
+    id: "t1", short: "Tier 1", level: "Entry level · Triage analyst",
+    blurb: "The front line. Watches the queue, filters noise, and escalates what looks real.",
+    skills: [["Triage", 95], ["Investigate", 25], ["Hunt", 10], ["Lead", 10]],
+    tasks: ["Validate and close false positives", "Enrich indicators", "Escalate with clear tickets"],
+    tools: ["SIEM", "EDR", "Ticketing", "VirusTotal"],
+    certs: ["Security+", "BTL1"],
+  },
+];
+
+const alerts = [
+  { tier: "t1", text: "3 failed logins for j.martin, then a successful one. Same office IP and device as every day this week.", why: "A known, low-risk pattern. Confirm with the user or asset history, document it, and close." },
+  { tier: "t1", text: "Firewall blocked 4,000 connection attempts from one external IP across 20 ports in 2 minutes.", why: "Blocked scan noise. Tier 1 checks the IP reputation, notes it, and adds a block if the runbook says so." },
+  { tier: "t2", text: "WINWORD.EXE spawned powershell.exe -enc JABz... on a finance workstation. File hash not in threat intel.", why: "Unexplained and suspicious. Needs an EDR timeline, host isolation and scoping, which is incident response work." },
+  { tier: "t2", text: "Same user signed in from two countries 10 minutes apart. An MFA push was approved for the second login.", why: "Likely account takeover. Tier 2 revokes sessions, resets credentials, and checks what the account touched." },
+  { tier: "t3", text: "Packed loader, zero AV detections, beacons every 60 seconds to a new domain. Two other hosts show similar timing.", why: "Custom tooling that evades detection. It needs reverse engineering, a fleet-wide hunt and a new detection rule." },
+  { tier: "mgr", text: "Ransomware confirmed on a file server. The CFO wants an update and legal asks about breach notification.", why: "Technical response continues, but someone must command the incident and brief leadership and legal." },
+];
+const shortOf = Object.fromEntries(tiers.map((t) => [t.id, t.short]));
+---
+<div class="soc" id="soc-ladder" data-soc data-alerts={JSON.stringify(alerts)} data-names={JSON.stringify(shortOf)}>
+  <div class="soc-head">
+    <p class="soc-title">Climb the escalation ladder</p>
+    <p class="soc-sub">One common way SOCs organise work. Tier counts, titles and career paths vary by organisation, but alerts generally move up as they get harder. Pick a rung to see the role, then test yourself by routing example alerts.</p>
+  </div>
+
+  <div class="soc-body">
+    <div class="soc-ladder">
+      <div class="soc-rungs" role="tablist" aria-orientation="vertical" aria-label="Example SOC tiers">
+        {tiers.map((t, i) => (
+          <button type="button" class="soc-rung" role="tab" id={`soc-tab-${t.id}`} aria-controls={`soc-panel-${t.id}`} aria-selected={i === tiers.length - 1 ? "true" : "false"} tabindex={i === tiers.length - 1 ? 0 : -1} data-tab={t.id}>
+            <span class="soc-rung-name">{t.short}</span>
+            <span class="soc-rung-level">{t.level.split(" · ")[0]}</span>
+          </button>
+        ))}
+      </div>
+      <p class="soc-up">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13V3M4 7l4-4 4 4" /></svg>
+        Alerts escalate upwards
+      </p>
+    </div>
+
+    {tiers.map((t, i) => (
+      <div class="soc-panel" role="tabpanel" id={`soc-panel-${t.id}`} aria-labelledby={`soc-tab-${t.id}`} hidden={i !== tiers.length - 1} tabindex="0">
+        <p class="soc-panel-title">{t.short} · {t.level}</p>
+        <p class="soc-blurb">{t.blurb}</p>
+        <div class="soc-skills" aria-label="Illustrative skill emphasis">
+          {t.skills.map(([name, v]) => (
+            <div class="soc-skill">
+              <span>{name}</span>
+              <span class="soc-track"><i style={`transform: scaleX(${Number(v) / 100})`}></i></span>
+            </div>
+          ))}
+        </div>
+        <div class="soc-cols">
+          <div>
+            <p class="soc-label">Day to day</p>
+            <ul>{t.tasks.map((x) => <li>{x}</li>)}</ul>
+          </div>
+          <div>
+            <p class="soc-label">Tools</p>
+            <p class="soc-chips">{t.tools.map((x) => <span>{x}</span>)}</p>
+            <p class="soc-label">Common certifications</p>
+            <p class="soc-chips">{t.certs.map((x) => <span>{x}</span>)}</p>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <div class="soc-game">
+    <p class="soc-title">Route the alert</p>
+    <p class="soc-sub">In this model, who should take each alert first?</p>
+    <div class="soc-alert">
+      <p class="soc-count"><span class="soc-live" aria-hidden="true"></span><span data-count></span></p>
+      <p class="soc-alert-text" data-alert aria-live="polite"></p>
+    </div>
+    <div class="soc-opts" role="group" aria-label="Route to" data-opts>
+      {tiers.slice().reverse().map((t) => <button type="button" class="soc-opt" data-route={t.id}>{t.short}</button>)}
+    </div>
+    <div class="soc-feedback" data-feedback aria-live="polite"></div>
+    <button type="button" class="soc-next" data-next hidden></button>
+  </div>
+</div>
+
+<style>
+  .soc { margin: 48px 0; padding: 32px; border-radius: 16px; background: var(--grey-50); border: 1px solid var(--white-20); display: flex; flex-direction: column; gap: 32px; font-size: 16px; line-height: 1.5; }
+  .soc p { margin: 0; }
+  .soc-head, .soc-game { display: flex; flex-direction: column; gap: 8px; }
+  .soc-title { font-size: 24px; font-weight: 600; letter-spacing: -0.04em; line-height: 1.3; color: var(--white); }
+  .soc-sub { color: var(--white-60); }
+
+  .soc-body { display: grid; grid-template-columns: 200px 1fr; gap: 28px; }
+  .soc-ladder { display: flex; flex-direction: column; gap: 12px; }
+  .soc-rungs { display: flex; flex-direction: column; gap: 8px; }
+  .soc-rung {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 16px; border-radius: 12px;
+    border: 1px solid var(--white-20); background: var(--black); color: var(--grey); text-align: left; cursor: pointer;
+    transition: background 0.3s var(--ease-out), color 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
+  }
+  .soc-rung-name { font-weight: 600; }
+  .soc-rung-level { font-size: 13px; color: var(--white-60); transition: color 0.3s var(--ease-out); }
+  .soc-rung[aria-selected="true"] { background: var(--white); color: var(--black); border-color: var(--white); }
+  .soc-rung[aria-selected="true"] .soc-rung-level { color: var(--black-50); }
+  @media (hover: hover) and (pointer: fine) { .soc-rung:not([aria-selected="true"]):hover { border-color: var(--white-60); } }
+  .soc-up { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--white-60); }
+
+  .soc-panel { display: flex; flex-direction: column; gap: 18px; padding-left: 28px; border-left: 1px solid var(--white-20); outline: none; animation: fadeIn 0.4s var(--ease-out); }
+  .soc-panel[hidden] { display: none; }
+  .soc-panel-title { font-size: 20px; font-weight: 600; letter-spacing: -0.03em; color: var(--white); }
+  .soc-blurb { color: var(--grey); }
+  .soc-skills { display: flex; flex-direction: column; gap: 8px; }
+  .soc-skill { display: grid; grid-template-columns: 96px 1fr; align-items: center; gap: 12px; font-size: 14px; color: var(--white-60); }
+  .soc-track { height: 6px; border-radius: 6px; background: var(--white-20); overflow: clip; }
+  .soc-track i { display: block; height: 100%; border-radius: 6px; background: var(--white); transform-origin: left; }
+  .soc-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .soc-cols > div { display: flex; flex-direction: column; gap: 8px; }
+  .soc-label { font-size: 13px; font-weight: 600; color: var(--white-60); }
+  .soc-cols ul { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 4px; }
+  .soc-cols li { margin: 0; }
+  .soc-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px !important; }
+  .soc-chips span { font-size: 13px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--white-20); color: var(--grey); }
+
+  .soc-game { padding-top: 32px; border-top: 1px solid var(--white-20); gap: 16px; }
+  .soc-game .soc-sub { margin-top: -8px; }
+  .soc-alert { padding: 20px; border-radius: 12px; background: var(--black); border: 1px solid var(--white-20); display: flex; flex-direction: column; gap: 10px; }
+  .soc-count { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--white-60); }
+  .soc-live { width: 8px; height: 8px; border-radius: 50%; background: var(--error); animation: soc-pulse 1.6s ease-in-out infinite; }
+  @keyframes soc-pulse { 50% { opacity: 0.3; } }
+  .soc-alert-text { color: var(--white); overflow-wrap: anywhere; }
+  .soc-opts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .soc-opt, .soc-next {
+    padding: 12px 14px; border-radius: 12px; border: 1px solid var(--white-20); background: transparent; color: var(--grey);
+    font-weight: 600; cursor: pointer; transition: background 0.3s var(--ease-out), color 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) { .soc-opt:not(:disabled):hover, .soc-next:hover { background: var(--white); color: var(--black); border-color: var(--white); } }
+  .soc-opt:disabled { cursor: default; opacity: 0.45; }
+  .soc-opt.is-right { opacity: 1; border-color: var(--success); color: var(--white); }
+  .soc-opt.is-wrong { opacity: 1; border-color: var(--error); color: var(--white); }
+  .soc-feedback:empty { display: none; }
+  .soc-feedback b { color: var(--white); }
+  .soc-next { align-self: flex-start; background: var(--white); color: var(--black); border-color: var(--white); }
+
+  @media (max-width: 809px) {
+    .soc { padding: 20px; }
+    .soc-body { grid-template-columns: 1fr; }
+    .soc-rungs { flex-direction: row; }
+    .soc-rung { flex: 1; min-width: 0; padding: 10px 8px; align-items: center; text-align: center; }
+    .soc-rung-level { display: none; }
+    .soc-panel { padding: 20px 0 0; border-left: 0; border-top: 1px solid var(--white-20); }
+    .soc-cols, .soc-opts { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) { .soc-cols { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .soc-live, .soc-panel { animation: none; } }
+</style>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>("[data-soc]")) {
+    // Ladder tabs: click or arrow keys (up = towards the manager).
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>("[role=tab]"));
+    const select = (tab: HTMLButtonElement) => {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute("aria-selected", String(on));
+        t.tabIndex = on ? 0 : -1;
+        root.querySelector<HTMLElement>(`#${t.getAttribute("aria-controls")}`)!.hidden = !on;
+      });
+    };
+    tabs.forEach((tab, i) => {
+      tab.addEventListener("click", () => select(tab));
+      tab.addEventListener("keydown", (e) => {
+        const n = { ArrowUp: i - 1, ArrowLeft: i - 1, ArrowDown: i + 1, ArrowRight: i + 1, Home: 0, End: tabs.length - 1 }[e.key];
+        if (n === undefined) return;
+        e.preventDefault();
+        const next = tabs[(n + tabs.length) % tabs.length];
+        select(next);
+        next.focus();
+      });
+    });
+
+    // Route the alert: one alert at a time, score at the end.
+    const alerts: { tier: string; text: string; why: string }[] = JSON.parse(root.dataset.alerts!);
+    const names: Record<string, string> = JSON.parse(root.dataset.names!);
+    const opts = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-route]"));
+    const alertEl = root.querySelector<HTMLElement>("[data-alert]")!;
+    const countEl = root.querySelector<HTMLElement>("[data-count]")!;
+    const feedback = root.querySelector<HTMLElement>("[data-feedback]")!;
+    const next = root.querySelector<HTMLButtonElement>("[data-next]")!;
+    let i = 0;
+    let score = 0;
+
+    const show = () => {
+      if (i >= alerts.length) {
+        countEl.textContent = "Shift complete";
+        alertEl.textContent = `You routed ${score} of ${alerts.length} alerts to the right place.`;
+        feedback.textContent = "";
+        opts.forEach((o) => (o.hidden = true));
+        next.textContent = "Play again";
+        next.hidden = false;
+        return;
+      }
+      countEl.textContent = `Alert ${i + 1} of ${alerts.length}`;
+      alertEl.textContent = alerts[i].text;
+      feedback.textContent = "";
+      next.hidden = true;
+      opts.forEach((o) => {
+        o.hidden = false;
+        o.disabled = false;
+        o.classList.remove("is-right", "is-wrong");
+      });
+    };
+
+    opts.forEach((o) =>
+      o.addEventListener("click", () => {
+        const a = alerts[i];
+        const right = o.dataset.route === a.tier;
+        if (right) score++;
+        opts.forEach((b) => {
+          b.disabled = true;
+          if (b.dataset.route === a.tier) b.classList.add("is-right");
+        });
+        if (!right) o.classList.add("is-wrong");
+        feedback.innerHTML = "";
+        const verdict = document.createElement("b");
+        verdict.textContent = right ? "Correct. " : `Not quite: ${names[a.tier]}. `;
+        feedback.append(verdict, a.why);
+        next.textContent = i < alerts.length - 1 ? "Next alert" : "See your score";
+        next.hidden = false;
+        next.focus();
+      })
+    );
+    next.addEventListener("click", () => {
+      if (i >= alerts.length) {
+        i = 0;
+        score = 0;
+      } else i++;
+      show();
+    });
+    show();
+  }
+</script>

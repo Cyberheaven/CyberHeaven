@@ -45,6 +45,8 @@ SOC analysts work at the frontline of cyberattacks; they are often the first to 
   * **Tier 2 SOC Analyst:** After the alert has been escalated, Tier 2 analysts have to perform an in-depth investigation and use threat intelligence to gather more information about the threat, assess the risk it poses, and determine whether it is a genuine security incident. Then, Tier 2 analysts have to take the appropriate response actions. They are capable of performing more complex investigations, and if they can’t handle the case, they will escalate the alert to a Tier 3 analyst.
   * **Tier 3 SOC Analyst:** Tier 3 analysts are among the most experienced SOC analysts, and they handle the most advanced and complex incidents. Their work may involve reverse engineering, understanding custom tooling, performing advanced threat hunting, and analyzing new or sophisticated tactics and techniques used by threat actors.
 
+<div data-widget="soc-ladder"></div>
+
 With the above interactive exercise, you can see how the incidents are handled by each tier and how they work together to defend organizations against cyberattacks.
 
 ## Becoming a SOC Analyst

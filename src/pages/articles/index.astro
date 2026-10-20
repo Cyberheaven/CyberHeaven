@@ -2,35 +2,95 @@
 import Base from "../../layouts/Base.astro";
 import Topbar from "../../components/Topbar.astro";
 import Footer from "../../components/sections/Footer.astro";
+import PageHead from "../../components/PageHead.astro";
+import Icon from "../../components/Icon.astro";
 import { getArticles, site } from "../../lib/site";
-import "../../styles/prose.css";
+import categories from "../../data/categories.json";
 
 const articles = (await getArticles()).filter((a) => !a.id.startsWith("_"));
-const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-const cats = [...new Set(articles.map((a) => a.data.category))];
+// Categories are managed in the CMS (Settings > Categories). Only ones with articles get a chip;
+// a category typed on an article but missing from the list still shows, at the end.
+const names = [...new Set([...categories.articles.map((c) => c.name), ...articles.map((a) => a.data.category)])];
+const countOf = (c: string) => articles.filter((a) => a.data.category === c).length;
+const cats = names.filter((c) => countOf(c) > 0);
+const fmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+const minutes = (body = "") => Math.max(1, Math.ceil(body.split(/\s+/).filter(Boolean).length / 200));
 ---
-<Base title={`Articles | ${site.name}`} description="Free cybersecurity guides, tutorials and career advice.">
+<Base title={`Articles | ${site.name}`} description="Free cybersecurity guides, tutorials and career advice. Search and filter every article.">
   <Topbar path="/articles" />
   <main>
-    <header class="list-head"><h1>Articles</h1></header>
-    <nav class="cat-nav" aria-label="Categories">
-      {cats.map((c) => <a href={`#${slug(c)}`}>{c}</a>)}
-    </nav>
-    {cats.map((c) => (
-      <section class="cat-group" aria-labelledby={slug(c)}>
-        <h2 id={slug(c)}>{c}</h2>
-        <div class="post-grid">
-          {articles.filter((a) => a.data.category === c).map((a) => (
-            <a class="post-card" href={`/articles/${a.id}`}>
-              <img src={a.data.cover} alt={a.data.coverAlt} loading="lazy" />
-              <span class="article-meta"><time datetime={a.data.date.toISOString()}>{a.data.date.toLocaleDateString("en-GB", { dateStyle: "medium", timeZone: "UTC" })}</time></span>
-              <h3>{a.data.title}</h3>
-              <p>{a.data.excerpt}</p>
-            </a>
-          ))}
+    <PageHead title="Articles" lead="Free, practical guides on OSINT, forensics, malware analysis, SOC careers and Linux. Written by volunteers, free forever." />
+
+    <section class="ax shell" data-list data-per-page="12">
+      <div class="ax-bar">
+        <label class="search">
+          <span class="visually-hidden">Search articles</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+          <input type="search" placeholder="Search, e.g. prefetch or SOC" autocomplete="off" data-q />
+        </label>
+        <label>
+          <span class="visually-hidden">Sort articles</span>
+          <select class="select" data-sort>
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="az">Title A–Z</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="ax-filters">
+        <div class="chips" role="group" aria-label="Filter by category" data-filter="category">
+          <button type="button" class="chip" data-value="" aria-pressed="true">All <small>{articles.length}</small></button>
+          {cats.map((c) => <button type="button" class="chip" data-value={c} aria-pressed="false">{c} <small>{countOf(c)}</small></button>)}
         </div>
-      </section>
-    ))}
+        <p class="caption muted" aria-live="polite"><span data-count>{articles.length}</span> of {articles.length} articles</p>
+      </div>
+
+      <ul class="latest-grid">
+        {articles.map((a) => (
+          <li
+            class="sf"
+            data-item
+            data-category={a.data.category}
+            data-date={a.data.date.toISOString()}
+            data-title={a.data.title}
+            data-text={[a.data.title, a.data.excerpt, a.data.category, a.data.author, ...a.data.tags].join(" ").toLowerCase()}
+          >
+            <a class="acard" href={`/articles/${a.id}`}>
+              <div class="acard-media"><img src={a.data.cover} alt={a.data.coverAlt} loading="lazy" /></div>
+              <p class="caption acard-meta">
+                <span>{a.data.category.toUpperCase()}</span>
+                <span><time datetime={a.data.date.toISOString().slice(0, 10)}>{fmt.format(a.data.date)}</time> · {minutes(a.body)} min</span>
+              </p>
+              <h2 class="h4 balance">{a.data.title}</h2>
+              <p class="body muted acard-excerpt">{a.data.excerpt}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <nav class="pager" aria-label="Article pages" data-pager hidden></nav>
+
+      <div class="ax-empty" data-empty hidden>
+        <p class="h4">Nothing matches that yet.</p>
+        <p class="body muted">Try a different word, or <button type="button" class="ax-reset" data-reset>clear the filters</button>. Want to write the guide you were looking for? <a class="text-link" href="/join">Join us<Icon name="arrow-right" size={16} /></a></p>
+      </div>
+    </section>
   </main>
   <Footer />
 </Base>
+
+<style>
+  .ax { padding-bottom: 120px; display: flex; flex-direction: column; gap: 24px; }
+  .ax-bar { display: flex; gap: 12px; flex-wrap: wrap; }
+  .ax-filters { display: flex; justify-content: space-between; align-items: center; gap: 16px 24px; flex-wrap: wrap; padding-bottom: 16px; }
+  .ax .latest-grid { margin-top: 16px; }
+  .ax-empty { padding: 48px 0; border-top: 1px solid var(--white-20); display: flex; flex-direction: column; gap: 12px; }
+  .ax-reset { padding: 0; border: 0; background: none; color: var(--white); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .ax-bar .search { flex: 1 1 320px; }
+</style>
+
+<script>
+  import { filterList } from "../../scripts/filter-list";
+  filterList(document.querySelector<HTMLElement>("[data-list]")!);
+</script>

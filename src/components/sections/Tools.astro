@@ -1,0 +1,18 @@
+---
+import ScrollWords from "../ScrollWords.astro";
+import ToolCards from "../ToolCards.astro";
+import Icon from "../Icon.astro";
+---
+<section id="interactive" class="home-tools container">
+  <div class="home-tools-head">
+    <ScrollWords as="h2" class="h2 balance" text="Learn by doing" />
+    <a class="body-sb text-link" href="/interactive">All interactive tools<Icon name="arrow-right" size={18} /></a>
+  </div>
+  <ToolCards />
+</section>
+
+<style>
+  .home-tools { padding: 100px 20px; display: flex; flex-direction: column; gap: 40px; }
+  .home-tools-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+  @media (max-width: 1199px) { .home-tools { padding: 80px 20px; } }
+</style>
