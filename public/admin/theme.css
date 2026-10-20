@@ -147,6 +147,44 @@
   color: #fff;
 }
 
+/*
+ * Entry lists (articles, people, pages, labs…): hovering or keyboard-focusing a row sweeps it white from the
+ * left and the text turns dark, like the rows on the site's lab and resource pages (.bigrow in global.css).
+ * Rows are table rows, so the sweep is a growing white background rather than a separate layer.
+ * Folder collections label their list "Entries", file collections (Pages, Lab exercises, Settings) "Files".
+ */
+:is([aria-label="Entries"], [aria-label="Files"])[role="grid"] [role="row"] {
+  background: linear-gradient(#fff, #fff) left / 0% 100% no-repeat;
+  transition: background-size 0.6s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+:is([aria-label="Entries"], [aria-label="Files"])[role="grid"] [role="row"] [role="gridcell"]:is(.title, .image) > * {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+:is([aria-label="Entries"], [aria-label="Files"])[role="grid"] [role="row"]:focus-visible {
+  background-size: 100% 100%;
+  color: #121212;
+  outline: none;
+}
+/* Sveltia colours the title itself, so it has to follow the row */
+:is([aria-label="Entries"], [aria-label="Files"])[role="grid"] [role="row"]:is(:hover, :focus-visible) :is(.title, .title *) { color: inherit; }
+@media (hover: hover) and (pointer: fine) {
+  :is([aria-label="Entries"], [aria-label="Files"])[role="grid"] [role="row"]:hover {
+    background-color: transparent;
+    background-size: 100% 100%;
+    color: #121212;
+  }
+  /* The small nudge right is for list rows only: in the card view it would shift the cover inside its frame */
+  :not(.grid-view) > :is([aria-label="Entries"], [aria-label="Files"])[role="grid"] [role="row"]:is(:hover, :focus-visible) [role="gridcell"]:is(.title, .image) > * {
+    transform: translateX(8px);
+  }
+}
+/* Thumbnails get the site's card corners */
+:is([aria-label="Entries"], [aria-label="Files"])[role="grid"] [role="gridcell"].image > * { border-radius: 8px; }
+@media (prefers-reduced-motion: reduce) {
+  :is([aria-label="Entries"], [aria-label="Files"])[role="grid"] [role="row"],
+  :is([aria-label="Entries"], [aria-label="Files"])[role="grid"] [role="gridcell"] > * { transition: none; }
+}
+
 /* Headings (page titles, field labels) get the site's slightly tighter letter spacing */
 :is(h1, h2, h3, h4) { letter-spacing: -0.02em; }
 
