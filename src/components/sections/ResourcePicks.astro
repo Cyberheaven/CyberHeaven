@@ -3,13 +3,15 @@ import ScrollWords from "../ScrollWords.astro";
 import ScrollFade from "../ScrollFade.astro";
 import Icon from "../Icon.astro";
 import data from "../../data/resources.json";
+import home from "../../content/pages/home.json";
+import { fill } from "../../lib/site";
 // Resources marked "Featured" in the CMS (src/data/resources.json) show here.
 const picks = data.items.filter((r) => r.featured).slice(0, 6);
 ---
 <section id="practise" class="picks container">
   <div class="picks-head">
-    <ScrollWords as="h2" class="h2 balance" text="Free places to start practising today" />
-    <a class="body-sb text-link" href="/resources">All {data.items.length} resources<Icon name="arrow-right" size={18} /></a>
+    <ScrollWords as="h2" class="h2 balance" text={home.picksHeading} />
+    <a class="body-sb text-link" href="/resources">{fill(home.picksLink, { count: data.items.length })}<Icon name="arrow-right" size={18} /></a>
   </div>
   <ul class="picks-list">
     {picks.map((r) => (

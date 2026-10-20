@@ -8,6 +8,7 @@ import ScrollWords from "../../components/ScrollWords.astro";
 import Icon from "../../components/Icon.astro";
 import { getArticles, getPeople, site } from "../../lib/site";
 import categories from "../../data/categories.json";
+import page from "../../content/pages/team.json";
 
 // People live in src/content/people (CMS: Team). Roles and their order: src/data/categories.json "roles".
 const people = await getPeople();
@@ -20,10 +21,10 @@ const membersOf = (role: string) => current.filter((p) => p.data.roles.includes(
 // Show a person's roles in the order of the roles list.
 const rolesOf = (list: string[]) => [...categories.roles.map((r) => r.name).filter((r) => list.includes(r)), ...list.filter((r) => !categories.roles.some((c) => c.name === r))];
 ---
-<Base title={`Team | ${site.name}`} description="The volunteers behind CyberHeaven: maintainers, authors, reviewers, contributors and supporters.">
+<Base title={`Team | ${site.name}`} description={page.seo}>
   <Topbar path="/team" />
   <main>
-    <PageHead title="The people behind CyberHeaven" lead="Everyone here gives their time for free. Maintainers, writers, reviewers and supporters who keep cybersecurity learning open to all." />
+    <PageHead title={page.title} lead={page.lead} />
 
     <section class="tm shell" data-list>
       <div class="tm-controls">
@@ -75,8 +76,8 @@ const rolesOf = (list: string[]) => [...categories.roles.map((r) => r.name).filt
 
     {alumni.length > 0 && (
       <section class="shell tm-alumni">
-        <h2 class="h3">With thanks</h2>
-        <p class="body muted">Past members who helped build CyberHeaven.</p>
+        <h2 class="h3">{page.alumniHeading}</h2>
+        <p class="body muted">{page.alumniText}</p>
         <ul>{alumni.map((p) => <li><a class="text-link body" href={`/team/${p.id}`}>{p.data.name}</a></li>)}</ul>
       </section>
     )}
@@ -85,10 +86,10 @@ const rolesOf = (list: string[]) => [...categories.roles.map((r) => r.name).filt
       <ul class="bigrows">
         <li>
           <a class="bigrow" href="/join">
-            <span class="bigrow-name">Join us</span>
+            <span class="bigrow-name">{page.joinName}</span>
             <span class="bigrow-info">
-              <span class="body-sb bigrow-sub">Want to be on this page?</span>
-              <span class="body bigrow-text">Write, review, help on Discord or improve the site. Every volunteer gets a profile here.</span>
+              <span class="body-sb bigrow-sub">{page.joinSub}</span>
+              <span class="body bigrow-text">{page.joinText}</span>
             </span>
             <span class="round-btn bigrow-btn" aria-hidden="true"><Icon name="arrow-right" size={24} /></span>
           </a>

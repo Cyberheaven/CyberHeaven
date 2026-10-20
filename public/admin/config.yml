@@ -47,24 +47,226 @@ collections:
         widget: string
         hint: Describes the cover image for screen reader users
       - { name: tags, label: Tags, widget: list, required: false, default: [] }
-      - { name: draft, label: Draft, widget: boolean, default: false }
-      - { name: hero, label: Show in homepage hero, widget: boolean, default: false, required: false, hint: "The big scrolling carousel at the top of the homepage shows switched-on articles, newest first (up to 6). If none are switched on, it shows the 5 newest." }
+      - { name: draft, label: Draft, widget: boolean, default: false, hint: "To show an article at the top of the homepage, add it under Pages → Home." }
       - name: body
         label: Body
         widget: markdown
         hint: 'To show an interactive widget, add <div data-widget="soc-ladder"></div> or <div data-widget="malware-explorer"></div> on its own line.'
 
+  # The text of every page, one entry per page. Files live in src/content/pages.
+  # Text in {curly brackets} is filled in when the site is built, e.g. {count} becomes a number.
   - name: pages
     label: Pages
-    folder: src/content/pages
-    create: false
-    delete: false
-    extension: md
-    format: frontmatter
-    fields:
-      - { name: title, label: Title, widget: string }
-      - { name: description, label: Description, widget: string }
-      - { name: body, label: Body, widget: markdown }
+    editor: { preview: false }
+    files:
+      - name: home
+        label: Home
+        file: src/content/pages/home.json
+        format: json
+        fields:
+          - { name: tagline, label: Tagline, widget: text, hint: "The line under the big carousel at the top." }
+          - name: heroArticles
+            label: Carousel articles
+            widget: list
+            required: false
+            max: 6
+            hint: "The big scrolling carousel at the top, in this order (drag to reorder, up to 6). Leave empty to show the 5 newest articles."
+            field: { name: article, label: Article, widget: relation, collection: articles, value_field: "{{slug}}", search_fields: [title], display_fields: [title] }
+          - name: about
+            label: About section
+            widget: object
+            hint: "Also shown on the About page."
+            fields:
+              - { name: label, label: Small label, widget: string }
+              - { name: statement, label: Big statement, widget: text }
+              - { name: bio, label: Paragraph, widget: text }
+              - { name: contactLead, label: Text before the email address, widget: string }
+              - { name: contactTail, label: Text after the email address, widget: string }
+              - { name: moreLink, label: Link to the About page, widget: string }
+          - { name: principlesHeading, label: Values heading, widget: string, hint: "{count} is the number of values. Also shown on the About page." }
+          - name: principles
+            label: Values
+            widget: list
+            summary: "{{fields.title}}"
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: description, label: Description, widget: text }
+              - { name: icon, label: Icon, widget: select, options: [target, accessibility, users, heart] }
+              - { name: image, label: Image, widget: image }
+              - { name: alt, label: Image description, widget: string, hint: "For screen reader users" }
+          - { name: ticker, label: Scrolling ticker text, widget: string, hint: "Also shown on the About page." }
+          - { name: topicsHeading, label: Topics heading, widget: string }
+          - name: topics
+            label: Topics
+            widget: list
+            summary: "{{fields.name}}"
+            hint: "Labs on the Interactive page are grouped by these topics, in this order."
+            fields:
+              - { name: name, label: Name, widget: string }
+              - { name: image, label: Image, widget: image }
+              - { name: alt, label: Image description, widget: string, required: false }
+              - { name: captions, label: Captions, widget: list, hint: "The three lines shown next to the image." }
+          - { name: toolsHeading, label: Labs heading, widget: string, hint: "The labs shown are the ones marked Featured under Pages → Interactive." }
+          - { name: toolsLink, label: Labs link text, widget: string }
+          - { name: picksHeading, label: Resources heading, widget: string, hint: "The resources shown are the ones marked Featured under Resources." }
+          - { name: picksLink, label: Resources link text, widget: string, hint: "{count} is the number of resources." }
+          - { name: faqHeading, label: FAQ heading, widget: string, hint: "Also shown on the Join page." }
+          - name: faq
+            label: FAQ
+            widget: list
+            summary: "{{fields.q}}"
+            fields:
+              - { name: q, label: Question, widget: string }
+              - { name: a, label: Answer, widget: text }
+          - name: contact
+            label: Contact section
+            widget: object
+            hint: "Also shown on the About page. The buttons link to the Discord and email set under Settings → Site."
+            fields:
+              - { name: heading, label: Heading, widget: text }
+              - { name: label, label: Discord label, widget: string }
+              - { name: text, label: Discord text, widget: text }
+              - { name: button, label: Discord button, widget: string }
+              - { name: contributeLabel, label: Contribute label, widget: string }
+              - { name: contributeText, label: Contribute text, widget: text }
+              - { name: contributeButton, label: Contribute button, widget: string }
+
+      - name: articles
+        label: Articles
+        file: src/content/pages/articles.json
+        format: json
+        fields:
+          - { name: title, label: Heading, widget: string }
+          - { name: lead, label: Intro, widget: text }
+          - { name: seo, label: Search engine description, widget: text, hint: "Shown in Google results and link previews." }
+
+      - name: interactive
+        label: Interactive
+        file: src/content/pages/interactive.json
+        format: json
+        fields:
+          - { name: title, label: Heading, widget: string }
+          - { name: lead, label: Intro, widget: text }
+          - { name: seo, label: Search engine description, widget: text, hint: "Shown in Google results and link previews." }
+          - { name: startHeading, label: '"Start here" heading', widget: string }
+          - { name: startText, label: '"Start here" text', widget: text }
+          - name: tools
+            label: Labs and tools
+            widget: list
+            summary: "{{fields.title}}"
+            hint: "Each one's card, and the heading and intro on its own page. The lab exercises themselves are under Interactive."
+            fields:
+              - { name: title, label: Title, widget: string, hint: "On the card, and the page heading too unless one is set below." }
+              - { name: heading, label: Page heading, widget: string, required: false, hint: "Only if the page heading should differ from the title." }
+              - { name: description, label: Card text, widget: text }
+              - { name: href, label: Link, widget: string, hint: "e.g. /play/soc. Every lab page needs an entry here, or the site won't build." }
+              - { name: topic, label: Topic, widget: string, required: false, hint: "One of the topics under Pages → Home, or a lab topic below. Leave empty to show it under \"Start here\"." }
+              - { name: featured, label: Featured on the homepage, widget: boolean, default: false, required: false }
+              - { name: specimen, label: Sample line, widget: string, required: false, hint: "A line of data from the lab, shown in code style on the card." }
+              - { name: lead, label: Page intro, widget: text, hint: "{count} works on Spot the phish (number of messages) and Glossary (number of terms)." }
+              - { name: seo, label: Search engine description, widget: text, hint: "{count} works on Glossary." }
+          - name: labTopics
+            label: Lab topics
+            widget: list
+            summary: "{{fields.name}}"
+            hint: "Extra topics for labs that aren't homepage topics, with their image."
+            fields:
+              - { name: name, label: Name, widget: string }
+              - { name: image, label: Image, widget: image }
+
+      - name: resources
+        label: Resources
+        file: src/content/pages/resources.json
+        format: json
+        fields:
+          - { name: title, label: Heading, widget: string }
+          - { name: lead, label: Intro, widget: text, hint: "{count} is the number of resources, {free} the number that are completely free." }
+          - { name: seo, label: Search engine description, widget: text, hint: "Shown in Google results and link previews." }
+          - { name: disclaimer, label: Disclaimer under the intro, widget: text }
+          - { name: note, label: Note at the bottom, widget: text }
+
+      - name: about
+        label: About
+        file: src/content/pages/about.md
+        format: frontmatter
+        fields:
+          - { name: title, label: Title, widget: string, hint: "Shown in the browser tab." }
+          - { name: heading, label: Heading, widget: string }
+          - { name: description, label: Intro, widget: text, hint: "Also used in Google results and link previews." }
+          - { name: storyHeading, label: Story heading, widget: string }
+          - { name: body, label: Story, widget: markdown }
+          - { name: waysHeading, label: '"Ways in" heading', widget: string, hint: "{count} is the number of ways, as a word." }
+          - name: ways
+            label: Ways in
+            widget: list
+            summary: "{{fields.name}}"
+            fields:
+              - { name: name, label: Name, widget: string }
+              - { name: sub, label: Subtitle, widget: string, hint: "{articles} is the number of articles." }
+              - { name: text, label: Text, widget: string }
+              - { name: href, label: Link, widget: string }
+
+      - name: team
+        label: Team
+        file: src/content/pages/team.json
+        format: json
+        fields:
+          - { name: title, label: Heading, widget: string }
+          - { name: lead, label: Intro, widget: text }
+          - { name: seo, label: Search engine description, widget: text, hint: "Shown in Google results and link previews." }
+          - { name: alumniHeading, label: Past members heading, widget: string }
+          - { name: alumniText, label: Past members text, widget: string }
+          - { name: joinName, label: Join row title, widget: string }
+          - { name: joinSub, label: Join row subtitle, widget: string }
+          - { name: joinText, label: Join row text, widget: text }
+
+      - name: join
+        label: Join
+        file: src/content/pages/join.json
+        format: json
+        fields:
+          - { name: title, label: Heading, widget: string }
+          - { name: lead, label: Intro, widget: text }
+          - { name: seo, label: Search engine description, widget: text, hint: "Shown in Google results and link previews." }
+          - name: channels
+            label: Where to find us
+            widget: list
+            summary: "{{fields.name}}"
+            hint: "The first one is highlighted."
+            fields:
+              - { name: name, label: Name, widget: string }
+              - { name: handle, label: Handle or address, widget: string }
+              - { name: href, label: Link, widget: string, hint: "For email use mailto:address" }
+              - { name: text, label: Text, widget: text }
+          - { name: waysHeading, label: Ways to help heading, widget: string, hint: "{count} is the number of ways, as a word." }
+          - name: ways
+            label: Ways to help
+            widget: list
+            summary: "{{fields.title}}"
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: text, label: Text, widget: text }
+              - { name: action, label: Link text, widget: string }
+              - { name: href, label: Link, widget: string, hint: "For email use mailto:address?subject=Your%20subject" }
+
+      - name: legal
+        label: Terms, privacy & cookies
+        file: src/content/pages/legal.md
+        format: frontmatter
+        fields:
+          - { name: title, label: Title, widget: string }
+          - { name: description, label: Intro, widget: text, hint: "Also used in Google results and link previews." }
+          - { name: body, label: Body, widget: markdown }
+
+      - name: notfound
+        label: Page not found
+        file: src/content/pages/notfound.json
+        format: json
+        fields:
+          - { name: title, label: Heading, widget: string }
+          - { name: text, label: Text, widget: text }
+          - { name: homeButton, label: Home button, widget: string }
+          - { name: articlesButton, label: Articles button, widget: string }
 
   - name: people
     label: Team
@@ -350,6 +552,54 @@ collections:
     label: Settings
     editor: { preview: false }
     files:
+      - name: site
+        label: Site
+        file: src/content/site.json
+        format: json
+        fields:
+          - { name: name, label: Site name, widget: string }
+          - { name: role, label: Short description, widget: string, hint: "Shown after the name in the homepage's browser tab." }
+          - { name: description, label: Search engine description, widget: text, hint: "Used by Google and link previews for the homepage, and any page without its own." }
+          - { name: email, label: Contact email, widget: string }
+          - { name: discord, label: Discord invite link, widget: string }
+          - name: nav
+            label: Top menu
+            widget: list
+            summary: "{{fields.label}} → {{fields.href}}"
+            hint: "The item linking to /join is shown as a button."
+            fields:
+              - { name: label, label: Label, widget: string }
+              - { name: href, label: Link, widget: string }
+          - name: footerNav
+            label: Footer menu
+            widget: list
+            summary: "{{fields.label}} → {{fields.href}}"
+            fields:
+              - { name: label, label: Label, widget: string }
+              - { name: href, label: Link, widget: string }
+          - name: socials
+            label: Social links
+            widget: list
+            summary: "{{fields.label}}"
+            hint: "In the footer."
+            fields:
+              - { name: label, label: Label, widget: string }
+              - { name: href, label: Link, widget: string }
+          - { name: footerNote, label: Footer note, widget: string, hint: "Next to the green dot under the email address." }
+          - { name: maintainerName, label: Maintained by, widget: string }
+          - { name: maintainerUrl, label: Maintainer link, widget: string }
+          - { name: year, label: Copyright year, widget: string }
+          - name: comments
+            label: Article comments (technical)
+            widget: object
+            collapsed: true
+            hint: "GitHub Discussions settings for comments. Set up by a developer: see src/components/Comments.astro."
+            fields:
+              - { name: repo, label: Repository, widget: string }
+              - { name: repoId, label: Repository ID, widget: string }
+              - { name: category, label: Category, widget: string }
+              - { name: categoryId, label: Category ID, widget: string }
+
       - name: categories
         label: Categories
         file: src/data/categories.json

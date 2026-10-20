@@ -1,15 +1,15 @@
 ---
-import { site } from "../lib/site";
+import interactive from "../content/pages/interactive.json";
 import Icon from "./Icon.astro";
-// Interactive tools (list in site.json "tools"). The home page shows the featured ones;
-// /interactive passes each topic's tools with `dense` (equal cards, two per row).
+// Interactive tools (list in src/content/pages/interactive.json "tools"). The home page shows the featured
+// ones; /interactive passes each topic's tools with `dense` (equal cards, two per row).
 // A tool's "specimen" is a line of real data from it, set in mono, that decodes itself into view.
-type Tool = (typeof site.tools)[number];
+type Tool = (typeof interactive.tools)[number];
 interface Props {
   tools?: Tool[];
   dense?: boolean;
 }
-const { tools = site.tools.filter((t) => t.featured), dense = false } = Astro.props;
+const { tools = interactive.tools.filter((t) => t.featured), dense = false } = Astro.props;
 ---
 <ul class:list={["tools", { "is-dense": dense }]}>
   {tools.map((t) => (

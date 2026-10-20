@@ -7,28 +7,16 @@ import ScrollWords from "../components/ScrollWords.astro";
 import ScrollFade from "../components/ScrollFade.astro";
 import FAQ from "../components/sections/FAQ.astro";
 import Icon from "../components/Icon.astro";
-import { site } from "../lib/site";
+import { countWord, fill, site } from "../lib/site";
+import page from "../content/pages/join.json";
 
-const mail = (subject: string) => `mailto:${site.email}?subject=${encodeURIComponent(subject)}`;
-const channels = [
-  { name: "Discord", handle: "discord.gg/QH8mRSCdW9", href: site.discord, text: "Where the community lives. Ask questions, share what you’re learning, find study partners and help plan what we write next." },
-  { name: "X (Twitter)", handle: "@cyberheaven0x", href: "https://twitter.com/cyberheaven0x", text: "New guides and resources as they land." },
-  { name: "LinkedIn", handle: "company/cyberheaven", href: "https://www.linkedin.com/company/cyberheaven", text: "Follow along and connect with other learners and practitioners." },
-  { name: "GitHub", handle: "github.com/cyberheaven", href: "https://github.com/cyberheaven", text: "Follow CyberHeaven’s projects on GitHub." },
-  { name: "Email", handle: site.email, href: `mailto:${site.email}`, text: "For anything else, or if you’d rather not use social media." },
-];
-const ways = [
-  { title: "Write an article", text: "Know something a beginner would find useful? Pitch a topic and we’ll help you shape it. Published free, with your name and your own profile on the team page.", action: "Pitch an idea", href: mail("Article idea") },
-  { title: "Suggest a resource", text: "Found a free course, lab or tool that helped you? Tell us and it can go on the resources page.", action: "Suggest a resource", href: mail("Resource suggestion") },
-  { title: "Review and edit", text: "Fix a typo, check a technical detail or bring an old guide up to date. Every correction helps the next learner.", action: "Offer to review", href: mail("Reviewing articles") },
-  { title: "Help on Discord", text: "Answer questions, welcome new members and share what you’ve learned. You don’t need to be an expert to be helpful.", action: "Open Discord", href: site.discord },
-  { title: "Improve the site", text: "Designers and developers welcome. The site is built with Astro and plain Markdown, so small fixes are easy to make.", action: "Offer to help", href: mail("Helping with the website") },
-];
+// Page text, channels and ways to help: CMS Pages → Join (src/content/pages/join.json).
+const { channels, ways } = page;
 ---
-<Base title={`Join the community | ${site.name}`} description="Join the CyberHeaven community on Discord and social media, and find out how to write, review or volunteer.">
+<Base title={`${page.title} | ${site.name}`} description={page.seo}>
   <Topbar path="/join" />
   <main>
-    <PageHead title="Join the community" lead={`${site.name} is free and run by the people who use it. Here’s where to find us, and how to help keep it going.`} />
+    <PageHead title={page.title} lead={page.lead} />
 
     <section class="shell jn-channels" aria-label="Where to find us">
       <ul class="bigrows">
@@ -48,7 +36,7 @@ const ways = [
     </section>
 
     <section class="shell jn-ways">
-      <ScrollWords as="h2" class="h2 balance jn-ways-title" text="Five ways to help keep it going" />
+      <ScrollWords as="h2" class="h2 balance jn-ways-title" text={fill(page.waysHeading, { count: countWord(ways.length) })} />
       <ul class="jn-ways-list">
         {ways.map((w) => (
           <li>

@@ -5,18 +5,20 @@ import Topbar from "../../components/Topbar.astro";
 import Footer from "../../components/sections/Footer.astro";
 import Icon from "../../components/Icon.astro";
 import DefenderNote from "../../components/DefenderNote.astro";
-import { site } from "../../lib/site";
+import { site, tool } from "../../lib/site";
 import data from "../../data/permissions.json";
 
 // Tasks live in src/data/permissions.json (CMS: Interactive → Permissions lab).
 const { challenges } = data;
 const who = [["u", "Owner"], ["g", "Group"], ["o", "Others"]];
 const bits = [["r", "read", 4], ["w", "write", 2], ["x", "execute", 1]] as const;
+// Heading, intro and search engine text: CMS Pages → Interactive (src/content/pages/interactive.json).
+const lab = tool("/play/permissions");
 ---
-<Base title={`Permissions lab | ${site.name}`} description="A free hands-on Linux lab: click rwx to set file permissions, see the octal and chmod commands change live, then solve real-world permission tasks.">
+<Base title={`${lab.heading} | ${site.name}`} description={lab.seo}>
   <Topbar path="/play/permissions" />
   <main>
-    <PageHead title="Permissions lab" lead="Every Linux file says who can read, write and run it in nine letters. Click the letters to switch them on and off, watch the numbers and chmod commands follow, then lock files down with least privilege. The tasks change every run.">
+    <PageHead title={lab.heading} lead={lab.lead}>
       <a class="text-link body-sb" href="/articles/linux-command-line-cheat-sheet">Read the Linux command line cheat sheet<Icon name="arrow-right" size={18} /></a>
     </PageHead>
 

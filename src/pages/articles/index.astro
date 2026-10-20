@@ -6,6 +6,7 @@ import PageHead from "../../components/PageHead.astro";
 import Icon from "../../components/Icon.astro";
 import { getArticles, getPeople, site } from "../../lib/site";
 import categories from "../../data/categories.json";
+import page from "../../content/pages/articles.json";
 
 const articles = (await getArticles()).filter((a) => !a.id.startsWith("_"));
 const people = await getPeople();
@@ -18,10 +19,10 @@ const cats = names.filter((c) => countOf(c) > 0);
 const fmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 const minutes = (body = "") => Math.max(1, Math.ceil(body.split(/\s+/).filter(Boolean).length / 200));
 ---
-<Base title={`Articles | ${site.name}`} description="Free cybersecurity guides, tutorials and career advice. Search and filter every article.">
+<Base title={`${page.title} | ${site.name}`} description={page.seo}>
   <Topbar path="/articles" />
   <main>
-    <PageHead title="Articles" lead="Free, practical guides on OSINT, forensics, malware analysis, SOC careers and Linux. Written by volunteers, free forever." />
+    <PageHead title={page.title} lead={page.lead} />
 
     <section class="ax shell" data-list data-per-page="12">
       <div class="ax-bar">

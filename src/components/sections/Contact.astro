@@ -2,7 +2,8 @@
 import { site } from "../../lib/site";
 import ScrollWords from "../ScrollWords.astro";
 import Icon from "../Icon.astro";
-const { contact } = site;
+import home from "../../content/pages/home.json";
+const { contact } = home;
 ---
 <section id="contact" class="contact container">
   <div class="contact-main">
@@ -17,13 +18,13 @@ const { contact } = site;
       <div class="contact-block">
         <p class="body-sb" style="color: var(--grey)">{contact.label}</p>
         <p class="body balance">{contact.text}</p>
-        <a class="btn" href={site.discord} target="_blank" rel="noreferrer"><span class="body-sb">Join the Discord</span><Icon name="arrow-up-right" size={20} /></a>
+        <a class="btn" href={site.discord} target="_blank" rel="noreferrer"><span class="body-sb">{contact.button}</span><Icon name="arrow-up-right" size={20} /></a>
       </div>
       <div class="divider" aria-hidden="true"></div>
       <div class="contact-block">
         <p class="body-sb" style="color: var(--grey)">{contact.contributeLabel}</p>
         <p class="body balance">{contact.contributeText}</p>
-        <a class="btn btn-ghost" href={`mailto:${site.email}?subject=${encodeURIComponent("Contributing to CyberHeaven")}`}><span class="body-sb">Volunteer or write for us</span><Icon name="arrow-up-right" size={20} /></a>
+        <a class="btn btn-ghost" href={`mailto:${site.email}?subject=${encodeURIComponent("Contributing to CyberHeaven")}`}><span class="body-sb">{contact.contributeButton}</span><Icon name="arrow-up-right" size={20} /></a>
       </div>
     </div>
   </div>

@@ -1,15 +1,15 @@
 ---
-import { site } from "../../lib/site";
+import home from "../../content/pages/home.json";
 import ScrollWords from "../ScrollWords.astro";
 import Icon from "../Icon.astro";
 ---
 <section class="faq container">
   <div class="faq-card">
     <div class="faq-left">
-      <ScrollWords as="h2" class="h2 balance" text="Frequently asked questions" />
+      <ScrollWords as="h2" class="h2 balance" text={home.faqHeading} />
     </div>
     <div class="faq-rows" data-faq>
-      {site.faq.map((it, i) => (
+      {home.faq.map((it, i) => (
         <>
           {i > 0 && <div class="divider" aria-hidden="true"></div>}
           <button type="button" class="faq-item" aria-expanded="false">

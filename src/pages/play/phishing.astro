@@ -5,17 +5,19 @@ import Topbar from "../../components/Topbar.astro";
 import Footer from "../../components/sections/Footer.astro";
 import Icon from "../../components/Icon.astro";
 import DefenderNote from "../../components/DefenderNote.astro";
-import { site } from "../../lib/site";
+import { fill, site, tool } from "../../lib/site";
 import data from "../../data/phishing.json";
 
 // Messages live in src/data/phishing.json (CMS: Interactive → Spot the phish). All companies and people
 // in them are made up. The inbox is shuffled on every visit and every replay.
 const { messages } = data;
+// Heading, intro and search engine text: CMS Pages → Interactive (src/content/pages/interactive.json).
+const lab = tool("/play/phishing");
 ---
-<Base title={`Spot the phish | ${site.name}`} description="A free inbox game: open each message, check the sender and where links really go, then report it as phishing or mark it safe.">
+<Base title={`${lab.heading} | ${site.name}`} description={lab.seo}>
   <Topbar path="/play/phishing" />
   <main>
-    <PageHead title="Spot the phish" lead={`${messages.length} messages just landed. Open each one, check who really sent it and where its links go (hover or tap them), then report it or mark it safe.`}>
+    <PageHead title={lab.heading} lead={fill(lab.lead, { count: messages.length })}>
       <a class="text-link body-sb" href="/glossary">Look up a term in the glossary<Icon name="arrow-right" size={18} /></a>
     </PageHead>
 

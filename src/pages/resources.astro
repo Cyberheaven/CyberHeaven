@@ -4,7 +4,8 @@ import Topbar from "../components/Topbar.astro";
 import Footer from "../components/sections/Footer.astro";
 import PageHead from "../components/PageHead.astro";
 import Icon from "../components/Icon.astro";
-import { site } from "../lib/site";
+import { fill, site } from "../lib/site";
+import page from "../content/pages/resources.json";
 import data from "../data/resources.json";
 import categories from "../data/categories.json";
 
@@ -23,14 +24,11 @@ const costs = ["Free", "Free tier", "Paid"].filter((c) => items.some((r) => r.co
 const freeCount = items.filter((r) => r.cost === "Free").length;
 const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 ---
-<Base title={`Resources | ${site.name}`} description="Hand-picked cybersecurity courses, labs, tools, certifications, books and communities. Mostly free, with a few paid ones worth their price.">
+<Base title={`Resources | ${site.name}`} description={page.seo}>
   <Topbar path="/resources" />
   <main>
-    <PageHead
-      title="Everything you need to learn cybersecurity"
-      lead={`${items.length} hand-picked courses, labs, tools and references from across the web. ${freeCount} are completely free, most others have a free tier, and the few paid ones are here because they’re worth it.`}
-    >
-      <p class="caption muted rs-disclaimer">CyberHeaven isn’t affiliated with any of these. They’re independent recommendations: we don’t get paid for listing them or for anything you sign up to.</p>
+    <PageHead title={page.title} lead={fill(page.lead, { count: items.length, free: freeCount })}>
+      <p class="caption muted rs-disclaimer">{page.disclaimer}</p>
     </PageHead>
 
     <section class="rs shell" data-list>
@@ -95,7 +93,7 @@ const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(
         <p class="body muted">Try another word or <button type="button" class="rs-reset" data-reset>show everything</button>. Know a great resource we’re missing? <a class="text-link" href={`mailto:${site.email}?subject=${encodeURIComponent("Resource suggestion")}`}>Suggest it<Icon name="arrow-right" size={16} /></a></p>
       </div>
 
-      <p class="caption muted rs-note">Every link goes to an outside site. We don’t earn anything from them, and prices and free tiers change, so check before you sign up.</p>
+      <p class="caption muted rs-note">{page.note}</p>
     </section>
   </main>
   <Footer />

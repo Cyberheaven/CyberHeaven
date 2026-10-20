@@ -5,7 +5,8 @@ import Topbar from "../components/Topbar.astro";
 import Footer from "../components/sections/Footer.astro";
 import Icon from "../components/Icon.astro";
 import ToolCards from "../components/ToolCards.astro";
-import { getArticles, site } from "../lib/site";
+import { getArticles, site, tool } from "../lib/site";
+import interactive from "../content/pages/interactive.json";
 import career from "../data/career.json";
 
 // Questions, paths and starting levels live in src/data/career.json; the adaptive logic (which question
@@ -13,12 +14,14 @@ import career from "../data/career.json";
 const { paths } = career;
 const articles = await getArticles();
 const titleOf = (slug: string) => articles.find((a) => a.id === slug)?.data.title;
-const labsOf = (hrefs: string[]) => hrefs.map((h) => site.tools.find((t) => t.href === h)).filter((t) => t !== undefined);
+const labsOf = (hrefs: string[]) => hrefs.map((h) => interactive.tools.find((t) => t.href === h)).filter((t) => t !== undefined);
+// Heading, intro and search engine text: CMS Pages → Interactive (src/content/pages/interactive.json).
+const page = tool("/career");
 ---
-<Base title={`Find your path in cybersecurity | ${site.name}`} description="A free, personal career quiz for cybersecurity beginners. Each question adapts to your last answer, and you get a path, the reasons it fits you and your first three steps.">
+<Base title={`${page.heading} | ${site.name}`} description={page.seo}>
   <Topbar path="/career" />
   <main>
-    <PageHead title="Find your path in cybersecurity" lead="No experience needed. Answer a few quick questions, each one shaped by what you said before, and get the path that fits you, why it fits, and your first three steps." />
+    <PageHead title={page.heading} lead={page.lead} />
 
     <section class="shell cr" data-cr data-quiz={JSON.stringify(career)}>
       <div class="cr-play" data-cr-play>

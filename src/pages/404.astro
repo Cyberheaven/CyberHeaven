@@ -5,18 +5,20 @@ import Footer from "../components/sections/Footer.astro";
 import ScrollRing from "../components/ScrollRing.astro";
 import Icon from "../components/Icon.astro";
 import { site } from "../lib/site";
+import home from "../content/pages/home.json";
+import page from "../content/pages/notfound.json";
 ---
-<Base title={`Page not found | ${site.name}`}>
+<Base title={`${page.title} | ${site.name}`}>
   <Topbar path="/404" />
   <main>
     <section class="nf-hero">
-      <ScrollRing images={site.topics.map((t) => t.image)} radius={360} scrollSpeed={0.02} autoSpin={2} />
+      <ScrollRing images={home.topics.map((t) => t.image)} radius={360} scrollSpeed={0.02} autoSpin={2} />
       <div class="nf-content">
-        <h1 class="h1">Page not found</h1>
-        <p class="body muted balance nf-text">This page doesn’t exist or may have moved. Every article is still here, free as ever.</p>
+        <h1 class="h1">{page.title}</h1>
+        <p class="body muted balance nf-text">{page.text}</p>
         <div class="nf-actions">
-          <a class="btn" href="/"><span class="body-sb">Back to home</span><Icon name="arrow-up-right" size={20} /></a>
-          <a class="btn btn-ghost" href="/articles"><span class="body-sb">Browse articles</span><Icon name="arrow-up-right" size={20} /></a>
+          <a class="btn" href="/"><span class="body-sb">{page.homeButton}</span><Icon name="arrow-up-right" size={20} /></a>
+          <a class="btn btn-ghost" href="/articles"><span class="body-sb">{page.articlesButton}</span><Icon name="arrow-up-right" size={20} /></a>
         </div>
       </div>
     </section>

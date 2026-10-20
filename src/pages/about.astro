@@ -11,31 +11,25 @@ import Ticker from "../components/sections/Ticker.astro";
 import Contact from "../components/sections/Contact.astro";
 import Icon from "../components/Icon.astro";
 import { getCollection, getEntry, render } from "astro:content";
-import { site } from "../lib/site";
+import { countWord, fill, site } from "../lib/site";
 import "../styles/prose.css";
 
-// The story text comes from src/content/pages/about.md (CMS: Pages > About).
-// The statement, values and ticker come from src/content/site.json, shared with the homepage.
+// All the text here comes from src/content/pages/about.md (CMS: Pages → About).
+// The statement, values, ticker and contact sections are shared with the homepage (CMS: Pages → Home).
 const page = (await getEntry("pages", "about"))!;
 const { Content } = await render(page);
 const articleCount = (await getCollection("articles", (a) => !a.data.draft)).length;
-const ways = [
-  { name: "Learn", sub: `${articleCount} free guides`, text: "Practical articles on OSINT, forensics, malware analysis, SOC careers and Linux.", href: "/articles" },
-  { name: "Practise", sub: "Interactive tools", text: "Triage SOC alerts, hunt through logs, review a Linux server and spot phishing, all in your browser.", href: "/interactive" },
-  { name: "Explore", sub: "Curated resources", text: "Hand-picked courses, labs, tools and communities from across the web.", href: "/resources" },
-  { name: "Meet", sub: "The team", text: "The volunteers who write, review and run CyberHeaven.", href: "/team" },
-  { name: "Contribute", sub: "Join the community", text: "Write, review, suggest resources or help others on Discord.", href: "/join" },
-];
+const ways = page.data.ways;
 ---
 <Base title={`${page.data.title} | ${site.name}`} description={page.data.description}>
   <Topbar path="/about" />
   <main>
-    <PageHead title="Eight years of free cybersecurity guides, now run by the community" lead={page.data.description} />
+    <PageHead title={page.data.heading || page.data.title} lead={page.data.description} />
 
     <About more={false} />
 
     <section class="shell ab-story">
-      <ScrollWords as="h2" class="h2 balance ab-story-title" text="Built by practitioners, for practitioners" />
+      {page.data.storyHeading && <ScrollWords as="h2" class="h2 balance ab-story-title" text={page.data.storyHeading} />}
       <ScrollFade><div class="prose"><Content /></div></ScrollFade>
     </section>
 
@@ -43,14 +37,14 @@ const ways = [
     <Principles />
 
     <section class="shell ab-ways">
-      <ScrollWords as="h2" class="h2 balance" text={`${["Four", "Five", "Six"][ways.length - 4] ?? ways.length} ways in`} />
+      {page.data.waysHeading && <ScrollWords as="h2" class="h2 balance" text={fill(page.data.waysHeading, { count: countWord(ways.length) })} />}
       <ul class="bigrows">
         {ways.map((w) => (
           <li>
             <a class="bigrow" href={w.href}>
               <span class="bigrow-name">{w.name}</span>
               <span class="bigrow-info">
-                <span class="body-sb bigrow-sub">{w.sub}</span>
+                <span class="body-sb bigrow-sub">{fill(w.sub, { articles: articleCount })}</span>
                 <span class="body bigrow-text">{w.text}</span>
               </span>
               <span class="round-btn bigrow-btn" aria-hidden="true"><Icon name="arrow-right" size={24} /></span>

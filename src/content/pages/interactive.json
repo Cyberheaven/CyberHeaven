@@ -1,0 +1,158 @@
+{
+  "title": "Learn by doing",
+  "lead": "Hands-on labs built from the work analysts really do: reading logs, peeling encodings, writing detections. Everything runs in your browser. No sign-up, nothing to install, nothing tracked.",
+  "seo": "Free hands-on cybersecurity labs for defenders that run in your browser: triage SOC alerts, hunt through logs, review a Linux server, decode suspicious strings, write detection rules and more.",
+  "startHeading": "Start here",
+  "startText": "New to security? Find a direction first, and keep the glossary open while you play.",
+  "tools": [
+    {
+      "title": "Alert triage",
+      "heading": "",
+      "description": "Work a SOC shift: read eight alerts, close the benign ones and escalate the real threats. New alerts every shift.",
+      "href": "/play/soc",
+      "topic": "SOC Careers",
+      "featured": true,
+      "specimen": "HIGH  Impossible travel · user a.okafor",
+      "lead": "You’re on shift in a Security Operations Centre. Eight alerts are waiting. Read each one, decide whether it’s benign or needs escalating, and see how an experienced analyst would call it. Every shift is different.",
+      "seo": "A free SOC analyst simulator: work through a queue of security alerts, decide which are benign and which to escalate, and learn the reasoning. New alerts every shift."
+    },
+    {
+      "title": "Log hunt",
+      "heading": "",
+      "description": "Filter a real-looking server log, pin the evidence and work out how the attacker got in. Two cases.",
+      "href": "/play/logs",
+      "topic": "DFIR & Forensics",
+      "featured": true,
+      "specimen": "03:14:07 sshd: Accepted password for deploy from 203.0.113.45",
+      "lead": "Something happened on this server. The log saw it all. Filter the lines, pin the ones that matter and answer the questions, the way a SOC analyst works through an incident.",
+      "seo": "A free hands-on log analysis lab: search real-looking Linux and web server logs, pin evidence and work out how the attacker got in."
+    },
+    {
+      "title": "Shell quest",
+      "heading": "",
+      "description": "Review a copy of a server in a real-feeling Linux terminal. Use ls, cat, grep and find to collect five flags. A new server every game.",
+      "href": "/play/shell",
+      "topic": "Linux",
+      "featured": true,
+      "specimen": "$ grep ERROR /var/log/app.log",
+      "lead": "You’ve been handed a read-only copy of a server after a security alert. Use real Linux commands to look around, read the logs and find five flags. Every game builds a new server, and nothing here runs on a real machine.",
+      "seo": "A free in-browser Linux terminal exercise: review a copy of a server after an alert, using ls, cd, cat, grep and find to collect five flags. A new server every game."
+    },
+    {
+      "title": "Decode the layers",
+      "heading": "",
+      "description": "Peel Base64, hex, URL, ROT13 and XOR layers off suspicious strings, like analysts do in CyberChef. Endless random mode.",
+      "href": "/play/decode",
+      "topic": "DFIR & Forensics",
+      "featured": true,
+      "specimen": "Q0h7YmFzZTY0X2lzX25vdF9lbmNyeXB0aW9ufQ==",
+      "lead": "Suspicious strings in logs and emails are often hidden under layers of encoding. Build a recipe of decoding steps to peel each one back to its flag, the way analysts do when they investigate. Every step runs right here in your browser.",
+      "seo": "A free in-browser decoding lab: stack Base64, hex, URL decoding, ROT13, reverse and XOR steps to peel obfuscated strings, like analysts do with CyberChef."
+    },
+    {
+      "title": "Real or fake link?",
+      "heading": "",
+      "description": "Read addresses the way a browser does and spot the lookalike links hiding in emails and texts. New links every round.",
+      "href": "/play/links",
+      "topic": "Web & account security",
+      "featured": true,
+      "specimen": "https://northwindbank.example.secure-login.test/",
+      "lead": "Fake links hide in emails, texts and ads by looking almost right. Learn to read an address the way a browser does, find who really owns it, and know what to report. Every round brings new links.",
+      "seo": "A free exercise in reading links like a defender: decide which addresses really belong to an organisation and learn the tricks lookalike links use. New links every round."
+    },
+    {
+      "title": "Write the rule",
+      "heading": "",
+      "description": "Write a YARA-style detection rule that catches every malware sample and none of the clean files. Scored live as you type.",
+      "href": "/play/rules",
+      "topic": "Malware Analysis",
+      "featured": false,
+      "specimen": "$mutex = \"InkwellMtx\"",
+      "lead": "Malware analysts turn what they find into detection rules. Write one that flags every malicious sample and leaves the clean files alone. It's scored live as you type, using the same ideas as YARA.",
+      "seo": "A free in-browser detection lab: write a YARA-style rule that catches the malware samples and leaves the clean files alone, scored live as you type."
+    },
+    {
+      "title": "Classify the infection",
+      "heading": "",
+      "description": "Read what defenders observed on an infected machine, name the type of malware and learn how to respond.",
+      "href": "/play/malware",
+      "topic": "Malware Analysis",
+      "featured": false,
+      "specimen": "IR-4821: every file now ends in .locked",
+      "lead": "An incident note just landed on your desk. Read what was observed, decide which type of malware you’re dealing with, then see how defenders respond. Every round deals new cases.",
+      "seo": "A free incident response exercise: read what defenders observed on an infected machine, decide which type of malware it is, and learn how to respond. New cases every round."
+    },
+    {
+      "title": "Spot the phish",
+      "heading": "",
+      "description": "An inbox of eight messages, shuffled every time. Report the phishing, keep the real ones.",
+      "href": "/play/phishing",
+      "topic": "SOC Careers",
+      "featured": false,
+      "specimen": "From: security@northwind-bank-alerts.com",
+      "lead": "{count} messages just landed. Open each one, check who really sent it and where its links go (hover or tap them), then report it or mark it safe.",
+      "seo": "A free inbox game: open each message, check the sender and where links really go, then report it as phishing or mark it safe."
+    },
+    {
+      "title": "Permissions lab",
+      "heading": "",
+      "description": "Set Linux file permissions with least privilege. Watch ls -l, octal and chmod change live. New tasks every run.",
+      "href": "/play/permissions",
+      "topic": "Linux",
+      "featured": false,
+      "specimen": "-rwxr-x--- maya devops deploy.sh",
+      "lead": "Every Linux file says who can read, write and run it in nine letters. Click the letters to switch them on and off, watch the numbers and chmod commands follow, then lock files down with least privilege. The tasks change every run.",
+      "seo": "A free hands-on Linux lab: click rwx to set file permissions, see the octal and chmod commands change live, then solve real-world permission tasks."
+    },
+    {
+      "title": "Hash and salt",
+      "heading": "",
+      "description": "See how websites should store passwords: a live SHA-256 hash, why salting matters and how strong a password really is.",
+      "href": "/play/hashing",
+      "topic": "Web & account security",
+      "featured": false,
+      "specimen": "sha256(\"sunshine2026\") = 5d6180aa498ee7335f2899c3e818a2f4",
+      "lead": "Websites shouldn’t store your password, only a scrambled fingerprint of it. Type a made-up password and watch what hashing and salting do, and why the way a site stores passwords decides how bad a data breach gets.",
+      "seo": "A free in-browser lab on how websites should store passwords: see a real SHA-256 hash change, why salting matters, and roughly how strong a password is. Nothing leaves your browser."
+    },
+    {
+      "title": "Fix the query",
+      "heading": "",
+      "description": "Review code that builds SQL from user input, pick the fix a security reviewer would approve and watch the tests run.",
+      "href": "/play/query",
+      "topic": "Web & account security",
+      "featured": false,
+      "specimen": "db.get(\"... WHERE name = ?\", [name])",
+      "lead": "Most SQL injection bugs come from one habit: gluing what users type into database commands. Read each piece of code, pick the fix a security reviewer would approve, and see the tests run.",
+      "seo": "A free secure coding exercise: find out why building SQL from user input is dangerous, pick the safe fix, and watch the tests pass. Parameterized queries and allowlists explained."
+    },
+    {
+      "title": "Find your path",
+      "heading": "Find your path in cybersecurity",
+      "description": "A personal quiz for beginners: every question adapts to your last answer. Get your path, why it fits you and your first three steps.",
+      "href": "/career",
+      "topic": "",
+      "featured": false,
+      "specimen": "",
+      "lead": "No experience needed. Answer a few quick questions, each one shaped by what you said before, and get the path that fits you, why it fits, and your first three steps.",
+      "seo": "A free, personal career quiz for cybersecurity beginners. Each question adapts to your last answer, and you get a path, the reasons it fits you and your first three steps."
+    },
+    {
+      "title": "Glossary",
+      "heading": "Cybersecurity glossary",
+      "description": "Plain-English definitions of the cybersecurity terms you’ll run into, from APT to zero trust. Searchable and filterable.",
+      "href": "/glossary",
+      "topic": "",
+      "featured": false,
+      "specimen": "",
+      "lead": "{count} terms explained in plain English. Search, pick a topic, or jump to a letter.",
+      "seo": "{count} cybersecurity terms explained in plain English, from APT to zero trust."
+    }
+  ],
+  "labTopics": [
+    {
+      "name": "Web & account security",
+      "image": "/assets/streak-web.webp"
+    }
+  ]
+}

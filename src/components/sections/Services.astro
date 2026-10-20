@@ -1,7 +1,7 @@
 ---
-import { site } from "../../lib/site";
+import home from "../../content/pages/home.json";
 // "Topics we cover": scroll-driven switcher (behaviour in scripts/fx/services.ts).
-const topics = site.topics;
+const topics = home.topics;
 const n = topics.length;
 const pad = (v: number) => String(v).padStart(2, "0");
 ---
@@ -9,7 +9,7 @@ const pad = (v: number) => String(v).padStart(2, "0");
   <div id="servicesScroll" class="services-scroll" data-services data-captions={JSON.stringify(topics.map((s) => s.captions))}>
     <div class="services-switcher">
       <div class="services-top">
-        <h2 class="body" style="color: var(--grey)">TOPICS WE COVER</h2>
+        <h2 class="body" style="color: var(--grey)">{home.topicsHeading}</h2>
         <p class="caption"><span data-counter>01</span> / {pad(n)}</p>
       </div>
       <div class="services-middle">

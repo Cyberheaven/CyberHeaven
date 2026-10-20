@@ -16,8 +16,6 @@ const articles = defineCollection({
     coverAlt: z.string(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
-    // Show in the homepage hero carousel (see components/sections/Hero.astro).
-    hero: z.boolean().default(false),
   }),
 });
 
@@ -26,6 +24,11 @@ const pages = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
+    // Only used by the About page (src/pages/about.astro).
+    heading: z.string().optional(),
+    storyHeading: z.string().optional(),
+    waysHeading: z.string().optional(),
+    ways: z.array(z.object({ name: z.string(), sub: z.string(), text: z.string(), href: z.string() })).default([]),
   }),
 });
 
@@ -40,7 +43,8 @@ const people = defineCollection({
     // Role names from src/data/categories.json "roles" (e.g. Maintainer, Author, Supporter).
     roles: z.array(z.string()).default([]),
     location: z.string().default(""),
-    joined: z.coerce.date().optional(),
+    // The CMS saves a cleared date as '', so treat that as "not set".
+    joined: z.preprocess((v) => (v === "" ? undefined : v), z.coerce.date().optional()),
     links: z.array(z.object({ label: z.string(), url: z.string() })).default([]),
     // Past members stay on the team page under "With thanks".
     alumni: z.boolean().default(false),

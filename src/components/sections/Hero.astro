@@ -1,12 +1,13 @@
 ---
-import { getArticles, site } from "../../lib/site";
+import { getArticles } from "../../lib/site";
 import Icon from "../Icon.astro";
+import home from "../../content/pages/home.json";
 
-// Articles switched on with "Show in homepage hero" in the CMS, newest first (at most 6).
-// If none are switched on, the 5 newest articles are shown instead.
+// Articles picked under Pages → Home in the CMS (src/content/pages/home.json), in that order.
+// If none are picked, the 5 newest articles are shown instead.
 const all = await getArticles();
-const picked = all.filter((a) => a.data.hero);
-const articles = picked.length ? picked.slice(0, 6) : all.slice(0, 5);
+const picked = home.heroArticles.map((id: string) => all.find((a) => a.id === id)).filter((a) => a !== undefined);
+const articles = picked.length ? picked : all.slice(0, 5);
 const slides = articles.map((a) => ({
   src: a.data.cover,
   alt: a.data.coverAlt,
@@ -77,6 +78,6 @@ const words = (title: string) => {
     </div>
   </div>
   <div class="hero-bottom">
-    <h1 class="body balance hero-heading">{site.tagline}</h1>
+    <h1 class="body balance hero-heading">{home.tagline}</h1>
   </div>
 </section>

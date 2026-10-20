@@ -5,16 +5,18 @@ import Footer from "../../components/sections/Footer.astro";
 import PageHead from "../../components/PageHead.astro";
 import Icon from "../../components/Icon.astro";
 import DefenderNote from "../../components/DefenderNote.astro";
-import { site } from "../../lib/site";
+import { site, tool } from "../../lib/site";
 import data from "../../data/query.json";
 
 // Rounds live in src/data/query.json (CMS: Interactive → Fix the query). The fixes are shuffled each time.
 const { rounds } = data;
+// Heading, intro and search engine text: CMS Pages → Interactive (src/content/pages/interactive.json).
+const lab = tool("/play/query");
 ---
-<Base title={`Fix the query | ${site.name}`} description="A free secure coding exercise: find out why building SQL from user input is dangerous, pick the safe fix, and watch the tests pass. Parameterized queries and allowlists explained.">
+<Base title={`${lab.heading} | ${site.name}`} description={lab.seo}>
   <Topbar path="/play/query" />
   <main>
-    <PageHead title="Fix the query" lead="Most SQL injection bugs come from one habit: gluing what users type into database commands. Read each piece of code, pick the fix a security reviewer would approve, and see the tests run.">
+    <PageHead title={lab.heading} lead={lab.lead}>
       <a class="text-link body-sb" href="/glossary">Look up SQL injection in the glossary<Icon name="arrow-right" size={18} /></a>
     </PageHead>
 

@@ -6,28 +6,31 @@ import Footer from "../components/sections/Footer.astro";
 import Contact from "../components/sections/Contact.astro";
 import ToolCards from "../components/ToolCards.astro";
 import { site } from "../lib/site";
+import page from "../content/pages/interactive.json";
+import home from "../content/pages/home.json";
 
-// Tools are grouped by the homepage topics (site.json "topics"), in the same order. A tool without a
+// Page text and the list of tools: CMS Pages → Interactive (src/content/pages/interactive.json).
+// Tools are grouped by the homepage topics (home.json "topics"), in the same order. A tool without a
 // topic goes under "Start here"; a topic with no tools yet is left out.
-const start = site.tools.filter((t) => !("topic" in t) || !t.topic);
-const topicOf = (t: (typeof site.tools)[number]) => ("topic" in t ? t.topic : "") ?? "";
-const groups = site.topics.map((topic) => ({ name: topic.name, image: topic.image as string | undefined, tools: site.tools.filter((t) => topicOf(t) === topic.name) })).filter((g) => g.tools.length);
-// a tool topic that isn't a homepage topic gets its own group, with its image from site.json "labTopics"
+const { tools } = page;
+const start = tools.filter((t) => !t.topic);
+const groups = home.topics.map((topic) => ({ name: topic.name, image: topic.image as string | undefined, tools: tools.filter((t) => t.topic === topic.name) })).filter((g) => g.tools.length);
+// a tool topic that isn't a homepage topic gets its own group, with its image from "labTopics"
 // (or a plain heading if it has none)
-for (const name of new Set(site.tools.map(topicOf)))
+for (const name of new Set(tools.map((t) => t.topic)))
   if (name && !groups.some((g) => g.name === name))
-    groups.push({ name, image: site.labTopics.find((t) => t.name === name)?.image, tools: site.tools.filter((t) => topicOf(t) === name) });
+    groups.push({ name, image: page.labTopics.find((t) => t.name === name)?.image, tools: tools.filter((t) => t.topic === name) });
 ---
-<Base title={`Interactive | ${site.name}`} description="Free hands-on cybersecurity labs for defenders that run in your browser: triage SOC alerts, hunt through logs, review a Linux server, decode suspicious strings, write detection rules and more.">
+<Base title={`Interactive | ${site.name}`} description={page.seo}>
   <Topbar path="/interactive" />
   <main>
-    <PageHead title="Learn by doing" lead="Hands-on labs built from the work analysts really do: reading logs, peeling encodings, writing detections. Everything runs in your browser. No sign-up, nothing to install, nothing tracked." />
+    <PageHead title={page.title} lead={page.lead} />
 
     <section class="shell hub">
       <div class="hub-group">
         <div class="hub-head hub-start">
-          <h2 class="h3">Start here</h2>
-          <p class="body muted">New to security? Find a direction first, and keep the glossary open while you play.</p>
+          <h2 class="h3">{page.startHeading}</h2>
+          <p class="body muted">{page.startText}</p>
         </div>
         <ToolCards tools={start} dense />
       </div>

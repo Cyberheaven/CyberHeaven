@@ -5,17 +5,19 @@ import Topbar from "../../components/Topbar.astro";
 import Footer from "../../components/sections/Footer.astro";
 import Icon from "../../components/Icon.astro";
 import DefenderNote from "../../components/DefenderNote.astro";
-import { site } from "../../lib/site";
+import { site, tool } from "../../lib/site";
 import data from "../../data/rules.json";
 
 // Rounds live in src/data/rules.json (CMS: Interactive → Write the rule). The rule language is a small
 // subset of YARA, explained in src/lib/yara-lite.mjs. All samples are made up and harmless.
 const { rounds } = data;
+// Heading, intro and search engine text: CMS Pages → Interactive (src/content/pages/interactive.json).
+const lab = tool("/play/rules");
 ---
-<Base title={`Write the rule | ${site.name}`} description="A free in-browser detection lab: write a YARA-style rule that catches the malware samples and leaves the clean files alone, scored live as you type.">
+<Base title={`${lab.heading} | ${site.name}`} description={lab.seo}>
   <Topbar path="/play/rules" />
   <main>
-    <PageHead title="Write the rule" lead="Malware analysts turn what they find into detection rules. Write one that flags every malicious sample and leaves the clean files alone. It's scored live as you type, using the same ideas as YARA.">
+    <PageHead title={lab.heading} lead={lab.lead}>
       <a class="text-link body-sb" href="/articles/a-beginners-guide-to-malware-analysis">Read the beginner’s guide to malware analysis<Icon name="arrow-right" size={18} /></a>
     </PageHead>
 

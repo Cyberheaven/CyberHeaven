@@ -1,0 +1,133 @@
+{
+  "tagline": "Free, community-driven cybersecurity learning. Practical guides for every aspiring defender, written and kept alive by volunteers.",
+  "heroArticles": [],
+  "about": {
+    "label": "ABOUT",
+    "statement": "Quality cybersecurity learning, free for everyone and powered by the people who use it",
+    "bio": "For eight years CyberHeaven has published practical guides for cybersecurity aspirants. Funding constraints mean we are scaling back and cutting operational costs, so CyberHeaven is now a community-driven, volunteer-contributed project. It isn’t going anywhere: we remain 100% committed to quality content, resources and learning opportunities for everyone.",
+    "contactLead": "Want to help keep it active and fresh? Write to",
+    "contactTail": "or join us on Discord.",
+    "moreLink": "More about CyberHeaven"
+  },
+  "principlesHeading": "{count} values that keep CyberHeaven going",
+  "principles": [
+    {
+      "title": "Quality content, always",
+      "description": "Practical, accurate guides you can actually learn from. Going volunteer-led doesn’t lower the bar.",
+      "icon": "target",
+      "image": "/assets/principle-1.webp",
+      "alt": "Blurred charcoal and cream abstract streaks"
+    },
+    {
+      "title": "Free for everyone",
+      "description": "No pricing, no paid courses, no paywalled paths. Everything CyberHeaven publishes is free to read and use.",
+      "icon": "accessibility",
+      "image": "/assets/principle-2.webp",
+      "alt": "Blurred blue-grey abstract streaks"
+    },
+    {
+      "title": "Community-driven",
+      "description": "Learners shape what comes next. The Discord is led by a community lead responsible for its reforms and restructuring.",
+      "icon": "users",
+      "image": "/assets/principle-3.webp",
+      "alt": "Blurred green abstract streaks"
+    },
+    {
+      "title": "Volunteer-powered",
+      "description": "Community contributions keep CyberHeaven active, fresh and valuable. Anyone can write, review or help out.",
+      "icon": "heart",
+      "image": "/assets/principle-4.webp",
+      "alt": "Blurred orange abstract streaks"
+    }
+  ],
+  "ticker": "LEARN · DEFEND · SHARE · GROW TOGETHER ·",
+  "topicsHeading": "TOPICS WE COVER",
+  "topics": [
+    {
+      "name": "OSINT",
+      "image": "/assets/streak-osint.webp",
+      "alt": "",
+      "captions": [
+        "The OSINT cycle",
+        "Investigation mindset",
+        "Intelligence vs information"
+      ]
+    },
+    {
+      "name": "DFIR & Forensics",
+      "image": "/assets/streak-dfir.webp",
+      "alt": "",
+      "captions": [
+        "Memory, disk & network forensics",
+        "Incident response lifecycle",
+        "Windows Prefetch & LOLBins"
+      ]
+    },
+    {
+      "name": "Malware Analysis",
+      "image": "/assets/streak-malware.webp",
+      "alt": "",
+      "captions": [
+        "Setting up a safe lab",
+        "Static analysis",
+        "Dynamic analysis"
+      ]
+    },
+    {
+      "name": "SOC Careers",
+      "image": "/assets/streak-soc.webp",
+      "alt": "",
+      "captions": [
+        "What a SOC does",
+        "Where SOC analysts fit in",
+        "Becoming a SOC analyst"
+      ]
+    },
+    {
+      "name": "Linux",
+      "image": "/assets/streak-linux.webp",
+      "alt": "",
+      "captions": [
+        "File management & navigation",
+        "Permissions",
+        "Networking commands"
+      ]
+    }
+  ],
+  "toolsHeading": "Learn by doing",
+  "toolsLink": "All interactive tools",
+  "picksHeading": "Free places to start practising today",
+  "picksLink": "All {count} resources",
+  "faqHeading": "Frequently asked questions",
+  "faq": [
+    {
+      "q": "Is CyberHeaven really free?",
+      "a": "Yes. There is no pricing, no paid courses and no paid learning paths. Every article, lab and tool on CyberHeaven is free for everyone. Our resources page also recommends some outside courses, a few of them paid; we’re not affiliated with any of them."
+    },
+    {
+      "q": "Who runs CyberHeaven?",
+      "a": "Volunteers. CyberHeaven is now a community-driven, volunteer-contributed project, and the Discord is led by a community lead responsible for its reforms and restructuring."
+    },
+    {
+      "q": "How can I contribute an article?",
+      "a": "Share your idea in the Discord or email cyberheavenhq@proton.me with a short outline of the topic. Community contributions are what keep CyberHeaven active and fresh."
+    },
+    {
+      "q": "How do I join the community?",
+      "a": "Join the CyberHeaven Discord. It’s the place to ask questions, share what you’re learning and meet other cybersecurity aspirants."
+    },
+    {
+      "q": "What topics do you cover?",
+      "a": "Practical, beginner-friendly guides on OSINT, digital forensics and incident response, malware analysis, SOC careers and Linux, with more to come as volunteers contribute."
+    }
+  ],
+  "contact": {
+    "heading": "CyberHeaven is powered by you. Join the community and help keep it going",
+    "label": "JOIN THE COMMUNITY",
+    "text": "Ask questions, share what you’re learning and meet other cybersecurity aspirants on Discord.",
+    "button": "Join the Discord",
+    "contributeLabel": "CONTRIBUTE",
+    "contributeText": "Write an article, suggest a resource or lend a hand as a volunteer. Say hello on Discord or email us.",
+    "contributeButton": "Volunteer or write for us"
+  }
+}

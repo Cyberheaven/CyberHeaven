@@ -2,11 +2,12 @@
 import ScrollWords from "../ScrollWords.astro";
 import ToolCards from "../ToolCards.astro";
 import Icon from "../Icon.astro";
+import home from "../../content/pages/home.json";
 ---
 <section id="interactive" class="home-tools container">
   <div class="home-tools-head">
-    <ScrollWords as="h2" class="h2 balance" text="Learn by doing" />
-    <a class="body-sb text-link" href="/interactive">All interactive tools<Icon name="arrow-right" size={18} /></a>
+    <ScrollWords as="h2" class="h2 balance" text={home.toolsHeading} />
+    <a class="body-sb text-link" href="/interactive">{home.toolsLink}<Icon name="arrow-right" size={18} /></a>
   </div>
   <ToolCards />
 </section>

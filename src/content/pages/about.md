@@ -1,6 +1,15 @@
 ---
 title: "About"
 description: "CyberHeaven was founded by cybersecurity professionals to help close the skills gap with practical, hands-on learning that is free for everyone."
+heading: "Eight years of free cybersecurity guides, now run by the community"
+storyHeading: "Built by practitioners, for practitioners"
+waysHeading: "{count} ways in"
+ways:
+  - { name: "Learn", sub: "{articles} free guides", text: "Practical articles on OSINT, forensics, malware analysis, SOC careers and Linux.", href: "/articles" }
+  - { name: "Practise", sub: "Interactive tools", text: "Triage SOC alerts, hunt through logs, review a Linux server and spot phishing, all in your browser.", href: "/interactive" }
+  - { name: "Explore", sub: "Curated resources", text: "Hand-picked courses, labs, tools and communities from across the web.", href: "/resources" }
+  - { name: "Meet", sub: "The team", text: "The volunteers who write, review and run CyberHeaven.", href: "/team" }
+  - { name: "Contribute", sub: "Join the community", text: "Write, review, suggest resources or help others on Discord.", href: "/join" }
 ---
 
 The cybersecurity skills gap is one of the greatest challenges of our time. We’re here to help close that gap with practical cybersecurity learning that is free for everyone.

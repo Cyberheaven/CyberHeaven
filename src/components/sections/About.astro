@@ -3,7 +3,8 @@ import { site } from "../../lib/site";
 import ScrollWords from "../ScrollWords.astro";
 import ScrollFade from "../ScrollFade.astro";
 import Icon from "../Icon.astro";
-const { about } = site;
+import home from "../../content/pages/home.json";
+const { about } = home;
 // On the /about page itself the "More about" link is left out.
 const { more = true } = Astro.props as { more?: boolean };
 ---
@@ -23,7 +24,7 @@ const { more = true } = Astro.props as { more?: boolean };
       </div>
       <div class="about-bio-row shell">
         <div class="about-bio-col">
-          <p class="body muted">ABOUT</p>
+          <p class="body muted">{about.label}</p>
           <ScrollFade>
             <div class="about-paragraphs">
               <p class="body balance">{about.bio}</p>
@@ -32,7 +33,7 @@ const { more = true } = Astro.props as { more?: boolean };
               </p>
             </div>
           </ScrollFade>
-          {more && <a class="body-sb text-link" href="/about">More about {site.name}<Icon name="arrow-right" size={18} /></a>}
+          {more && <a class="body-sb text-link" href="/about">{about.moreLink}<Icon name="arrow-right" size={18} /></a>}
         </div>
       </div>
     </div>

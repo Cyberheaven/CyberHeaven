@@ -5,17 +5,19 @@ import Topbar from "../../components/Topbar.astro";
 import Footer from "../../components/sections/Footer.astro";
 import Icon from "../../components/Icon.astro";
 import DefenderNote from "../../components/DefenderNote.astro";
-import { site } from "../../lib/site";
+import { site, tool } from "../../lib/site";
 import data from "../../data/loghunt.json";
 
 // Cases live in src/data/loghunt.json (CMS: Interactive → Log hunt). Every IP address in them is from
 // the ranges reserved for documentation (192.0.2.x, 198.51.100.x, 203.0.113.x), so none are real.
 const { cases } = data;
+// Heading, intro and search engine text: CMS Pages → Interactive (src/content/pages/interactive.json).
+const lab = tool("/play/logs");
 ---
-<Base title={`Log hunt | ${site.name}`} description="A free hands-on log analysis lab: search real-looking Linux and web server logs, pin evidence and work out how the attacker got in.">
+<Base title={`${lab.heading} | ${site.name}`} description={lab.seo}>
   <Topbar path="/play/logs" />
   <main>
-    <PageHead title="Log hunt" lead="Something happened on this server. The log saw it all. Filter the lines, pin the ones that matter and answer the questions, the way a SOC analyst works through an incident.">
+    <PageHead title={lab.heading} lead={lab.lead}>
       <a class="text-link body-sb" href="/articles/introduction-to-digital-forensics-and-incident-response">Read the introduction to DFIR<Icon name="arrow-right" size={18} /></a>
     </PageHead>
 

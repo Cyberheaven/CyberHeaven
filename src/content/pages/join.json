@@ -1,0 +1,70 @@
+{
+  "title": "Join the community",
+  "lead": "CyberHeaven is free and run by the people who use it. Here’s where to find us, and how to help keep it going.",
+  "seo": "Join the CyberHeaven community on Discord and social media, and find out how to write, review or volunteer.",
+  "channels": [
+    {
+      "name": "Discord",
+      "handle": "discord.gg/QH8mRSCdW9",
+      "href": "https://discord.gg/QH8mRSCdW9",
+      "text": "Where the community lives. Ask questions, share what you’re learning, find study partners and help plan what we write next."
+    },
+    {
+      "name": "X (Twitter)",
+      "handle": "@cyberheaven0x",
+      "href": "https://twitter.com/cyberheaven0x",
+      "text": "New guides and resources as they land."
+    },
+    {
+      "name": "LinkedIn",
+      "handle": "company/cyberheaven",
+      "href": "https://www.linkedin.com/company/cyberheaven",
+      "text": "Follow along and connect with other learners and practitioners."
+    },
+    {
+      "name": "GitHub",
+      "handle": "github.com/cyberheaven",
+      "href": "https://github.com/cyberheaven",
+      "text": "Follow CyberHeaven’s projects on GitHub."
+    },
+    {
+      "name": "Email",
+      "handle": "cyberheavenhq@proton.me",
+      "href": "mailto:cyberheavenhq@proton.me",
+      "text": "For anything else, or if you’d rather not use social media."
+    }
+  ],
+  "waysHeading": "{count} ways to help keep it going",
+  "ways": [
+    {
+      "title": "Write an article",
+      "text": "Know something a beginner would find useful? Pitch a topic and we’ll help you shape it. Published free, with your name and your own profile on the team page.",
+      "action": "Pitch an idea",
+      "href": "mailto:cyberheavenhq@proton.me?subject=Article%20idea"
+    },
+    {
+      "title": "Suggest a resource",
+      "text": "Found a free course, lab or tool that helped you? Tell us and it can go on the resources page.",
+      "action": "Suggest a resource",
+      "href": "mailto:cyberheavenhq@proton.me?subject=Resource%20suggestion"
+    },
+    {
+      "title": "Review and edit",
+      "text": "Fix a typo, check a technical detail or bring an old guide up to date. Every correction helps the next learner.",
+      "action": "Offer to review",
+      "href": "mailto:cyberheavenhq@proton.me?subject=Reviewing%20articles"
+    },
+    {
+      "title": "Help on Discord",
+      "text": "Answer questions, welcome new members and share what you’ve learned. You don’t need to be an expert to be helpful.",
+      "action": "Open Discord",
+      "href": "https://discord.gg/QH8mRSCdW9"
+    },
+    {
+      "title": "Improve the site",
+      "text": "Designers and developers welcome. The site is built with Astro and plain Markdown, so small fixes are easy to make.",
+      "action": "Offer to help",
+      "href": "mailto:cyberheavenhq@proton.me?subject=Helping%20with%20the%20website"
+    }
+  ]
+}

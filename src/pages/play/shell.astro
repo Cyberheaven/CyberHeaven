@@ -5,14 +5,16 @@ import Footer from "../../components/sections/Footer.astro";
 import PageHead from "../../components/PageHead.astro";
 import Icon from "../../components/Icon.astro";
 import DefenderNote from "../../components/DefenderNote.astro";
-import { site } from "../../lib/site";
+import { site, tool } from "../../lib/site";
 
 // The pretend shell and its randomly generated server live in src/lib/shell.mjs.
+// Heading, intro and search engine text: CMS Pages → Interactive (src/content/pages/interactive.json).
+const lab = tool("/play/shell");
 ---
-<Base title={`Shell quest | ${site.name}`} description="A free in-browser Linux terminal exercise: review a copy of a server after an alert, using ls, cd, cat, grep and find to collect five flags. A new server every game.">
+<Base title={`${lab.heading} | ${site.name}`} description={lab.seo}>
   <Topbar path="/play/shell" />
   <main>
-    <PageHead title="Shell quest" lead="You’ve been handed a read-only copy of a server after a security alert. Use real Linux commands to look around, read the logs and find five flags. Every game builds a new server, and nothing here runs on a real machine.">
+    <PageHead title={lab.heading} lead={lab.lead}>
       <a class="text-link body-sb" href="/articles/linux-command-line-cheat-sheet">Keep the Linux cheat sheet open<Icon name="arrow-right" size={18} /></a>
     </PageHead>
 

@@ -12,7 +12,7 @@ const FADE =
       <a class="body" href={`mailto:${site.email}`}>{site.email}</a>
       <div class="footer-available">
         <span class="footer-dot" aria-hidden="true"></span>
-        <p class="body">Free for everyone, run by volunteers</p>
+        <p class="body">{site.footerNote}</p>
       </div>
     </div>
     <div class="footer-col footer-social">
@@ -28,6 +28,6 @@ const FADE =
   </div>
   <div class="footer-bottom shell">
     <p class="caption"><span class="muted">© {site.year} {site.name}. All rights reserved.</span></p>
-    <p class="caption"><span class="muted">Maintained by</span> <a class="footer-credit" href="https://purpleshonen.fyi" target="_blank" rel="noopener">PurpleShonen</a></p>
+    <p class="caption"><span class="muted">Maintained by</span> <a class="footer-credit" href={site.maintainerUrl} target="_blank" rel="noopener">{site.maintainerName}</a></p>
   </div>
 </footer>

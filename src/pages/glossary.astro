@@ -4,7 +4,7 @@ import Topbar from "../components/Topbar.astro";
 import Footer from "../components/sections/Footer.astro";
 import PageHead from "../components/PageHead.astro";
 import Icon from "../components/Icon.astro";
-import { site } from "../lib/site";
+import { fill, site, tool } from "../lib/site";
 import glossary from "../data/glossary.json";
 import categories from "../data/categories.json";
 
@@ -15,11 +15,13 @@ const letters = [...new Set(terms.map((t) => letterOf(t.term)))];
 const cats = [...new Set([...categories.glossary.map((c) => c.name), ...terms.map((t) => t.category ?? "")])].filter(
   (c) => c && terms.some((t) => t.category === c)
 );
+// Heading, intro and search engine text: CMS Pages → Interactive (src/content/pages/interactive.json).
+const page = tool("/glossary");
 ---
-<Base title={`Cybersecurity glossary | ${site.name}`} description={`${terms.length} cybersecurity terms explained in plain English, from APT to zero trust.`}>
+<Base title={`${page.heading} | ${site.name}`} description={fill(page.seo, { count: terms.length })}>
   <Topbar path="/glossary" />
   <main data-list>
-    <PageHead title="Cybersecurity glossary" lead={`${terms.length} terms explained in plain English. Search, pick a topic, or jump to a letter.`}>
+    <PageHead title={page.heading} lead={fill(page.lead, { count: terms.length })}>
       <div class="gl-controls">
         <label class="search">
           <span class="visually-hidden">Search the glossary</span>

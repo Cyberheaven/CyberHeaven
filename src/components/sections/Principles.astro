@@ -1,8 +1,9 @@
 ---
-import { site } from "../../lib/site";
+import { fill } from "../../lib/site";
+import home from "../../content/pages/home.json";
 import ScrollWords from "../ScrollWords.astro";
 
-// Lucide icon paths, keyed by the "icon" field in site.json principles.
+// Lucide icon paths, keyed by the "icon" field in home.json principles.
 const icons: Record<string, string> = {
   target: '<circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />',
   accessibility:
@@ -15,10 +16,10 @@ const icons: Record<string, string> = {
 ---
 <section class="principles container">
   <div class="principles-header">
-    <ScrollWords as="h2" class="h2 balance principles-heading" text={`${site.principles.length} values that keep CyberHeaven going`} />
+    <ScrollWords as="h2" class="h2 balance principles-heading" text={fill(home.principlesHeading, { count: home.principles.length })} />
   </div>
   <div class="principles-cards">
-    {site.principles.map((c) => (
+    {home.principles.map((c) => (
       <div class="pcard" data-pcard>
         <div class="pcard-inner">
           <div class="pcard-face pcard-front">

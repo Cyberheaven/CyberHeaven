@@ -5,14 +5,16 @@ import Footer from "../../components/sections/Footer.astro";
 import PageHead from "../../components/PageHead.astro";
 import Icon from "../../components/Icon.astro";
 import DefenderNote from "../../components/DefenderNote.astro";
-import { site } from "../../lib/site";
+import { site, tool } from "../../lib/site";
 
 // Links are generated in src/lib/links.mjs: made-up organisations, reserved .example/.test domains.
+// Heading, intro and search engine text: CMS Pages → Interactive (src/content/pages/interactive.json).
+const lab = tool("/play/links");
 ---
-<Base title={`Real or fake link? | ${site.name}`} description="A free exercise in reading links like a defender: decide which addresses really belong to an organisation and learn the tricks lookalike links use. New links every round.">
+<Base title={`${lab.heading} | ${site.name}`} description={lab.seo}>
   <Topbar path="/play/links" />
   <main>
-    <PageHead title="Real or fake link?" lead="Fake links hide in emails, texts and ads by looking almost right. Learn to read an address the way a browser does, find who really owns it, and know what to report. Every round brings new links.">
+    <PageHead title={lab.heading} lead={lab.lead}>
       <a class="text-link body-sb" href="/play/phishing">Then try Spot the phish<Icon name="arrow-right" size={18} /></a>
     </PageHead>
 

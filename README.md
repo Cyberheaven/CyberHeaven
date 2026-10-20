@@ -44,12 +44,36 @@ You don’t need to be an expert, and you don’t need to know how to code.
 
 ### Editing content without code
 
-Volunteers with access can sign in at **`/admin`** (Sveltia CMS, GitHub login) and edit:
+Volunteers with access can sign in at **`/admin`** (Sveltia CMS, GitHub login). Every change is saved as a commit
+to `main` on GitHub. The CMS always shows what’s on GitHub, not your local copy, so push your local changes before
+editing the same thing in the CMS.
 
-- **Articles** and **Pages** (Markdown)
-- **Team**: everyone’s profile (photo, roles, bio, links). Articles pick their author from here
-- **Resources**, **Glossary** and the **Spot the phish** messages
-- **Settings → Categories** for articles, resources, glossary topics and team roles
+Here’s where to find each thing on the site:
+
+| In the CMS | What you can change |
+| --- | --- |
+| **Articles** | Every article: title, category, date, author, summary, cover image and body. Switch on **Draft** to hide one. |
+| **Pages → Home** | The carousel articles at the top (pick and drag to set the order; leave it empty for the 5 newest), the tagline, the About band, the values cards, the scrolling ticker, the topics, the labs and resources headings, the FAQ and the contact section. |
+| **Pages → Articles** | The heading and intro of the articles list. |
+| **Pages → Interactive** | The heading and intro of the Interactive page, and every lab and tool listed on it: its card, whether it’s featured on the homepage, its topic, and the heading and intro on its own page (this includes the career quiz and the glossary). |
+| **Pages → Resources** | The heading, intro, disclaimer and closing note of the resources page. |
+| **Pages → About** | The heading, intro, story text and the “ways in” list. |
+| **Pages → Team** | The heading and intro, the past members heading and the “Join us” row. |
+| **Pages → Join** | The heading and intro, the “Where to find us” list and the ways to help. |
+| **Pages → Terms, privacy & cookies** | The whole legal page. |
+| **Pages → Page not found** | The 404 page’s text and buttons. |
+| **Team** | Everyone’s profile: photo, roles, bio and links. Articles pick their author from here. |
+| **Resources** | Every recommended resource, its cost and level, and which ones are featured on the homepage. |
+| **Glossary** | Every glossary term. |
+| **Interactive** | The exercises inside the labs: phishing messages, log hunt cases, decoding challenges, detection rule rounds, permission tasks, SOC alerts, malware cases and SQL fixes. |
+| **Settings → Site** | The site name, contact email, Discord link, top menu, footer menu, social links, footer note and copyright year. |
+| **Settings → Categories** | The categories for articles and resources, the glossary topics and the team roles. |
+
+Some text has placeholders in curly brackets, like `{count} terms`. Keep them as they are: the site fills in the
+real number when it builds, so it never goes out of date. Each field’s hint says which placeholders it supports.
+
+Changing these still needs code: the career quiz questions (`src/data/career.json`), the Shell quest, Real or
+fake link and Hash and salt labs, and small interface text such as search boxes, filter buttons and lab controls.
 
 Writing tips: to embed a YouTube video, paste its link on a line of its own. To show an interactive widget in an
 article, add `<div data-widget="soc-ladder"></div>` or `<div data-widget="malware-explorer"></div>` on its own line.
@@ -79,9 +103,9 @@ A static [Astro](https://astro.build) site. No server, no database, no build-tim
 ```
 src/
   content/articles/   articles (Markdown)
-  content/pages/      plain pages, e.g. legal.md (and about.md’s text)
+  content/pages/      the text of every page: home.json, interactive.json, about.md, legal.md…
   content/people/     team profiles (one Markdown file per person, bio in the body)
-  content/site.json   homepage copy, navigation, socials, comments settings
+  content/site.json   site name, email, navigation, socials, footer, comments settings
   data/               resources, glossary, categories, quiz and game data (JSON)
   pages/              one file per route (articles, resources, glossary, team, join, play/…)
   components/         page sections, widgets, PageHead, YouTube, Comments
