@@ -6,6 +6,13 @@ backend:
 media_folder: public/media
 public_folder: /media
 
+# Branding: name in the browser tab and on the login page, logo (also the tab icon), and where the
+# logo and the "view site" link go. The look itself (colours, font, buttons) is in theme.css.
+app_title: CyberHeaven CMS
+logo:
+  src: /admin/logo.webp
+display_url: /
+
 collections:
   - name: articles
     label: Articles

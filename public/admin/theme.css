@@ -1,0 +1,96 @@
+/*
+ * CyberHeaven theme for Sveltia CMS (/admin).
+ *
+ * Sveltia draws everything from --sui-* CSS variables, so this file only changes those variables (plus a
+ * few browser defaults at the bottom). It gives the CMS the site's look: dark only, neutral greys on
+ * #121212, white as the one accent, the Sora font, pill buttons. Site colours: src/styles/global.css.
+ *
+ * Sveltia has no official theming yet (planned for its v1.0), so these variable names could change in
+ * a future version. After updating Sveltia in index.html, open /admin and check this still applies.
+ *
+ * Colours are "hue saturation lightness" without hsl(), because that's how Sveltia combines them.
+ * Every grey has 0 saturation, so none of Sveltia's default blue tint is left.
+ */
+
+@font-face {
+  font-family: "Sora";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/sora:vf@5.2.5/latin-wght-normal.woff2) format("woff2");
+}
+
+/* ":root:root[data-theme]" outranks Sveltia's own light and dark settings, so every editor gets the dark
+   look, whatever their system or CMS appearance setting says. */
+:root:root,
+:root:root[data-theme] {
+  color-scheme: dark;
+  --sui-base-hue: 0;
+
+  /* Backgrounds: #121212 work area like the site, a slightly deeper frame, lifted fields like the site's search box */
+  --sui-background-color-1-hsl: 0 0% 10%;   /* text fields */
+  --sui-background-color-2-hsl: 0 0% 7%;    /* work area (#121212) */
+  --sui-background-color-3-hsl: 0 0% 5%;    /* top bar and sidebar */
+  --sui-background-color-4-hsl: 0 0% 13%;   /* raised surfaces: list item headers, menus */
+  --sui-background-color-5-hsl: 0 0% 22%;   /* hover and selected */
+
+  /* Text: white headings, the site's light grey for body text, softer greys for hints (all at least 4.5:1) */
+  --sui-foreground-color-1-hsl: 0 0% 100%;
+  --sui-foreground-color-2-hsl: 0 0% 90%;
+  --sui-foreground-color-3-hsl: 0 0% 76%;
+  --sui-foreground-color-4-hsl: 0 0% 64%;
+  --sui-foreground-color-5-hsl: 0 0% 46%;
+
+  /* Borders: field outlines stay at 3:1 or more so fields are easy to find; dividers match the site's subtle lines */
+  --sui-border-color-1-hsl: 0 0% 42%;
+  --sui-border-color-2-hsl: 0 0% 26%;
+  --sui-border-color-3-hsl: 0 0% 18%;
+  --sui-shadow-color: 0 0% 0%;
+
+  /* Accent: white, like the site's buttons and chips. Text on a white button is #121212. */
+  --sui-primary-accent-color: hsl(0 0% 100%);
+  --sui-primary-accent-color-light: hsl(0 0% 88%);
+  --sui-primary-accent-color-dark: hsl(0 0% 78%);
+  --sui-primary-accent-color-text: hsl(0 0% 100%);
+  --sui-primary-accent-color-inverted: hsl(0 0% 7%);
+  --sui-primary-accent-color-translucent: hsl(0 0% 100% / 24%);
+  --sui-primary-accent-color-translucent-light: hsl(0 0% 100% / 14%);
+  --sui-focus-ring-color: hsl(0 0% 100%);
+
+  /* Messages (errors, warnings): Sveltia's colours, tuned for a dark background */
+  --sui-alert-foreground-color-saturation: 85%;
+  --sui-alert-foreground-color-lightness: 78%;
+  --sui-alert-background-color-saturation: 40%;
+  --sui-alert-background-color-lightness: 10%;
+  --sui-alert-border-color-saturation: 48%;
+  --sui-alert-border-color-lightness: 40%;
+
+  /* Type: Sora, the site's font */
+  --sui-font-family-default: "Sora", system-ui, sans-serif;
+
+  /* Shape: pill buttons like the site; softer corners on fields and small controls */
+  --sui-button-small-border-radius: 999px;
+  --sui-button-medium-border-radius: 999px;
+  --sui-button-large-border-radius: 999px;
+  --sui-textbox-border-radius: 12px;
+  --sui-control-small-border-radius: 8px;
+  --sui-control-medium-border-radius: 10px;
+  --sui-control-large-border-radius: 12px;
+  --sui-checkbox-border-radius: 6px;
+}
+
+/* "Increase contrast" (system or CMS setting): brighter text and borders on a deeper background */
+:root:root[data-theme][data-contrast="more"] {
+  --sui-background-color-2-hsl: 0 0% 4%;
+  --sui-background-color-3-hsl: 0 0% 2%;
+  --sui-foreground-color-2-hsl: 0 0% 96%;
+  --sui-foreground-color-3-hsl: 0 0% 88%;
+  --sui-foreground-color-4-hsl: 0 0% 80%;
+  --sui-border-color-1-hsl: 0 0% 64%;
+  --sui-border-color-2-hsl: 0 0% 48%;
+  --sui-border-color-3-hsl: 0 0% 36%;
+}
+
+/* Browser defaults, themed to match */
+::selection { background: #fff; color: #121212; }
+:root { caret-color: #fff; scrollbar-color: hsl(0 0% 30%) transparent; }

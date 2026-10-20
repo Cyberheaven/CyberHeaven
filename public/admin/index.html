@@ -7,6 +7,9 @@
     <meta name="robots" content="noindex">
   </head>
   <body>
-    <script src="https://unpkg.com/@sveltia/cms@0.229.0/dist/sveltia-cms.js"></script>
+    <script src="https://unpkg.com/@sveltia/cms@0.248.1/dist/sveltia-cms.js"></script>
+    <!-- CyberHeaven look for the CMS. It must come after the script above: Sveltia adds its own styles
+         to <head> when it starts, and later styles win. After updating Sveltia, check theme.css still applies. -->
+    <link rel="stylesheet" href="theme.css">
   </body>
 </html>
