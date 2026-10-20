@@ -197,6 +197,8 @@ nav.primary-sidebar :is([role="treeitem"] > .row, [role="option"]) {
 nav.primary-sidebar :is([role="tree"], [role="listbox"]) { --sui-control-medium-border-radius: 999px; }
 nav.primary-sidebar :is([role="treeitem"][aria-selected="true"] > .row, [role="option"][aria-selected="true"]) {
   --sui-selected-background-color: #fff;
+  --sui-hover-background-color: #fff;   /* Sveltia's hover and pressed colours would turn it grey under dark text */
+  --sui-active-background-color: #fff;
   --sui-highlight-foreground-color: #121212;
   font-weight: 600;
   /* the count after the name, darker on the white pill so it stays readable */
