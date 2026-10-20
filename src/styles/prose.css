@@ -20,6 +20,13 @@
   .post-cover { margin-bottom: 48px; }
 }
 
+.post-main { min-width: 0; display: flex; flex-direction: column; gap: 64px; }
+.author-card { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; padding: 28px; border-radius: 16px; background: var(--grey-50); border: 1px solid var(--white-20); }
+.author-card-who { display: flex; align-items: center; gap: 16px; }
+.author-card-who > span:last-child { display: flex; flex-direction: column; gap: 2px; }
+.author-card-bio p { margin: 0; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.author-card-bio p + p { display: none; }
+
 .read-progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 20; pointer-events: none; }
 .read-progress i { display: block; height: 100%; background: var(--white); transform-origin: left; transform: scaleX(0); }
 

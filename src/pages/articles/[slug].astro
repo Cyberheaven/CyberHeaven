@@ -7,9 +7,10 @@ import PageHead from "../../components/PageHead.astro";
 import Toc from "../../components/Toc.astro";
 import Comments from "../../components/Comments.astro";
 import Icon from "../../components/Icon.astro";
+import Avatar from "../../components/Avatar.astro";
 import SocLadder from "../../components/widgets/SocLadder.astro";
 import MalwareExplorer from "../../components/widgets/MalwareExplorer.astro";
-import { render } from "astro:content";
+import { getEntry, render } from "astro:content";
 import { getArticles, site } from "../../lib/site";
 import "../../styles/prose.css";
 
@@ -24,6 +25,8 @@ export async function getStaticPaths() {
 const { article, next, prev } = Astro.props;
 const a = article.data;
 const { Content, headings } = await render(article);
+const author = (await getEntry(a.author))!;
+const { Content: Bio } = await render(author);
 const minutes = Math.max(1, Math.ceil((article.body ?? "").split(/\s+/).filter(Boolean).length / 200));
 const fmt = (d: Date) => d.toLocaleDateString("en-GB", { dateStyle: "long", timeZone: "UTC" });
 // Interactive widgets: an article opts in by putting <div data-widget="name"></div> in its body.
@@ -38,7 +41,7 @@ const hasWidget = (name: string) => (article.body ?? "").includes(`data-widget="
         <p class="post-meta body">
           <a href={`/articles?category=${encodeURIComponent(a.category)}`}>{a.category}</a>
           <time datetime={a.date.toISOString()}>{fmt(a.date)}</time>
-          <span>By {a.author}</span>
+          <a href={`/team/${author.id}`}>By {author.data.name}</a>
           <span>{minutes} min read</span>
         </p>
       </PageHead>
@@ -48,7 +51,21 @@ const hasWidget = (name: string) => (article.body ?? "").includes(`data-widget="
           <Toc headings={headings} />
           {a.tags.length > 0 && <ul class="tag-list" aria-label="Tags">{a.tags.map((t) => <li><a href={`/articles?q=${encodeURIComponent(t)}`}>{t}</a></li>)}</ul>}
         </aside>
-        <div class="prose"><Content /></div>
+        <div class="post-main">
+          <div class="prose"><Content /></div>
+          <aside class="author-card" aria-label="About the author">
+            <a href={`/team/${author.id}`} class="author-card-who">
+              <Avatar name={author.data.name} src={author.data.avatar} size={64} />
+              <span>
+                <span class="caption muted">Written by</span>
+                <span class="h4">{author.data.name}</span>
+                {author.data.headline && <span class="body muted">{author.data.headline}</span>}
+              </span>
+            </a>
+            {author.body?.trim() && <div class="body muted author-card-bio"><Bio /></div>}
+            <a class="text-link body-sb" href={`/team/${author.id}`}>View profile<Icon name="arrow-right" size={18} /></a>
+          </aside>
+        </div>
       </div>
       {hasWidget("soc-ladder") && <div hidden data-widget-src="soc-ladder"><SocLadder /></div>}
       {hasWidget("malware-explorer") && <div hidden data-widget-src="malware-explorer"><MalwareExplorer /></div>}

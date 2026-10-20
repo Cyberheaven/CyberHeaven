@@ -2,7 +2,7 @@
 title: "Career Guide: How to Become a SOC Analyst"
 category: "Career Guides"
 date: 2026-10-06
-author: "PurpleShonen"
+author: "purpleshonen"
 excerpt: "SOC analysts are the first line of defence in today’s technology-driven world; from detecting threats to responding, they play a critical role in the cyber defence of enterprises. Today’s article will explore the exciting world of SOC analysts."
 cover: "/media/2026/07/Career-Guide_-How-to-Become-a-SOC-Analyst.png"
 coverAlt: "Career Guide: How to Become a SOC Analyst"

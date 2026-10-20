@@ -18,11 +18,13 @@
     { "label": "Interactive", "href": "/interactive" },
     { "label": "Resources", "href": "/resources" },
     { "label": "About", "href": "/about" },
+    { "label": "Team", "href": "/team" },
     { "label": "Join", "href": "/join" }
   ],
   "footerNav": [
     { "label": "Articles", "href": "/articles" },
     { "label": "About", "href": "/about" },
+    { "label": "Team", "href": "/team" },
     { "label": "Resources", "href": "/resources" },
     { "label": "Join the community", "href": "/join" },
     { "label": "Interactive", "href": "/interactive" },

@@ -1,0 +1,132 @@
+---
+import Base from "../../layouts/Base.astro";
+import Topbar from "../../components/Topbar.astro";
+import Footer from "../../components/sections/Footer.astro";
+import Avatar from "../../components/Avatar.astro";
+import Icon from "../../components/Icon.astro";
+import { render } from "astro:content";
+import { getArticles, getPeople, site } from "../../lib/site";
+import categories from "../../data/categories.json";
+import "../../styles/prose.css";
+
+export async function getStaticPaths() {
+  return (await getPeople()).map((person) => ({ params: { person: person.id }, props: { person } }));
+}
+
+const { person } = Astro.props;
+const p = person.data;
+const { Content } = await render(person);
+const hasBio = Boolean(person.body?.trim());
+const written = (await getArticles()).filter((a) => a.data.author.id === person.id);
+const roles = [...categories.roles.map((r) => r.name).filter((r) => p.roles.includes(r)), ...p.roles.filter((r) => !categories.roles.some((c) => c.name === r))];
+const firstName = p.name.split(" ")[0];
+const words = p.name.split(" ");
+const fmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+const since = p.joined && new Intl.DateTimeFormat("en-GB", { month: "long", year: "numeric", timeZone: "UTC" }).format(p.joined);
+const external = (url: string) => /^https?:/.test(url);
+const description = p.headline ? `${p.name}: ${p.headline}.` : `${p.name}, ${roles.join(", ").toLowerCase() || "member"} at ${site.name}.`;
+---
+<Base title={`${p.name} | ${site.name}`} description={description}>
+  <Topbar path={`/team/${person.id}`} />
+  <main>
+    <section class="shell pf">
+      <div class="pf-side">
+        <Avatar name={p.name} src={p.avatar} size={240} class="pf-avatar" />
+        {p.links.length > 0 && (
+          <ul class="pf-links" aria-label={`${p.name} elsewhere`}>
+            {p.links.map((l) => (
+              <li>
+                <a href={l.url} target={external(l.url) ? "_blank" : undefined} rel={external(l.url) ? "me noreferrer" : undefined}>
+                  <span class="body-sb">{l.label}</span>
+                  <Icon name="arrow-up-right" size={18} />
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div class="pf-main">
+        <h1 class="h1 balance phead-title">
+          {words.map((w, i) => <>{i > 0 && " "}<span class="phead-w" style={`--d: ${i * 60}ms`}>{w}</span></>)}
+        </h1>
+        {(p.headline || p.pronouns) && (
+          <p class="phead-lead" style={`--d: ${words.length * 60 + 120}ms`}>
+            {p.headline}{p.headline && p.pronouns && " · "}{p.pronouns && <span>{p.pronouns}</span>}
+          </p>
+        )}
+        <div class="phead-extra pf-facts" style={`--d: ${words.length * 60 + 240}ms`}>
+          {roles.length > 0 && <p class="pf-roles">{roles.map((r) => <a class="tag" href={`/team?role=${encodeURIComponent(r)}`}>{r}</a>)}</p>}
+          <dl class="pf-meta">
+            {p.alumni && <div><dt>Status</dt><dd>Past member, with thanks</dd></div>}
+            {p.location && <div><dt>Based in</dt><dd>{p.location}</dd></div>}
+            {since && <div><dt>With {site.name} since</dt><dd>{since}</dd></div>}
+            {written.length > 0 && <div><dt>Articles</dt><dd>{written.length}</dd></div>}
+          </dl>
+        </div>
+        {hasBio && <div class="prose pf-bio"><Content /></div>}
+      </div>
+    </section>
+
+    {written.length > 0 && (
+      <section class="shell pf-articles">
+        <h2 class="h3">Articles by {firstName}</h2>
+        <ul class="latest-grid">
+          {written.map((a) => (
+            <li class="sf">
+              <a class="acard" href={`/articles/${a.id}`}>
+                <div class="acard-media"><img src={a.data.cover} alt={a.data.coverAlt} loading="lazy" /></div>
+                <p class="caption acard-meta">
+                  <span>{a.data.category.toUpperCase()}</span>
+                  <time datetime={a.data.date.toISOString().slice(0, 10)}>{fmt.format(a.data.date)}</time>
+                </p>
+                <h3 class="h4 balance">{a.data.title}</h3>
+                <p class="body muted acard-excerpt">{a.data.excerpt}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <section class="shell pf-back">
+      <a class="text-link body-sb" href="/team"><Icon name="arrow-right" size={18} />Everyone on the team</a>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .pf { padding-top: 72px; padding-bottom: 96px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 740px); gap: 64px; }
+  .pf-side { position: sticky; top: 100px; align-self: start; display: flex; flex-direction: column; gap: 32px; }
+  .pf-side :global(.pf-avatar) { animation: avatarIn 1.2s var(--ease-out) both; }
+  @keyframes avatarIn { from { opacity: 0; transform: scale(0.88) rotate(-6deg); filter: blur(12px); } }
+  .pf-links { list-style: none; margin: 0; padding: 0; max-width: 280px; border-top: 1px solid var(--white-20); }
+  .pf-links li { border-bottom: 1px solid var(--white-20); }
+  .pf-links a { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 0; color: var(--white); }
+  .pf-links svg { color: var(--white-40); transition: transform 0.4s var(--ease-out), color 0.4s var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .pf-links a:hover svg { transform: translate(3px, -3px); color: var(--white); } }
+
+  .pf-main { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+  .pf-main .phead-title { overflow-wrap: anywhere; }
+  .pf-facts { display: flex; flex-direction: column; gap: 24px; }
+  .pf-roles { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pf-roles .tag { height: 30px; padding: 0 14px; font-size: 13px; color: var(--grey); transition: border-color 0.3s var(--ease-out); }
+  .pf-roles .tag:hover { border-color: var(--white-60); }
+  .pf-meta { margin: 0; display: flex; flex-wrap: wrap; gap: 16px 48px; }
+  .pf-meta div { display: flex; flex-direction: column; gap: 4px; }
+  .pf-meta dt { font-size: 12px; color: var(--white-60); }
+  .pf-meta dd { margin: 0; color: var(--white); font-weight: 600; }
+  .pf-bio { padding-top: 24px; border-top: 1px solid var(--white-20); }
+
+  .pf-articles { padding-bottom: 80px; display: flex; flex-direction: column; gap: 32px; }
+  .pf-back { padding-bottom: 96px; }
+  .pf-back svg { transform: rotate(180deg); }
+
+  @media (max-width: 1023px) {
+    .pf { grid-template-columns: 1fr; gap: 40px; padding-top: 48px; }
+    .pf-side { position: static; }
+    .pf-side :global(.pf-avatar) { --size: 140px !important; }
+  }
+  @media (prefers-reduced-motion: reduce) { .pf-side :global(.pf-avatar) { animation: none; } }
+</style>

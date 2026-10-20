@@ -1,0 +1,28 @@
+---
+// A person's photo, or their initials on a colour from the footer palette when there's no photo.
+interface Props {
+  name: string;
+  src?: string;
+  size?: number;
+  class?: string;
+}
+const { name, src, size = 64, class: className } = Astro.props;
+const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+// The same name always gets the same colour pair.
+const hash = [...name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+const a = (hash % 5) + 1;
+const b = ((hash >>> 3) % 5) + 1;
+---
+<span class:list={["avatar", className]} style={`--size: ${size}px; --a: var(--c${a}); --b: var(--c${b === a ? (a % 5) + 1 : b})`}>
+  {src ? <img src={src} alt="" width={size} height={size} loading="lazy" decoding="async" /> : <span aria-hidden="true">{initials}</span>}
+</span>
+
+<style>
+  .avatar {
+    position: relative; flex: none; display: grid; place-items: center; width: var(--size); height: var(--size); border-radius: 50%; overflow: hidden;
+    background: radial-gradient(120% 120% at 20% 15%, var(--a), var(--b) 70%, var(--black) 130%);
+    color: var(--white); font-weight: 600; font-size: calc(var(--size) * 0.36); letter-spacing: -0.04em; line-height: 1;
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14); }
+</style>

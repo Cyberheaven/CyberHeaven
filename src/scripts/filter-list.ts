@@ -8,6 +8,7 @@ import { scrollToY } from "./lib";
  *   [data-filter="key"] > button[data-value]    a group of chips; data-value="" means "all"
  *   select[data-sort]                           optional; values are keys of SORTS below
  *   [data-item]                                 one per entry, with data-text and data-<key> for each filter
+ *                                               (several values allowed, separated by |, e.g. data-role="Author|Maintainer")
  *   [data-group]                                optional wrapper, hidden when none of its items match
  *   [data-count], [data-empty]                  optional result count and "no results" message
  *   nav[data-pager]                             optional; with data-per-page="12" on the root, splits
@@ -51,7 +52,7 @@ export function filterList(root: HTMLElement, onUpdate?: (shown: number) => void
     const words = (input?.value ?? "").toLowerCase().split(/\s+/).filter(Boolean);
     const matches = Array.from(root.querySelectorAll<HTMLElement>("[data-item]")).filter((item) => {
       const text = item.dataset.text ?? "";
-      return words.every((w) => text.includes(w)) && Object.entries(chosen).every(([key, value]) => !value || item.dataset[key] === value);
+      return words.every((w) => text.includes(w)) && Object.entries(chosen).every(([key, value]) => !value || (item.dataset[key] ?? "").split("|").includes(value));
     });
     const pages = Math.max(1, Math.ceil(matches.length / perPage));
     page = Math.min(Math.max(1, page), pages);

@@ -1,33 +1,137 @@
 {
   "articles": [
-    { "name": "Tutorials", "description": "Step-by-step guides to a skill or technique." },
-    { "name": "Career Guides", "description": "What the jobs involve and how to get into them." },
-    { "name": "Cheat Sheets", "description": "Quick references to keep open while you work." },
-    { "name": "Cybersecurity News", "description": "What happened and why it matters." },
-    { "name": "Free Resources", "description": "Round-ups of free tools, labs and courses." },
-    { "name": "Learning Roadmaps", "description": "What to learn, in what order." }
+    {
+      "name": "Tutorials",
+      "description": "Step-by-step guides to a skill or technique."
+    },
+    {
+      "name": "Career Guides",
+      "description": "What the jobs involve and how to get into them."
+    },
+    {
+      "name": "Cheat Sheets",
+      "description": "Quick references to keep open while you work."
+    },
+    {
+      "name": "Cybersecurity News",
+      "description": "What happened and why it matters."
+    },
+    {
+      "name": "Free Resources",
+      "description": "Round-ups of free tools, labs and courses."
+    },
+    {
+      "name": "Learning Roadmaps",
+      "description": "What to learn, in what order."
+    }
   ],
   "resources": [
-    { "name": "Start here", "description": "If you’re brand new, begin with these." },
-    { "name": "Courses", "description": "Structured lessons, from first principles to specialisms." },
-    { "name": "Practice labs & CTFs", "description": "Hands-on platforms where you break and defend real systems." },
-    { "name": "Certifications", "description": "Credentials employers recognise, and the free ways to prepare." },
-    { "name": "Tools", "description": "Free software professionals use every day." },
-    { "name": "Frameworks & references", "description": "The shared language and standards of the field." },
-    { "name": "Books & guides", "description": "Long-form reading, many of them free online." },
-    { "name": "Videos & podcasts", "description": "Learn while you watch or listen." },
-    { "name": "News & threat intel", "description": "Stay current on attacks, vulnerabilities and research." },
-    { "name": "Communities", "description": "Places to ask questions and meet other learners." },
-    { "name": "Careers", "description": "Roadmaps, job research and interview prep." }
+    {
+      "name": "Start here",
+      "description": "If you’re brand new, begin with these."
+    },
+    {
+      "name": "Courses",
+      "description": "Structured lessons, from first principles to specialisms."
+    },
+    {
+      "name": "Practice labs & CTFs",
+      "description": "Hands-on platforms where you break and defend real systems."
+    },
+    {
+      "name": "Certifications",
+      "description": "Credentials employers recognise, and the free ways to prepare."
+    },
+    {
+      "name": "Tools",
+      "description": "Free software professionals use every day."
+    },
+    {
+      "name": "Frameworks & references",
+      "description": "The shared language and standards of the field."
+    },
+    {
+      "name": "Books & guides",
+      "description": "Long-form reading, many of them free online."
+    },
+    {
+      "name": "Videos & podcasts",
+      "description": "Learn while you watch or listen."
+    },
+    {
+      "name": "News & threat intel",
+      "description": "Stay current on attacks, vulnerabilities and research."
+    },
+    {
+      "name": "Communities",
+      "description": "Places to ask questions and meet other learners."
+    },
+    {
+      "name": "Careers",
+      "description": "Roadmaps, job research and interview prep."
+    }
   ],
   "glossary": [
-    { "name": "Attacks & threats" },
-    { "name": "Malware" },
-    { "name": "Defence & operations" },
-    { "name": "Networking" },
-    { "name": "Identity & cryptography" },
-    { "name": "Web & cloud" },
-    { "name": "Forensics & analysis" },
-    { "name": "Governance & careers" }
+    {
+      "name": "Attacks & threats"
+    },
+    {
+      "name": "Malware"
+    },
+    {
+      "name": "Defence & operations"
+    },
+    {
+      "name": "Networking"
+    },
+    {
+      "name": "Identity & cryptography"
+    },
+    {
+      "name": "Web & cloud"
+    },
+    {
+      "name": "Forensics & analysis"
+    },
+    {
+      "name": "Governance & careers"
+    }
+  ],
+  "roles": [
+    {
+      "name": "Maintainer",
+      "plural": "Maintainers",
+      "description": "Keep the site, the content and the project running."
+    },
+    {
+      "name": "Community lead",
+      "plural": "Community leads",
+      "description": "Run the Discord and shape where the community goes next."
+    },
+    {
+      "name": "Moderator",
+      "plural": "Moderators",
+      "description": "Keep our community spaces friendly and safe."
+    },
+    {
+      "name": "Author",
+      "plural": "Authors",
+      "description": "Write the guides you learn from."
+    },
+    {
+      "name": "Reviewer",
+      "plural": "Reviewers",
+      "description": "Check articles for accuracy and clarity before they go out."
+    },
+    {
+      "name": "Contributor",
+      "plural": "Contributors",
+      "description": "Fix, design, suggest and build the bits that make CyberHeaven better."
+    },
+    {
+      "name": "Supporter",
+      "plural": "Supporters",
+      "description": "Help CyberHeaven in other ways: spreading the word, sharing resources, lending a hand."
+    }
   ]
 }

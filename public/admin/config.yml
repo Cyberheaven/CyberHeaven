@@ -32,7 +32,14 @@ collections:
         date_format: "YYYY-MM-DD"
         time_format: false
         picker_utc: true
-      - { name: author, label: Author, widget: string }
+      - name: author
+        label: Author
+        widget: relation
+        collection: people
+        value_field: "{{slug}}"
+        search_fields: [name]
+        display_fields: [name]
+        hint: Pick a person from Team. New author? Add them under Team first.
       - { name: excerpt, label: Excerpt, widget: text, hint: Short summary }
       - { name: cover, label: Cover image, widget: image }
       - name: coverAlt
@@ -57,6 +64,45 @@ collections:
       - { name: title, label: Title, widget: string }
       - { name: description, label: Description, widget: string }
       - { name: body, label: Body, widget: markdown }
+
+  - name: people
+    label: Team
+    label_singular: Person
+    folder: src/content/people
+    create: true
+    slug: "{{name}}"
+    identifier_field: name
+    extension: md
+    format: frontmatter
+    summary: "{{name}} ({{roles}})"
+    fields:
+      - { name: name, label: Name, widget: string }
+      - { name: headline, label: Headline, widget: string, required: false, hint: "One line, e.g. DFIR analyst and CTF player" }
+      - { name: pronouns, label: Pronouns, widget: string, required: false, hint: "Optional, e.g. she/her" }
+      - { name: avatar, label: Photo, widget: image, required: false, media_folder: /public/media/people, public_folder: /media/people, hint: "Square works best. Without one, their initials are shown." }
+      - name: roles
+        label: Roles
+        widget: relation
+        collection: settings
+        file: categories
+        value_field: "roles.*.name"
+        search_fields: ["roles.*.name"]
+        display_fields: ["roles.*.name"]
+        multiple: true
+        hint: Add or rename roles under Settings → Categories.
+      - { name: location, label: Based in, widget: string, required: false, hint: "Optional, e.g. Berlin, Germany" }
+      - { name: joined, label: Joined CyberHeaven, widget: datetime, required: false, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, picker_utc: true }
+      - name: links
+        label: Links
+        widget: list
+        required: false
+        summary: "{{fields.label}}"
+        hint: "Website, GitHub, LinkedIn, X, Mastodon, Bluesky, YouTube, TryHackMe… For email use mailto:name@example.com"
+        fields:
+          - { name: label, label: Name, widget: select, options: [Website, Blog, GitHub, LinkedIn, X, Mastodon, Bluesky, YouTube, Medium, TryHackMe, Hack The Box, Discord, Email] }
+          - { name: url, label: Link, widget: string }
+      - { name: alumni, label: Past member, widget: boolean, default: false, required: false, hint: "Moves them to 'With thanks' on the team page" }
+      - { name: body, label: Bio, widget: markdown, required: false }
 
   - name: resources
     label: Resources
@@ -165,6 +211,15 @@ collections:
             fields:
               - { name: name, label: Name, widget: string }
               - { name: description, label: Description, widget: string, required: false }
+          - name: roles
+            label: Team roles
+            widget: list
+            summary: "{{fields.name}}"
+            hint: "Roles people can have on the team page, in this order."
+            fields:
+              - { name: name, label: Name, widget: string, hint: "Singular, e.g. Author" }
+              - { name: plural, label: Plural, widget: string, hint: "e.g. Authors" }
+              - { name: description, label: What they do, widget: string }
           - name: glossary
             label: Glossary topics
             widget: list

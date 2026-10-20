@@ -2,7 +2,7 @@
 title: "OSINT for Beginners: Getting Started with Open Source Intelligence"
 category: "Tutorials"
 date: 2026-10-12
-author: "Pablo Rodriguez Sanz"
+author: "pablo-rodriguez-sanz"
 excerpt: "Hey there! Even if you’re just starting in cybersecurity or you’re a seasoned veteran red/blue teamer, you’ll have something new to learn. Remember, OSINT skills can be used not only in the cybersecurity field, but also in law enforcement, market analysis, and business."
 cover: "/media/2026/10/photo_2026-10-03_11-13-29.jpg"
 coverAlt: "OSINT"

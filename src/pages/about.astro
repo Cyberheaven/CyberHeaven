@@ -23,6 +23,7 @@ const ways = [
   { name: "Learn", sub: `${articleCount} free guides`, text: "Practical articles on OSINT, forensics, malware analysis, SOC careers and Linux.", href: "/articles" },
   { name: "Practise", sub: "Interactive tools", text: "Find your path, spot the phish, route SOC alerts and explore malware families.", href: "/interactive" },
   { name: "Explore", sub: "Curated resources", text: "Hand-picked courses, labs, tools and communities from across the web.", href: "/resources" },
+  { name: "Meet", sub: "The team", text: "The volunteers who write, review and run CyberHeaven.", href: "/team" },
   { name: "Contribute", sub: "Join the community", text: "Write, review, suggest resources or help others on Discord.", href: "/join" },
 ];
 ---
@@ -42,7 +43,7 @@ const ways = [
     <Principles />
 
     <section class="shell ab-ways">
-      <ScrollWords as="h2" class="h2 balance" text="Four ways in" />
+      <ScrollWords as="h2" class="h2 balance" text={`${["Four", "Five", "Six"][ways.length - 4] ?? ways.length} ways in`} />
       <ul class="bigrows">
         {ways.map((w) => (
           <li>

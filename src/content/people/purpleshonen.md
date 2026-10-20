@@ -1,0 +1,11 @@
+---
+name: "PurpleShonen"
+headline: "Self-taught programmer, obsessed with cybersecurity"
+avatar: "/media/people/purpleshonen.webp"
+roles: ["Maintainer", "Author"]
+links:
+  - { label: "Website", url: "https://purpleshonen.fyi" }
+  - { label: "GitHub", url: "https://github.com/PurpleShonen" }
+---
+
+An autodidact programmer obsessed with cybersecurity: studying how systems fail, how defences are built, and how vulnerabilities are discovered in the real world. Driven by curiosity, experimentation and a hands-on approach to ethical hacking, artificial intelligence and blockchain.

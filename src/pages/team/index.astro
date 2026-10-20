@@ -1,0 +1,139 @@
+---
+import Base from "../../layouts/Base.astro";
+import Topbar from "../../components/Topbar.astro";
+import Footer from "../../components/sections/Footer.astro";
+import PageHead from "../../components/PageHead.astro";
+import Avatar from "../../components/Avatar.astro";
+import ScrollWords from "../../components/ScrollWords.astro";
+import Icon from "../../components/Icon.astro";
+import { getArticles, getPeople, site } from "../../lib/site";
+import categories from "../../data/categories.json";
+
+// People live in src/content/people (CMS: Team). Roles and their order: src/data/categories.json "roles".
+const people = await getPeople();
+const articles = await getArticles();
+const current = people.filter((p) => !p.data.alumni);
+const alumni = people.filter((p) => p.data.alumni);
+const countOf = (id: string) => articles.filter((a) => a.data.author.id === id).length;
+const roles = categories.roles.filter((r) => current.some((p) => p.data.roles.includes(r.name)));
+const membersOf = (role: string) => current.filter((p) => p.data.roles.includes(role)).length;
+// Show a person's roles in the order of the roles list.
+const rolesOf = (list: string[]) => [...categories.roles.map((r) => r.name).filter((r) => list.includes(r)), ...list.filter((r) => !categories.roles.some((c) => c.name === r))];
+---
+<Base title={`Team | ${site.name}`} description="The volunteers behind CyberHeaven: maintainers, authors, reviewers, contributors and supporters.">
+  <Topbar path="/team" />
+  <main>
+    <PageHead title="The people behind CyberHeaven" lead="Everyone here gives their time for free. Maintainers, writers, reviewers and supporters who keep cybersecurity learning open to all." />
+
+    <section class="tm shell" data-list>
+      <div class="tm-controls">
+        <div class="chips" role="group" aria-label="Filter by role" data-filter="role">
+          <button type="button" class="chip" data-value="" aria-pressed="true">Everyone <small>{current.length}</small></button>
+          {roles.map((r) => <button type="button" class="chip" data-value={r.name} aria-pressed="false">{r.plural} <small>{membersOf(r.name)}</small></button>)}
+        </div>
+        <label class="search tm-search">
+          <span class="visually-hidden">Search people</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+          <input type="search" placeholder="Search by name or role" autocomplete="off" data-q />
+        </label>
+      </div>
+
+      <ul class="tm-grid">
+        {current.map((p) => {
+          const n = countOf(p.id);
+          return (
+            <li class="sf" data-item data-role={p.data.roles.join("|")} data-text={[p.data.name, p.data.headline, ...p.data.roles].join(" ").toLowerCase()}>
+              <a class="tm-person" href={`/team/${p.id}`}>
+                <Avatar name={p.data.name} src={p.data.avatar} size={88} class="tm-avatar" />
+                <span class="tm-text">
+                  <span class="tm-name h4">{p.data.name}<Icon name="arrow-up-right" size={18} /></span>
+                  {p.data.headline && <span class="body muted balance">{p.data.headline}</span>}
+                  <span class="tm-tags">
+                    {rolesOf(p.data.roles).map((r) => <span class="tag">{r}</span>)}
+                    {n > 0 && <span class="caption muted">{n} {n === 1 ? "article" : "articles"}</span>}
+                  </span>
+                </span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+      <p class="body muted tm-empty" data-empty hidden>Nobody matches that. <button type="button" class="tm-reset" data-reset>Show everyone</button></p>
+    </section>
+
+    <section class="shell tm-roles">
+      <ScrollWords as="h2" class="h2 balance tm-roles-title" text="How the team works" />
+      <dl class="tm-roles-list">
+        {categories.roles.map((r) => (
+          <div>
+            <dt class="h4">{r.plural}</dt>
+            <dd class="body muted">{r.description}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    {alumni.length > 0 && (
+      <section class="shell tm-alumni">
+        <h2 class="h3">With thanks</h2>
+        <p class="body muted">Past members who helped build CyberHeaven.</p>
+        <ul>{alumni.map((p) => <li><a class="text-link body" href={`/team/${p.id}`}>{p.data.name}</a></li>)}</ul>
+      </section>
+    )}
+
+    <section class="shell tm-join">
+      <ul class="bigrows">
+        <li>
+          <a class="bigrow" href="/join">
+            <span class="bigrow-name">Join us</span>
+            <span class="bigrow-info">
+              <span class="body-sb bigrow-sub">Want to be on this page?</span>
+              <span class="body bigrow-text">Write, review, help on Discord or improve the site. Every volunteer gets a profile here.</span>
+            </span>
+            <span class="round-btn bigrow-btn" aria-hidden="true"><Icon name="arrow-right" size={24} /></span>
+          </a>
+        </li>
+      </ul>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .tm { padding-bottom: 120px; display: flex; flex-direction: column; gap: 40px; }
+  .tm-controls { display: flex; justify-content: space-between; align-items: center; gap: 16px 24px; flex-wrap: wrap; }
+  .tm-search { max-width: 360px; height: 48px; }
+  .tm-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 40px; border-top: 1px solid var(--white-20); }
+  .tm-grid li { border-bottom: 1px solid var(--white-20); }
+  .tm-person { display: flex; gap: 20px; align-items: flex-start; padding: 32px 0; height: 100%; }
+  .tm-person :global(.tm-avatar) { transition: transform 0.6s var(--ease-out); }
+  .tm-text { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .tm-name { display: flex; align-items: center; gap: 8px; }
+  .tm-name svg { flex: none; color: var(--white-40); transition: transform 0.4s var(--ease-out), color 0.4s var(--ease-out); }
+  .tm-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding-top: 4px; }
+  @media (hover: hover) and (pointer: fine) {
+    .tm-person:hover :global(.tm-avatar) { transform: scale(1.06) rotate(-3deg); }
+    .tm-person:hover .tm-name svg { transform: translate(3px, -3px); color: var(--white); }
+  }
+  .tm-empty { padding: 24px 0; }
+  .tm-reset { padding: 0; border: 0; background: none; color: var(--white); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+  .tm-roles { padding-bottom: 120px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 40px; }
+  .tm-roles-title { position: sticky; top: 100px; align-self: start; }
+  .tm-roles-list { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 40px; }
+  .tm-roles-list div { padding: 24px 0 28px; border-top: 1px solid var(--white-20); display: flex; flex-direction: column; gap: 8px; }
+  .tm-roles-list dd { margin: 0; }
+
+  .tm-alumni { padding-bottom: 96px; display: flex; flex-direction: column; gap: 12px; }
+  .tm-alumni ul { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 12px 32px; }
+  .tm-join { padding-bottom: 80px; }
+
+  @media (max-width: 1199px) { .tm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tm-roles { grid-template-columns: 1fr; } .tm-roles-title { position: static; } }
+  @media (max-width: 809px) { .tm-grid, .tm-roles-list { grid-template-columns: 1fr; } .tm-search { max-width: none; } }
+  @media (prefers-reduced-motion: reduce) { .tm-person :global(.tm-avatar), .tm-name svg { transition-duration: 0.01ms; } }
+</style>
+
+<script>
+  import { filterList } from "../../scripts/filter-list";
+  filterList(document.querySelector<HTMLElement>("[data-list]")!);
+</script>

@@ -47,8 +47,9 @@ You don’t need to be an expert, and you don’t need to know how to code.
 Volunteers with access can sign in at **`/admin`** (Sveltia CMS, GitHub login) and edit:
 
 - **Articles** and **Pages** (Markdown)
+- **Team**: everyone’s profile (photo, roles, bio, links). Articles pick their author from here
 - **Resources**, **Glossary** and the **Spot the phish** messages
-- **Settings → Categories** for articles, resources and glossary topics
+- **Settings → Categories** for articles, resources, glossary topics and team roles
 
 Writing tips: to embed a YouTube video, paste its link on a line of its own. To show an interactive widget in an
 article, add `<div data-widget="soc-ladder"></div>` or `<div data-widget="malware-explorer"></div>` on its own line.
@@ -79,9 +80,10 @@ A static [Astro](https://astro.build) site. No server, no database, no build-tim
 src/
   content/articles/   articles (Markdown)
   content/pages/      plain pages, e.g. legal.md (and about.md’s text)
+  content/people/     team profiles (one Markdown file per person, bio in the body)
   content/site.json   homepage copy, navigation, socials, comments settings
   data/               resources, glossary, categories, quiz and game data (JSON)
-  pages/              one file per route (articles, resources, glossary, join, play/…)
+  pages/              one file per route (articles, resources, glossary, team, join, play/…)
   components/         page sections, widgets, PageHead, YouTube, Comments
   scripts/            scroll effects, smooth scrolling, list filtering
   styles/             global.css (design tokens and shared styles), prose.css (article text)

@@ -167,7 +167,7 @@ for p in posts:
         img = re.search(r"!\[[^\]]*\]\((/media/[^)\s]+)", body)
         cover = img.group(1) if img else ""
     cat = next(CATEGORY[c] for c in p["categories"] if c in CATEGORY)
-    fm = {"title": q(title), "category": q(cat), "date": p["date"][:10], "author": q(users[p["author"]]),
+    fm = {"title": q(title), "category": q(cat), "date": p["date"][:10], "author": q(re.sub(r"[^a-z0-9]+", "-", users[p["author"]].lower()).strip("-")),
           "excerpt": q(exc), "cover": q(cover), "coverAlt": q(alt or title),
           "tags": json.dumps([tags[t] for t in p["tags"]], ensure_ascii=False), "draft": "false"}
     write(ROOT / f"src/content/articles/{slug}.md", fm, body)

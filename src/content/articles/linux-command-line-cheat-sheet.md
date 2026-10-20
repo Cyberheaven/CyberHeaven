@@ -2,7 +2,7 @@
 title: "Linux Command-Line Cheat Sheet"
 category: "Cheat Sheets"
 date: 2026-07-15
-author: "PurpleShonen"
+author: "purpleshonen"
 excerpt: "Linux is one of the most widely used operating systems in the world, and with such a high level of usage, it has essentially become one of the most important tools for any IT professional to have. A lot of Linux’s power resides in the terminal emulator."
 cover: "/media/2026/07/Linux-Command-Line-Cheat-Sheet.png"
 coverAlt: "Linux Command Line Cheat Sheet"
