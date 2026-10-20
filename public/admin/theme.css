@@ -185,6 +185,33 @@
   :is([aria-label="Entries"], [aria-label="Files"])[role="grid"] [role="gridcell"] > * { transition: none; }
 }
 
+/*
+ * Sidebars (collections, and asset folders): the items look like the site's filter chips (.chip in global.css).
+ * The open one is a white pill with dark text; the others get a thin pill outline on hover. The outline is
+ * an inset shadow, so nothing moves. Collections are tree items with a ".row" inside, asset folders are options.
+ */
+nav.primary-sidebar :is([role="treeitem"] > .row, [role="option"]) {
+  transition: background-color 0.3s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Sveltia's own rules for these items are very specific, so the look is set through its variables */
+nav.primary-sidebar :is([role="tree"], [role="listbox"]) { --sui-control-medium-border-radius: 999px; }
+nav.primary-sidebar :is([role="treeitem"][aria-selected="true"] > .row, [role="option"][aria-selected="true"]) {
+  --sui-selected-background-color: #fff;
+  --sui-highlight-foreground-color: #121212;
+  font-weight: 600;
+  /* the count after the name, darker on the white pill so it stays readable */
+  --sui-highlighted-foreground-color: rgb(18 18 18 / 65%);
+}
+nav.primary-sidebar :is([role="treeitem"] > .row, [role="option"]) > .count { font-size: 12px; font-weight: 400; }
+@media (hover: hover) and (pointer: fine) {
+  nav.primary-sidebar :is([role="treeitem"]:not([aria-selected="true"]) > .row, [role="option"]:not([aria-selected="true"])):hover {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 60%);
+  }
+}
+/* The group headings ("Collections", "Your Site"), in the site's small caption style */
+nav.primary-sidebar [role="group"] > .label { font-size: 12px; }
+
 /* Headings (page titles, field labels) get the site's slightly tighter letter spacing */
 :is(h1, h2, h3, h4) { letter-spacing: -0.02em; }
 
