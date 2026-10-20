@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+.astro/
+
+# Environment
+.env
+.env.*
+
+# IDE / editor / tool config
+.vscode/
+.idea/
+*.swp
+*.swo
+CLAUDE.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Migration data (local only)
+site-content/
+scrape_site.py
