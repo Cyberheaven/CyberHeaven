@@ -7,7 +7,7 @@ roles:
   - Maintainer
   - Author
   - Contributor
-location: ''
+location: India
 joined: ''
 links:
   - label: Website
