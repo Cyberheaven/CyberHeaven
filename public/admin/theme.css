@@ -232,6 +232,24 @@ nav.primary-sidebar [role="group"] > .label { font-size: 12px; }
 }
 [role="toolbar"][aria-label="Primary"] button[data-label="Save"][aria-disabled="false"]::after { opacity: 1; }
 
+/*
+ * Editor typography. The top bar reads "Articles › Entry title": the entry title is a small display heading
+ * like the site's (Sora 600, tight tracking) and the collection before it is dimmed.
+ */
+[role="toolbar"][aria-label="Primary"] h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.04em; color: #fff; }
+[role="toolbar"][aria-label="Primary"] h2:has(bdi + bdi) { color: rgb(255 255 255 / 60%); }
+[role="toolbar"][aria-label="Primary"] h2 bdi:last-child { color: #fff; }
+/* Field labels: the site's caption weight in the body grey, so they stand apart from the muted hints below */
+section.field > header > h4 { font-size: 13px; font-weight: 600; color: hsl(var(--sui-foreground-color-2-hsl)); }
+/* More room between top-level fields (fields inside lists and objects keep Sveltia's tighter spacing) */
+section.field[data-key-path]:not([data-key-path*="."]) { padding-block: 22px; }
+/* Markdown text boxes (article body, bios) read like the site's articles: larger, airier text. Sveltia already
+   caps the edit pane's width, so lines stay about as long as on the site. */
+[data-field-type="markdown"] {
+  --sui-textbox-font-size: 16px;
+  --sui-textbox-multiline-line-height: 1.7;
+}
+
 /* Headings (page titles, field labels) get the site's slightly tighter letter spacing */
 :is(h1, h2, h3, h4) { letter-spacing: -0.02em; }
 
