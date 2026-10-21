@@ -156,6 +156,7 @@
 [role="toolbar"][aria-label="Global"][aria-orientation="horizontal"] { height: 64px; padding: 0 9px; }   /* logo lines up with the sidebar icons */
 [role="toolbar"][aria-label="Global"] button:has(> img.logo) {
   width: auto;
+  aspect-ratio: auto;   /* Sveltia keeps icon buttons square; Firefox would squeeze the name into 32px */
   gap: 10px;
   padding: 0 8px;
   background: transparent;

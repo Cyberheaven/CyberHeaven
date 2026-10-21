@@ -12,6 +12,8 @@ const extra = `
   font-family: "Sora"; font-style: normal; font-display: swap; font-weight: 100 800;
   src: url(https://cdn.jsdelivr.net/fontsource/fonts/sora:vf@5.2.5/latin-wght-normal.woff2) format("woff2");
 }
+/* The preview is its own page (an iframe): a dark scrollbar like the rest of the CMS, not the browser's light one */
+:root { color-scheme: dark; scrollbar-color: hsl(0 0% 30%) transparent; }
 /* The preview redraws on every keystroke: no entrance animations */
 *, *::before, *::after { animation: none !important; }
 /* Stand-in for an interactive widget, which only runs on the live site */
