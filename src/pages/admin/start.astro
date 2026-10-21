@@ -1,0 +1,85 @@
+---
+// "Start here" in the CMS (registered in public/admin/cms.js): a short guide for volunteers who edit the site.
+// It opens inside the CMS, so it's a plain page: the site's fonts and styles, but no top bar, footer or site
+// scripts (they expect the top bar). Search engines are told to skip it.
+// The "Where everything is" table is the same as the one in README.md: change both together.
+import "@fontsource/sora/400.css";
+import "@fontsource/sora/500.css";
+import "@fontsource/sora/600.css";
+import "@fontsource/sora/700.css";
+import "../../styles/global.css";
+import "../../styles/prose.css";
+import PageHead from "../../components/PageHead.astro";
+import { site } from "../../lib/site";
+
+const places = [
+  ["Articles", "Every article: title, category, date, author, summary, cover image and text."],
+  ["Pages → Home", "The carousel at the top, the tagline, the About band, values, ticker, topics, FAQ and contact section."],
+  ["Pages → the other pages", "The heading and intro of each page, and the rest of its text (About, Join, Team, Resources, the legal page, the 404 page)."],
+  ["Pages → Interactive", "Every lab and tool on the Interactive page: its card, topic, and the heading and intro on its own page."],
+  ["Team members", "Everyone’s profile: photo, roles, bio and links. Articles pick their author from here."],
+  ["Resource list", "Every recommended resource, its cost and level, and which ones are featured on the homepage."],
+  ["Glossary", "Every glossary term."],
+  ["Lab exercises", "The exercises inside the labs: phishing messages, log hunt cases, decoding challenges and more."],
+  ["Settings → Site", "Site name, contact email, Discord link, menus, social links and the footer."],
+  ["Settings → Categories", "Article and resource categories, glossary topics and team roles."],
+];
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Start here | {site.name} CMS</title>
+</head>
+<body>
+  <main class="st">
+    <PageHead title="Start here" lead="Everything you need to write and edit CyberHeaven, on one page. It takes about three minutes to read." />
+
+    <div class="shell">
+      <div class="prose st-body">
+        <h2>How saving works</h2>
+        <ul>
+          <li><strong>Save puts your change on the live site.</strong> It goes to GitHub straight away, and the site rebuilds itself and shows it a few minutes later.</li>
+          <li><strong>New articles start as a Draft</strong>: saved, but hidden from the site. When one is ready, switch <em>Draft</em> off and save again.</li>
+          <li>The Save button gets a coloured ring while you have changes that aren’t saved yet.</li>
+          <li>The CMS shows what’s on GitHub. If someone else just changed the same thing, reload the page before you edit it.</li>
+        </ul>
+
+        <h2>Where everything is</h2>
+        <table>
+          <thead><tr><th>In the sidebar</th><th>What you can change there</th></tr></thead>
+          <tbody>{places.map(([where, what]) => <tr><td><strong>{where}</strong></td><td>{what}</td></tr>)}</tbody>
+        </table>
+        <p>A few things still need code: the career quiz questions, some labs (Shell quest, Real or fake link, Hash and salt) and small interface text like search boxes and buttons. Ask on Discord if you want to change one.</p>
+
+        <h2>Writing an article</h2>
+        <ul>
+          <li>The preview on the right shows the article the way the site will, without the animations.</li>
+          <li>To add a YouTube video, paste its link on a line of its own.</li>
+          <li>To add an interactive widget, use <em>Insert → Interactive widget</em> in the editor.</li>
+          <li>Keep lists at the left edge and don’t paste HTML (like tables or embeds copied from another site): the editor can garble it when it saves.</li>
+        </ul>
+
+        <h2>Text in curly brackets</h2>
+        <p>Some text has placeholders like <code>{"{count}"} terms</code>. Keep them exactly as they are: the site fills in the real number when it builds, so it never goes out of date. Each field’s hint says which placeholders it supports.</p>
+
+        <h2>Need a hand?</h2>
+        <p>Ask on <a href={site.discord} target="_blank" rel="noreferrer">Discord</a> or email <a href={`mailto:${site.email}`}>{site.email}</a>. Nothing you do here is final: every change is kept on GitHub, so a mistake can always be undone.</p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+
+<style is:global>
+  /* Shown inside the CMS (an iframe): dark scrollbar, like the CMS around it */
+  :root { color-scheme: dark; scrollbar-color: hsl(0 0% 30%) transparent; }
+</style>
+
+<style>
+  .st { padding-bottom: 96px; }
+  .st-body { max-width: 760px; }
+  .st-body h2:first-child { margin-top: 0; }
+</style>

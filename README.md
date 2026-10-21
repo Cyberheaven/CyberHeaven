@@ -48,6 +48,9 @@ Volunteers with access can sign in at **`/admin`** (Sveltia CMS, GitHub login). 
 to `main` on GitHub. The CMS always shows what’s on GitHub, not your local copy, so push your local changes before
 editing the same thing in the CMS.
 
+The CMS has a short guide for volunteers, **Start here** (the waving hand in its top bar; `src/pages/admin/start.astro`).
+Its “Where everything is” table repeats the one below: change both together.
+
 Here’s where to find each thing on the site:
 
 | In the CMS | What you can change |

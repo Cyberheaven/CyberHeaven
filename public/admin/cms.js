@@ -10,7 +10,8 @@
  * Not shown in the preview: animations, the "On this page" list, comments, and interactive widgets
  * (they appear as a labelled box), because the site's scripts don't run here.
  *
- * Also adds "Interactive widget" to the article editor's Insert menu (registerEditorComponent below).
+ * Also adds "Interactive widget" to the article editor's Insert menu (registerEditorComponent below), and the
+ * "Start here" guide to the sidebar.
  */
 import { youtubeHtml, youtubeId } from "./youtube.mjs";
 
@@ -18,6 +19,9 @@ const { React } = CMS;
 const h = React.createElement;
 
 CMS.registerPreviewStyle("/admin/preview.css");
+
+// "Start here" in the sidebar: a short guide for volunteers (src/pages/admin/start.astro)
+CMS.registerCustomPage({ id: "start", label: "Start here", icon: "waving_hand", url: "/admin/start/" });
 
 // ---------- Small pieces shared by both templates ----------
 
