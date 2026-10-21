@@ -82,7 +82,7 @@ the look is `public/admin/theme.css`; the previews, which copy `src/pages/articl
 change it in `cms.js` too.
 
 The CMS editor rewrites the Markdown when it saves, and some Markdown doesn’t survive that (HTML tables, `<iframe>`
-embeds, `* * *` dividers). If you edit content files directly, run `node scripts/check-content.mjs` before pushing.
+embeds, `* * *` dividers). If you edit content files directly, run the checks below before pushing.
 
 Some text has placeholders in curly brackets, like `{count} terms`. Keep them as they are: the site fills in the
 real number when it builds, so it never goes out of date. Each field’s hint says which placeholders it supports.
@@ -99,6 +99,7 @@ article, add `<div data-widget="soc-ladder"></div>` or `<div data-widget="malwar
 - [docs/access-levels.md](docs/access-levels.md): who can publish what, and the GitHub setup behind it
 - [docs/cms-login.md](docs/cms-login.md): how "Sign In with GitHub" works (login service on Cloudflare), and fixing it
 - [docs/cms.md](docs/cms.md): how the CMS is built, themed and tested
+- [docs/checks.md](docs/checks.md): the checks every change must pass before it can be published
 
 ## Running it locally
 
@@ -111,12 +112,12 @@ npm run build     # static site in dist/
 npm run preview   # serve the built site
 ```
 
-Quick checks for the data that drives the interactive bits, and for Markdown the CMS would break:
+Every pull request runs the checks in [docs/checks.md](docs/checks.md) (content safety, data, labs, the build,
+links), and a change can't be published until they pass. Run them yourself before pushing:
 
 ```sh
-node scripts/check-career.mjs
-node scripts/check-youtube.mjs
-node scripts/check-content.mjs
+node scripts/check-content.mjs && node scripts/check-data.mjs && node scripts/check-labs.mjs \
+  && node scripts/check-career.mjs && node scripts/check-youtube.mjs && npm run build && node scripts/check-links.mjs
 ```
 
 ## How it’s built

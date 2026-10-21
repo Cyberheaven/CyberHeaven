@@ -38,8 +38,9 @@ tidying: a direct link still opens those sections, and the rules above still dec
 - **GitHub decides whether the merge is allowed.** A ruleset on `main` (*Review before publishing*,
   [`.github/rulesets/review-before-publishing.json`](../.github/rulesets/review-before-publishing.json)) requires a
   pull request with one approval from a code owner of the changed files. The `Maintainers` team (and repo admins)
-  may skip that. When someone may not publish yet, the CMS says *"Couldn't publish the entry. Please try again."*:
-  it means the change needs an approval first.
+  may skip that. A second ruleset, *Checks pass before publishing*, requires the automatic checks to pass, and only
+  repo admins may skip it ([checks.md](checks.md)). When someone may not publish yet, the CMS says *"Couldn't
+  publish the entry. Please try again."*: it means the change needs an approval first, or a check failed.
 - **Contributors** (no write access) work through open authoring (`open_authoring: true` in `config.yml`): on their
   first sign-in the CMS offers to fork the repo; their saves go to their fork; *In Review* opens a pull request.
   They never see Publish.
@@ -57,7 +58,11 @@ Contributors: that's the moment your change is sent.
 press *Publish* in the CMS, or *Merge* on GitHub. GitHub never lets you approve your own pull request: an editor's
 own article needs another editor or a maintainer.
 
-**Contributors' changes** come from a fork, so the CMS can't publish them: approve and merge them on GitHub.
+**Contributors' changes** come from a fork, so the CMS can't publish them: approve and merge them on GitHub. For
+someone's first contribution, also press *Approve and run* on the pull request, or its checks never start.
+
+**A check failed?** The pull request's *Checks* tab says which file and line ([checks.md](checks.md)). Fix it in
+the CMS and save again; the checks run again by themselves.
 Maintainers can also tick *"Merge without waiting for requirements to be met (bypass rules)"* on GitHub, but
 approving first leaves a record of who reviewed it.
 
@@ -96,7 +101,8 @@ How it was done on `Cyberheaven/cyberheaven.github.io` (and first on a sandbox c
    `gh api repos/$R/codeowners/errors` should list no errors.
 4. **Repo settings:** `gh api -X PATCH repos/$R -F allow_auto_merge=true -F delete_branch_on_merge=true`
    (the CMS uses auto-merge when checks are still running; merged CMS branches are deleted).
-5. **The rule on `main`:** `gh api -X POST repos/$R/rulesets --input .github/rulesets/review-before-publishing.json`.
+5. **The rules on `main`:** `gh api -X POST repos/$R/rulesets --input .github/rulesets/review-before-publishing.json`,
+   then the same with `.github/rulesets/checks-pass.json` ([checks.md](checks.md)).
    The JSON names the Maintainers team by id; if the team is ever recreated, put the new id in
    (`gh api orgs/Cyberheaven/teams/maintainers --jq .id`). To change the rule later, edit it on GitHub
    (Settings → Rules → Rulesets) and copy it back into the JSON
