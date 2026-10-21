@@ -45,6 +45,16 @@ for (const browserName of ["chrome", "firefox"]) {
   await wait(1200);
   check("← with unsaved changes asks, OK leaves", !hashOf(page).includes("/entries/"), hashOf(page));
 
+  // cms.js: ⋮ → Clear All asks first; Cancel keeps the fields
+  acceptLeave = false;
+  await goTo(page, "#/collections/articles/entries/a-beginners-guide-to-malware-analysis");
+  await page.click('[role="toolbar"][aria-label="Primary"] button[aria-label="Show Editor Options"]');
+  await wait(600);
+  await page.evaluate(() => [...document.querySelectorAll('[role="menuitem"]')].find((m) => m.textContent.trim() === "Clear All").click());
+  await wait(800);
+  const title = await page.$eval('section.field[data-key-path="title"] input', (i) => i.value);
+  check("Clear All asks, Cancel keeps the fields", title !== "", title);
+
   // config.yml: a new article's date is today; cms.js: its preview shows where the title goes
   await goTo(page, "#/collections/articles/new");
   const date = await page.$eval('section.field[data-key-path="date"] input', (i) => i.value);

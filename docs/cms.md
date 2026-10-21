@@ -55,7 +55,11 @@ Things that aren't obvious:
 - **Some rules match names from `config.yml`.** The person icon for team members without a photo matches
   `main[aria-label*="Team members"]`, and the "Start here" rule matches the page's label. Rename the collection
   or page and you must change `theme.css` too. The Assets page's lead line (Sveltia has no description there)
-  is written in `theme.css` as well.
+  is written in `theme.css` as well. The section captions in Pages → Home (Hero, About, Values…) are attached to
+  the first field of each homepage section by its `name`, and recognise the Home editor by its `picksHeading`
+  field: rename or reorder those fields in `config.yml` and update the list in `theme.css`.
+- **Destructive buttons** are a muted red outline (Sveltia's `--sui-error-*` colours), never the white pill used
+  for safe actions. List item buttons (move, ⋮, remove ×) grow to 44px on phones.
 - **Respect `prefers-reduced-motion`** for every animation; keep text contrast at 4.5:1 or more.
 
 ## Behaviour added in `cms.js`
@@ -66,6 +70,7 @@ Things that aren't obvious:
 - **Start here** page (`CMS.registerCustomPage`). A volunteer's first visit in each browser opens it once.
 - **Unsaved changes:** the ← button asks before throwing them away (Sveltia wouldn't); closing the tab asks too.
   The browser's own Back button isn't covered.
+- **Clear All** in the editor's ⋮ menu asks before emptying every field (Sveltia wouldn't).
 - **Logo name:** screen readers hear "CyberHeaven: visit the live site", matching what the logo shows.
 
 ## The editor rewrites Markdown
@@ -92,6 +97,7 @@ node scripts/cms-preview/check.mjs                    # behaviour checks, both b
 node scripts/cms-preview/shoot.mjs /tmp/cms-shots      # screenshots of every view, both browsers, desktop + phone
 ```
 
+The kit links the built site's `dist/_astro` too, so the "Start here" page gets its fonts.
 Run `setup.mjs` again after changing `config.yml` or anything in `src/pages/admin` (it copies or builds those).
 Browsers are expected at `/usr/bin/google-chrome` and `/usr/bin/firefox`; set `CHROME` / `FIREFOX` otherwise.
 

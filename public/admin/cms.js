@@ -217,6 +217,11 @@ document.addEventListener("click", (event) => {
     event.preventDefault();
     event.stopImmediatePropagation();
   }
+  // "Clear All" in the editor's ⋮ menu empties every field at once, also without asking
+  if (event.target.closest?.('[role="menuitem"]')?.textContent.trim() === "Clear All" && !confirm("Clear every field in this entry?")) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }
 }, true);
 window.addEventListener("beforeunload", (event) => { if (unsaved()) event.preventDefault(); });
 

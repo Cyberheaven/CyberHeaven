@@ -21,6 +21,7 @@ execSync("npm run build", { cwd: repo, stdio: "ignore" });
 mkdirSync(admin, { recursive: true });
 for (const dir of ["src", "public"]) link(join(repo, dir), join(out, dir));
 for (const dir of ["media", "assets"]) link(join(repo, "public", dir), join(out, dir));
+link(join(repo, "dist/_astro"), join(out, "_astro")); // fonts used by the "Start here" page
 for (const file of ["theme.css", "logo.webp", "cms.js"]) link(join(repo, "public/admin", file), join(admin, file));
 for (const file of ["preview.css", "youtube.mjs", "start"]) link(join(repo, "dist/admin", file), join(admin, file));
 

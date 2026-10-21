@@ -493,6 +493,42 @@ section.field > header > .required { color: rgb(255 255 255 / 60%); }
 section.field > header > h4 { font-size: 13px; font-weight: 600; color: hsl(var(--sui-foreground-color-2-hsl)); }
 /* More room between top-level fields (fields inside lists and objects keep Sveltia's tighter spacing) */
 section.field[data-key-path]:not([data-key-path*="."]) { padding-block: 22px; }
+/* Pages → Home has ~20 fields: a caption above the first field of each homepage section groups them.
+   The editor is recognised by its picksHeading field (only Home has it). Field names are in config.yml. */
+[aria-label="Content Editor"]:has(section.field[data-key-path="picksHeading"]) section.field:is(
+  [data-key-path="tagline"], [data-key-path="about"], [data-key-path="principlesHeading"], [data-key-path="ticker"],
+  [data-key-path="topicsHeading"], [data-key-path="toolsHeading"], [data-key-path="picksHeading"],
+  [data-key-path="faqHeading"], [data-key-path="contact"])::before {
+  display: block;
+  max-width: 768px;   /* lines up with the field labels, like Sveltia's field header */
+  margin: 8px auto 20px;
+  padding-inline: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 60%);
+}
+section.field[data-key-path="tagline"]::before { content: "Hero"; }
+section.field[data-key-path="about"]::before { content: "About"; }
+section.field[data-key-path="principlesHeading"]::before { content: "Values"; }
+section.field[data-key-path="ticker"]::before { content: "Ticker"; }
+section.field[data-key-path="topicsHeading"]::before { content: "Topics"; }
+section.field[data-key-path="toolsHeading"]::before { content: "Labs"; }
+section.field[data-key-path="picksHeading"]::before { content: "Resources"; }
+section.field[data-key-path="faqHeading"]::before { content: "FAQ"; }
+section.field[data-key-path="contact"]::before { content: "Contact"; }
+/* List item buttons (move, options, remove ×) are 24px: on a phone they get a finger-sized 44px target */
+@media (max-width: 767px) {
+  .header:has(> .end > button[aria-label="Remove"]) { height: 44px; --sui-button-small-height: 44px; }
+}
+/* "Delete" in Sveltia's confirm dialog: a muted red outline instead of the white pill used for safe actions */
+dialog[role="alertdialog"] button.primary[data-label="Delete"] {
+  border: 1px solid var(--sui-error-border-color);
+  background: transparent;
+  color: var(--sui-error-foreground-color);
+}
+dialog[role="alertdialog"] button.primary[data-label="Delete"]:is(:hover, :focus-visible) { background: var(--sui-error-background-color); }
 /* Markdown text boxes (article body, bios) read like the site's articles: larger, airier text. Sveltia already
    caps the edit pane's width, so lines stay about as long as on the site. */
 [data-field-type="markdown"] {
