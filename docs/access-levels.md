@@ -104,11 +104,18 @@ or closed on GitHub. `CODEOWNERS` can stay; without the rule it only requests re
 
 ## Testing changes safely
 
-Test changes to this setup on a throwaway copy of the repo, not on the live one. `Cyberheaven/cms-sandbox` is that
-copy: its `main` is the site with `repo: Cyberheaven/cms-sandbox` in `config.yml` and in `CODEOWNERS`. Run the CMS
-against it locally with `scripts/cms-preview/setup.mjs --github Cyberheaven/cms-sandbox` ([cms.md](cms.md#testing-the-cms-locally))
-and sign in with a token (`gh auth token`). To test a lower level, use a second GitHub account: add it to the
-sandbox as a collaborator with write access (a writer), or with no access at all (a contributor).
+Test changes to this setup on a throwaway copy of the repo, never on the live one. The copy used on 21 Oct 2026
+(`Cyberheaven/cms-sandbox`) was deleted afterwards; to make a new one:
+
+1. `gh repo create Cyberheaven/cms-sandbox --public`, then push `main` to it, with `repo:` in
+   `public/admin/config.yml` changed to `Cyberheaven/cms-sandbox` (one extra commit on a local branch).
+2. Give it the same settings as the real repo (steps 3–5 of [Setting it up on a repo](#setting-it-up-on-a-repo)).
+3. Run the CMS against it locally: `node scripts/cms-preview/setup.mjs /tmp/sb --github Cyberheaven/cms-sandbox`
+   ([cms.md](cms.md#testing-the-cms-locally)), and sign in with a token (`gh auth token`).
+4. To test a lower level, use a second GitHub account: add it to the sandbox as a collaborator with write access
+   (a writer), or with no access at all (a contributor).
+5. Afterwards delete the sandbox, and any forks the test accounts made of it (deleting a repo doesn't delete its
+   forks).
 
 Tested on 21 Oct 2026, in Chrome and Firefox:
 
