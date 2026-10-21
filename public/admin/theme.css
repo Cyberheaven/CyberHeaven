@@ -470,3 +470,23 @@ section.field[data-key-path]:not([data-key-path*="."]) { padding-block: 22px; }
 /* Browser defaults, themed to match */
 ::selection { background: #fff; color: #121212; }
 :root { caret-color: #fff; scrollbar-color: hsl(0 0% 30%) transparent; }
+
+/*
+ * Review workflow (publish_mode: editorial_workflow in config.yml). See docs/access-levels.md.
+ * The board's switch in the top bar reads "Workflow" (Sveltia says "Editorial Workflow", too long for the bar).
+ */
+[role="toolbar"][aria-label="Global"] [aria-label="Switch Page"] [role="radio"][aria-label="Editorial Workflow"]::after { content: "Workflow"; }
+/* Board columns (Drafts, In Review, Ready): plain headings on the page background instead of grey bars */
+.column[role="group"] > .inner > header { background: transparent; border-bottom: 1px solid rgb(255 255 255 / 12%); }
+.column[role="group"] > .inner > header h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.04em; color: #fff; }
+.column[role="group"] .card { border-radius: 16px; }
+/* Publish appears once an entry is Ready: it's the main action then, so it's the white pill like Save */
+[role="toolbar"][aria-label="Primary"] button[data-label="Publish"] {
+  height: 40px;
+  padding: 0 20px;
+  border-color: #fff;
+  background: #fff;
+  color: #121212;
+  font-size: 15px;
+  font-weight: 600;
+}
