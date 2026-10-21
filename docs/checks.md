@@ -10,7 +10,8 @@ Unlike the review rule ([access-levels.md](access-levels.md)), maintainers can't
 
 | Script | Fails when |
 | --- | --- |
-| `scripts/check-content.mjs` | Content contains HTML (other than the interactive widget line) or a link that runs code (`javascript:`), or Markdown the CMS editor would break (HTML tables, `<iframe>`, `* * *`). |
+| `scripts/check-roles.mjs` | Someone who isn't a maintainer changed team roles ([access-levels.md](access-levels.md#the-four-levels)). It asks GitHub for the access of whoever opened the pull request. |
+| `scripts/check-content.mjs` | An article's cover has no alt text; an old `@cyberheaven.eu` email address; the CMS's starting outline notes (✏️) left in. Content contains HTML (other than the interactive widget line) or a link that runs code (`javascript:`), or Markdown the CMS editor would break (HTML tables, `<iframe>`, `* * *`). |
 | `scripts/check-data.mjs` | A category, glossary topic or team role isn't in `src/data/categories.json`; a glossary term or resource link is listed twice; a content file has a field the CMS form (`public/admin/config.yml`) doesn't. |
 | `scripts/check-labs.mjs` | A lab exercise can't be solved, or its answer isn't in its data. |
 | `scripts/check-career.mjs` | A career quiz path can't win, or a run asks too many questions. |
@@ -26,7 +27,8 @@ yourself before pushing:
 
 ```sh
 node scripts/check-content.mjs && node scripts/check-data.mjs && node scripts/check-labs.mjs \
-  && node scripts/check-career.mjs && node scripts/check-youtube.mjs && npm run build && node scripts/check-links.mjs
+  && node scripts/check-career.mjs && node scripts/check-youtube.mjs && node scripts/check-roles.mjs \
+  && npm run build && node scripts/check-links.mjs
 ```
 
 **Why content may not contain HTML.** The site shows HTML written in Markdown as-is, scripts included. The site

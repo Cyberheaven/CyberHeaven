@@ -27,7 +27,7 @@ jobs:
           title="Update Sveltia CMS to $latest (we use $pinned)"
           body="Sveltia CMS $latest is out; \`public/admin/index.html\` loads $pinned.
           What changed: https://github.com/sveltia/sveltia-cms/releases
-          How to update and test it: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/main/docs/cms.md#updating-sveltia."
+          How to update and test it (version and integrity hash): $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/main/docs/cms.md#updating-sveltia."
           issue=$(gh issue list --state open --search 'in:title "Update Sveltia CMS"' --json number --jq '.[0].number')
           if [ -n "$issue" ]; then gh issue edit "$issue" --title "$title" --body "$body"
           else gh issue create --title "$title" --body "$body"; fi

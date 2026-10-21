@@ -37,6 +37,17 @@ jobs:
       - name: YouTube links
         if: ${{ !cancelled() }}
         run: node scripts/check-youtube.mjs
+      # Compares with main as it was when the pull request was opened or last updated
+      - name: Only maintainers change team roles
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          AUTHOR: ${{ github.event.pull_request.user.login || github.actor }}
+          BASE: ${{ github.event.pull_request.base.sha || github.sha }}
+        run: |
+          git fetch --depth=1 origin "$BASE"
+          node scripts/check-roles.mjs
       - id: build
         name: Site builds
         if: ${{ !cancelled() }}

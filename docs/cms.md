@@ -90,6 +90,24 @@ Things that aren't obvious:
   Built with the site, so it shows the published content as of the last deploy. Each row opens the entry
   (`target="_parent"` link to `../#/collections/…`).
 - **Interactive widget** in the article editor's Insert menu (saved as `<div data-widget="…"></div>`).
+- **Tip, Warning, Key takeaways** in the Insert menu: saved as a quote starting with a bold label
+  (`> **Tip:** …`, `> **Key takeaways**` + `> - …` lines), which the site draws as a quote. `check.mjs` tests that
+  the editor keeps them as written.
+- **Starting outline:** a new article's body starts with headings and ✏️ notes (`default` of the body field in
+  `config.yml`). The card lists notes still there, and `check-content.mjs` refuses to publish them (the mark is
+  `outlineMark` in `src/lib/content-rules.mjs`).
+- **Writer's notes in the article preview:** the "On this page" list like the live page (its CSS is copied from
+  `components/Toc.astro` into `preview.css.ts`: keep them alike), glossary terms underlined with their definition
+  on hover (first use of each, from the Glossary entry), "Easier to read" suggestions in the card (sentences over
+  30 words, paragraphs over 120), and "Articles you could link to" (same tags or category) under the Google card.
+- **Tag suggestions:** the Tags inputs suggest tags other articles use (a browser `<datalist>` filled by the
+  preview), and the card flags tags that look alike ("Malware Analysis" / "Malware Analysis Tools").
+- **On save** (`preSave` hook): old `@cyberheaven.eu` addresses become `cyberheavenhq@proton.me` in any entry;
+  in articles, title and excerpt lose stray spaces and duplicate tags go. An article whose body breaks the
+  checks' Markdown rules isn't saved: Sveltia shows "There was an error while saving the entry… Not saved. Body,
+  line N: …" (the first sentence is Sveltia's own). The unsaved changes stay in the editor.
+- **Roles field** for team members: unusable (`inert`, dimmed) for everyone but maintainers. The rule itself is
+  enforced by `scripts/check-roles.mjs` on every pull request.
 - **Start here** page (`CMS.registerCustomPage`). A volunteer's first visit in each browser opens it once.
 - **Unsaved changes:** the ← button asks before throwing them away (Sveltia wouldn't); closing the tab asks too.
   The browser's own Back button isn't covered.
@@ -178,7 +196,11 @@ the latest on npm and, if they differ, opens an issue *"Update Sveltia CMS to �
 than one: while it's open it's updated with the newest version. Close it once the update is merged (or if you
 decide to skip that version; the next release opens a new one). *Actions → Weekly → Run workflow* checks now.
 
-1. Change the version in the script URL in `public/admin/index.html`.
+1. Change the version in the script URL in `public/admin/index.html`, and its `integrity` hash: `setup.mjs` (next
+   step) stops and prints the right one, or run
+   `curl -sL <script URL> | openssl dgst -sha384 -binary | openssl base64 -A` and put `sha384-` in front. The hash
+   makes browsers refuse the script if unpkg ever serves something else for that version. It covers only this
+   script: Sveltia loads a few more files from unpkg and jsdelivr while it runs.
 2. Run `setup.mjs`, `check.mjs` and `shoot.mjs` (above), and compare the screenshots with ones taken before the
    update (take those first, on the old version; the sign-in background is animated, so it always differs).
    Variable names have stayed the same so far, but Sveltia doesn't promise that.

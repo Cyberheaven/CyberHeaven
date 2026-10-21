@@ -20,6 +20,12 @@ The rules are enforced by GitHub, not by the CMS: the CMS just follows them. How
 Which files editors may approve is set in [`.github/CODEOWNERS`](../.github/CODEOWNERS). Team roles shown on the
 site's `/team` page (Founder, Author…) are only for display; they aren't linked to these GitHub teams.
 
+**Only maintainers change team roles.** A pull request that changes a team member's *Roles* (or adds someone with
+roles, or changes the list of roles in Settings → Categories) fails the checks unless whoever opened it has admin
+or maintain access to the repo ([`scripts/check-roles.mjs`](../scripts/check-roles.mjs)), so nobody can make
+themselves "Maintainer" on the team page. An approval doesn't change that: a maintainer makes the change instead.
+In the CMS the Roles field is dimmed and can't be used by anyone but maintainers (tidying only; the check decides).
+
 The repo is public, so there's no separate read-only level: anyone can already read everything.
 
 **The sidebar follows the level, loosely.** Only maintainers see *Pages* and *Settings* in the CMS sidebar (the

@@ -92,7 +92,25 @@ collections:
       - name: body
         label: Body
         widget: markdown
-        hint: "Interactive widget: Insert → Interactive widget. YouTube video: paste the link on its own line."
+        hint: "Interactive widget: Insert → Interactive widget. YouTube video: paste the link on its own line. Tip, Warning and Key takeaways boxes: Insert menu."
+        # A new article starts with this outline. Replace each ✏️ note: the checks refuse to publish while one is left
+        # (the mark is outlineMark in src/lib/content-rules.mjs).
+        default: |-
+          ## What you'll learn
+
+          ✏️ One or two sentences: what the reader will be able to do after reading this.
+
+          ## Before you start
+
+          ✏️ What the reader needs first: tools, accounts, or another article to read. Delete this section if nothing.
+
+          ## Step 1: Rename this heading
+
+          ✏️ Explain the first step. Add more steps the same way, each with its own heading.
+
+          ## Key takeaways
+
+          ✏️ Three or four short points to remember. Insert → Key takeaways makes a box for them.
 
   # The text of every page, one entry per page. Files live in src/content/pages.
   # Text in {curly brackets} is filled in when the site is built, e.g. {count} becomes a number.
@@ -361,7 +379,7 @@ collections:
         search_fields: ["roles.*.name"]
         display_fields: ["roles.*.name"]
         multiple: true
-        hint: Add or rename roles under Settings → Categories.
+        hint: Only maintainers can change roles (the checks refuse it from anyone else). Maintainers add or rename roles under Settings → Categories.
       - { name: location, label: Based in, widget: string, required: false, hint: "e.g. Berlin, Germany" }
       - { name: joined, label: Joined CyberHeaven, widget: datetime, required: false, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, picker_utc: true }
       - name: links

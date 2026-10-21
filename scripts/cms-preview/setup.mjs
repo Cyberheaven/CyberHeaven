@@ -4,7 +4,8 @@
 //   node scripts/cms-preview/setup.mjs [folder] --github owner/repo → real GitHub repo (e.g. a sandbox), sign in with a token
 // Then serve the folder:  python3 -m http.server 4399 --directory <folder>   and open http://localhost:4399/admin/index.html
 import { execSync } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync, readdirSync, statSync, symlinkSync, rmSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, statSync, symlinkSync, rmSync } from "node:fs";
 import { join, resolve, relative } from "node:path";
 
 const args = process.argv.slice(2);
@@ -28,8 +29,17 @@ for (const file of ["preview.css", "youtube.mjs", "content-rules.mjs", "start", 
 // The same Sveltia version as the real CMS, saved locally
 const page = readFileSync(join(repo, "public/admin/index.html"), "utf8");
 const cdn = page.match(/https:\/\/unpkg\.com\/@sveltia\/cms@[\d.]+\/dist\/sveltia-cms\.js/)[0];
-console.log(`Downloading ${cdn}…`);
-writeFileSync(join(admin, "sveltia-cms.js"), await (await fetch(cdn)).text());
+// The integrity hash in index.html must belong to this version, or browsers refuse to run it. A copy already in
+// the folder with the right hash is kept, so running this again doesn't download it again.
+const hashOf = (bytes) => `sha384-${createHash("sha384").update(bytes).digest("base64")}`;
+const saved = join(admin, "sveltia-cms.js");
+if (!existsSync(saved) || !page.includes(`integrity="${hashOf(readFileSync(saved))}"`)) {
+  console.log(`Downloading ${cdn}…`);
+  const sveltia = Buffer.from(await (await fetch(cdn)).arrayBuffer());
+  if (!page.includes(`integrity="${hashOf(sveltia)}"`))
+    throw new Error(`public/admin/index.html: the integrity hash doesn't match ${cdn}. It should be integrity="${hashOf(sveltia)}"`);
+  writeFileSync(saved, sveltia);
+}
 
 let config = readFileSync(join(repo, "public/admin/config.yml"), "utf8");
 let index = page.replace(cdn, "sveltia-cms.js");

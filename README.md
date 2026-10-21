@@ -117,7 +117,8 @@ links), and a change can't be published until they pass. Run them yourself befor
 
 ```sh
 node scripts/check-content.mjs && node scripts/check-data.mjs && node scripts/check-labs.mjs \
-  && node scripts/check-career.mjs && node scripts/check-youtube.mjs && npm run build && node scripts/check-links.mjs
+  && node scripts/check-career.mjs && node scripts/check-youtube.mjs && node scripts/check-roles.mjs \
+  && npm run build && node scripts/check-links.mjs
 ```
 
 ## How it’s built

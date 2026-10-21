@@ -412,6 +412,9 @@ nav.primary-sidebar :is([role="treeitem"]:focus-visible > .row, [role="option"]:
 }
 /* The group headings ("Collections", "Your Site"), in the site's small caption style */
 nav.primary-sidebar [role="group"] > .label { font-size: 12px; }
+/* Team roles are for maintainers only too: cms.js makes the field unusable for everyone else; this shows it */
+body[data-level="volunteer"] section.field[data-key-path="roles"] .field-wrapper { opacity: 0.5; }
+
 /* Pages and Settings are for maintainers only: everyone else gets body[data-level="volunteer"] from cms.js. This
    matches the collections' labels in config.yml. Settings is last, so the line above it goes too. */
 body[data-level="volunteer"] [aria-label="Collection List"] :is(

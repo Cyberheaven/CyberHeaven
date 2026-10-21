@@ -7,7 +7,10 @@
     <meta name="robots" content="noindex">
   </head>
   <body>
-    <script src="https://unpkg.com/@sveltia/cms@0.250.0/dist/sveltia-cms.js"></script>
+    <!-- integrity: the browser refuses the script if unpkg ever serves different bytes for this version. Change it with
+         the version (docs/cms.md "Updating Sveltia" has the command). -->
+    <script src="https://unpkg.com/@sveltia/cms@0.250.0/dist/sveltia-cms.js"
+      integrity="sha384-ZsKrJb+2fz2LQAmNGNALsLSBhiMyQEzAbodz2oj3+UYyp+OKIEwEJB259KvvZZo+" crossorigin="anonymous"></script>
     <!-- CyberHeaven look for the CMS. It must come after the script above: Sveltia adds its own styles
          to <head> when it starts, and later styles win. After updating Sveltia, check theme.css still applies. -->
     <link rel="stylesheet" href="theme.css">

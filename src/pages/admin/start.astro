@@ -54,7 +54,7 @@ const places = [
           <thead><tr><th>In the sidebar</th><th>What you can change there</th></tr></thead>
           <tbody>{places.map(([where, what]) => <tr><td><strong>{where}</strong></td><td>{what}</td></tr>)}</tbody>
         </table>
-        <p>Pages and Settings only show up for maintainers. Want something changed there? Ask on Discord.</p>
+        <p>Pages and Settings only show up for maintainers, and only maintainers can change someone’s team roles. Want something changed there? Ask on Discord.</p>
         <p>A few things still need code: the career quiz questions, some labs (Shell quest, Real or fake link, Hash and salt) and small interface text like search boxes and buttons. Ask on Discord if you want to change one.</p>
 
         <h2>Writing an article</h2>
@@ -63,7 +63,10 @@ const places = [
           <li>Above the preview, <em>Before you submit</em> lists what to fix as you type: a missing excerpt or alt text, skipped headings, links to pages that don’t exist, and anything that would stop the article from being published.</li>
           <li>Below the preview you can see how the article will look in Google and when its link is shared. Keep the excerpt under 160 characters so Google shows all of it.</li>
           <li>To add a YouTube video, paste its link on a line of its own.</li>
-          <li>To add an interactive widget, use <em>Insert → Interactive widget</em> in the editor.</li>
+          <li>A new article starts with an outline. Replace every ✏️ note with your own text: an article can’t be published while one is left.</li>
+          <li>To add an interactive widget, or a <em>Tip</em>, <em>Warning</em> or <em>Key takeaways</em> box, use the editor’s <em>Insert</em> menu.</li>
+          <li>Tags suggest the ones other articles already use: pick one of those when it fits, so readers find related articles.</li>
+          <li>In the preview, dotted words are in the site’s glossary: hover to see the definition.</li>
           <li>Keep lists at the left edge and don’t paste HTML (like tables or embeds copied from another site): the editor can garble it when it saves.</li>
           <li>Images you upload are turned into WebP and shrunk to fit 2000 pixels, so pages stay quick to load.</li>
           <li>To take an article off the site without deleting it, turn on <em>Hide from the site</em>. It shows as <em>Hidden</em> in the list, and turning it off brings it back.</li>

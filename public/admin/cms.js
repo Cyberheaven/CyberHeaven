@@ -10,11 +10,12 @@
  * Not shown in the preview: animations, the "On this page" list, comments, and interactive widgets
  * (they appear as a labelled box), because the site's scripts don't run here.
  *
- * Also adds "Interactive widget" to the article editor's Insert menu (registerEditorComponent below), the
- * "Start here" guide to the sidebar, and a "Before you submit" card at the top of the article preview.
+ * Also adds "Interactive widget", "Tip", "Warning" and "Key takeaways" to the article editor's Insert menu
+ * (registerEditorComponent below), the "Start here" and "Content health" pages, the "Before you submit" card at the
+ * top of the article preview and notes for writers under it, and the save hook (preSave) near the end.
  */
 import { youtubeHtml, youtubeId } from "./youtube.mjs";
-import { articleProblems } from "./content-rules.mjs";
+import { articleProblems, bodyProblems } from "./content-rules.mjs";
 
 const { React } = CMS;
 const h = React.createElement;
@@ -82,11 +83,68 @@ CMS.registerEditorComponent({
   toPreview: ({ name }) => widgetBox(name),
 });
 
+// Tip, Warning and Key takeaways boxes. Each is saved as a quote that starts with a bold label, which the site
+// already draws as a quote, so the site needs nothing new. The text is escaped: it's shown inside the CMS.
+const escape = (text) => String(text ?? "").replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
+for (const [id, label, icon] of [["tip", "Tip", "lightbulb"], ["warning", "Warning", "warning"]])
+  CMS.registerEditorComponent({
+    id,
+    label,
+    icon,
+    fields: [{ name: "text", label, widget: "string" }],
+    pattern: new RegExp(`^> \\*\\*${label}:\\*\\* (.*)$`, "m"),
+    fromBlock: (match) => ({ text: match[1] }),
+    toBlock: ({ text }) => `> **${label}:** ${text ?? ""}`,
+    toPreview: ({ text }) => `<blockquote><p><strong>${label}:</strong> ${escape(text)}</p></blockquote>`,
+  });
+CMS.registerEditorComponent({
+  id: "takeaways",
+  label: "Key takeaways",
+  icon: "checklist",
+  fields: [{ name: "points", label: "Points", widget: "list" }],
+  pattern: /^> \*\*Key takeaways\*\*\n((?:> [-*] .*(?:\n|$))+)/m,
+  fromBlock: (match) => ({ points: match[1].trim().split("\n").map((line) => line.replace(/^> [-*] /, "")) }),
+  toBlock: ({ points }) => ["> **Key takeaways**", ...[...(points ?? [])].map((p) => `> - ${p}`)].join("\n"),
+  toPreview: ({ points }) => `<blockquote><p><strong>Key takeaways</strong></p><ul>${[...(points ?? [])].map((p) => `<li>${escape(p)}</li>`).join("")}</ul></blockquote>`,
+});
+
+// Glossary terms in the article preview get a dotted underline with their definition on hover, so writers see which
+// words readers can look up (the live article doesn't change). Only each term's first use, and not in links, code
+// or headings.
+function markTerms(root, terms) {
+  if (!terms?.length) return;
+  const definitions = new Map(terms.map((t) => [t.term.toLowerCase(), t.definition]));
+  const names = [...definitions.keys()].sort((a, b) => b.length - a.length).map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const pattern = new RegExp(`\\b(${names.join("|")})\\b`, "gi");
+  const seen = new Set([...root.querySelectorAll("abbr.cms-term")].map((a) => a.textContent.toLowerCase()));
+  const walker = root.ownerDocument.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode: (n) => (n.parentElement.closest("a, code, pre, h1, h2, h3, h4, abbr, .cms-widget") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+  });
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  for (const node of nodes) {
+    const found = [...node.nodeValue.matchAll(pattern)].filter((m) => !seen.has(m[0].toLowerCase()) && seen.add(m[0].toLowerCase()));
+    for (const m of found.reverse()) { // from the end, so the earlier positions stay right
+      const word = node.splitText(m.index);
+      word.splitText(m[0].length);
+      const abbr = root.ownerDocument.createElement("abbr");
+      abbr.className = "cms-term";
+      abbr.title = definitions.get(m[0].toLowerCase());
+      word.replaceWith(abbr);
+      abbr.append(word);
+    }
+  }
+}
+
 // The Markdown body as Sveltia draws it, kept in the site's markup. Sveltia wraps the text in a few
 // extra boxes, so the "prose" class goes on the innermost one: the site's spacing rules (".prose > *")
 // then apply exactly as on the live page.
-function Prose({ widget, className }) {
+function Prose({ widget, className, terms }) {
   const ref = React.useRef(null);
+  const termsRef = React.useRef(terms);
+  const updateRef = React.useRef(null);
+  termsRef.current = terms;
+  React.useEffect(() => updateRef.current?.(), [terms]); // the glossary loads after the text is drawn
   React.useEffect(() => {
     const root = ref.current;
     if (!root) return;
@@ -95,8 +153,10 @@ function Prose({ widget, className }) {
       while (inner.children.length === 1 && inner.firstElementChild.matches("div:not([data-widget], .cms-widget), section")) inner = inner.firstElementChild;
       if (!inner.classList.contains("prose")) inner.classList.add("prose"); // adding it again would wake the observer forever
       siteMarkup(inner);
+      markTerms(inner, termsRef.current);
     };
     update();
+    updateRef.current = update;
     const watch = new MutationObserver(update);
     watch.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
     return () => watch.disconnect();
@@ -126,13 +186,44 @@ function Checklist({ entry, getCollection }) {
     // Like the site: hidden articles and files starting with _ have no page
     articles: (await getCollection("articles")).filter((a) => !a.get("data").get("draft") && !a.get("slug").startsWith("_")).map((a) => a.get("slug")),
     team: (await getCollection("people")).map((p) => p.get("slug")).filter((id) => !id.startsWith("_")),
+    tags: [...new Set((await getCollection("articles")).flatMap((a) => a.get("data").get("tags")?.toJS?.() ?? []))],
   }), []);
+  React.useEffect(() => { if (live) suggestTags(live.tags); }, [live]);
   const found = articleProblems(entry.get("data").toJS(), live);
   if (entry.getIn(["data", "draft"])) found.push({ text: "Hide from the site is on: this article won't appear on the site." });
+  const notes = readingNotes(entry.getIn(["data", "body"]) || "");
+  const list = (items) => h("ul", null, items.map((f, i) => h("li", { key: i }, f.text, f.quote && h("code", null, quoted(f.quote)))));
   return h("aside", { className: "shell", "aria-label": "Before you submit" },
     h("div", { className: "cms-check", "data-ok": found.length ? null : "" },
       h("p", { className: "body-sb" }, found.length ? `Before you submit: ${found.length} to fix` : "Before you submit: nothing to fix"),
-      found.length > 0 && h("ul", null, found.map((f, i) => h("li", { key: i }, f.text, f.quote && h("code", null, quoted(f.quote)))))));
+      found.length > 0 && list(found),
+      notes.length > 0 && h("p", { className: "cms-check-sub" }, "Easier to read (suggestions, not required)"),
+      notes.length > 0 && list(notes)));
+}
+
+// Sentences over 30 words and paragraphs over 120: most readers are beginners. Code, headings, lists, tables and
+// quotes are skipped. Up to 5 notes, longest first.
+function readingNotes(body) {
+  const notes = [];
+  const prose = body.replace(/```[\s\S]*?(```|$)/g, "").split(/\n\s*\n/).map((p) => p.trim()).filter((p) => p && !/^(#|\||>|[-*+] |\d+\.|!\[|<)/.test(p));
+  const words = (text) => text.replace(/\]\([^)]*\)/g, "]").split(/\s+/).filter(Boolean).length;
+  for (const paragraph of prose) {
+    if (words(paragraph) > 120) notes.push({ n: words(paragraph), text: `A long paragraph (${words(paragraph)} words): split it in two.`, quote: paragraph });
+    for (const sentence of paragraph.split(/(?<=[.!?])\s+/))
+      if (words(sentence) > 30) notes.push({ n: words(sentence), text: `A long sentence (${words(sentence)} words): split it up.`, quote: sentence });
+  }
+  return notes.sort((a, b) => b.n - a.n).slice(0, 5);
+}
+
+// The Tags field suggests tags other articles use, as you type (a browser list). cms.js links the inputs to it below.
+function suggestTags(tags) {
+  let list = document.getElementById("ch-tags");
+  if (!list) {
+    list = document.createElement("datalist");
+    list.id = "ch-tags";
+    document.body.append(list);
+  }
+  list.replaceChildren(...[...tags].sort().map((tag) => Object.assign(document.createElement("option"), { value: tag })));
 }
 
 // ---------- How the article shows up in Google and when shared ----------
@@ -159,6 +250,32 @@ function SearchCard({ title, excerpt, slug }) {
         h("p", null, cut(excerpt, 110)))));
 }
 
+// Articles that share a tag or the category: worth linking to from this one
+function Related({ getCollection, slug, category, tags }) {
+  const all = useLoaded(async () => (await getCollection("articles")).map((a) => ({ id: a.get("slug"), ...a.get("data").toJS() })), []) ?? [];
+  const related = all
+    .filter((a) => a.id !== slug && !a.draft && !a.id.startsWith("_"))
+    .map((a) => ({ ...a, shared: (a.tags ?? []).filter((t) => tags.includes(t)).length + (a.category === category ? 1 : 0) }))
+    .filter((a) => a.shared)
+    .sort((a, b) => b.shared - a.shared)
+    .slice(0, 5);
+  return related.length > 0 && h("aside", { className: "shell cms-search", "aria-label": "Articles you could link to" },
+    h("p", { className: "caption" }, "Articles you could link to (same tags or category)"),
+    h("ul", { className: "cms-related" }, related.map((a) => h("li", { key: a.id }, a.title, h("code", null, `/articles/${a.id}`)))));
+}
+
+// The "On this page" list (components/Toc.astro): the body's ## headings, when there are two or more
+function Toc({ body }) {
+  let fence = false;
+  const items = body.split("\n").filter((line) => {
+    if (line.startsWith("```")) fence = !fence;
+    return !fence && /^## /.test(line);
+  }).map((line) => line.slice(3).replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_`]/g, "").trim());
+  return items.length > 1 && h("nav", { className: "toc", "aria-label": "On this page" },
+    h("p", { className: "caption muted" }, "On this page"),
+    h("ol", null, items.map((text, i) => h("li", { key: i }, h("a", { href: "#" }, text)))));
+}
+
 // ---------- Article: src/pages/articles/[slug].astro ----------
 
 function ArticlePreview({ entry, widgetFor, getAsset, getCollection }) {
@@ -172,6 +289,7 @@ function ArticlePreview({ entry, widgetFor, getAsset, getCollection }) {
   const authorId = get("author");
   // A new article has no author yet (an empty string), which would break the whole preview
   const author = useLoaded(async () => (authorId ? (await getCollection("people", authorId))?.get("data") : null), [authorId]);
+  const terms = useLoaded(async () => (await getCollection("glossary")).find((e) => e.getIn(["data", "terms"]))?.getIn(["data", "terms"]).toJS(), []);
   const name = author?.get("name") || authorId || "";
   // ponytail: only the bio's first paragraph, with links/emphasis stripped; the card shows 3 lines of it anyway
   const bio = (author?.get("body") || "").trim().split(/\n\s*\n/)[0].replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_`]/g, "");
@@ -192,9 +310,10 @@ function ArticlePreview({ entry, widgetFor, getAsset, getCollection }) {
         h("div", { className: "post-cover-clip" }, h("img", { src: String(getAsset(cover) ?? cover), alt: get("coverAlt") || "" }))),
       h("div", { className: "shell post-layout" },
         h("aside", { className: "post-aside" },
+          h(Toc, { body }),
           tags.length > 0 && h("ul", { className: "tag-list", "aria-label": "Tags" }, tags.map((t) => h("li", { key: t }, h("a", { href: "/articles" }, t))))),
         h("div", { className: "post-main" },
-          h(Prose, { widget: widgetFor("body") }),
+          h(Prose, { widget: widgetFor("body"), terms }),
           name && h("aside", { className: "author-card", "aria-label": "About the author" },
             h("a", { href: "/team", className: "author-card-who" },
               h(Avatar, { name, src: author?.get("avatar"), size: 64 }),
@@ -204,7 +323,8 @@ function ArticlePreview({ entry, widgetFor, getAsset, getCollection }) {
                 author?.get("headline") && h("span", { className: "body muted" }, author.get("headline")))),
             bio && h("div", { className: "body muted author-card-bio" }, h("p", null, bio)),
             h("a", { className: "text-link body-sb", href: "/team" }, "View profile", h(Icon, { name: "arrow-right" })))))),
-    h(SearchCard, { title, excerpt: (get("excerpt") || "").trim(), slug: entry.get("slug") }));
+    h(SearchCard, { title, excerpt: (get("excerpt") || "").trim(), slug: entry.get("slug") }),
+    h(Related, { getCollection, slug: entry.get("slug"), category: get("category"), tags }));
 }
 
 // ---------- Team member: src/pages/team/[person].astro ----------
@@ -255,6 +375,26 @@ CMS.registerPreviewTemplate("articles", ArticlePreview);
 CMS.registerPreviewTemplate("people", PersonPreview);
 
 // ---------- Small fixes around Sveltia ----------
+
+// Every save: old @cyberheaven.eu email addresses become the project's (in any entry), and in articles the title and
+// excerpt lose stray spaces and tags listed twice go. The change shows in the review on GitHub.
+// An article whose body breaks the pull request checks' Markdown rules (HTML, links that run code, Markdown the
+// editor breaks) isn't saved: the message names the first problem, and "Before you submit" lists them all. Nothing is
+// lost: Sveltia keeps the unsaved changes in the browser and offers "Restore Draft".
+const fixEmails = (value) =>
+  typeof value === "string" ? value.replace(/[\w.+-]+@cyberheaven\.eu\b/gi, "cyberheavenhq@proton.me")
+  : value?.map ? value.map(fixEmails) : value;
+CMS.registerEventListener({
+  name: "preSave",
+  handler: ({ entry }) => {
+    let data = fixEmails(entry.get("data"));
+    if (entry.get("collection") !== "articles") return data;
+    const problem = bodyProblems(data.get("body") || "")[0];
+    if (problem) throw new Error(`Not saved. Body, line ${problem.line}: ${problem.message}.`);
+    for (const key of ["title", "excerpt"]) if (typeof data.get(key) === "string") data = data.set(key, data.get(key).trim());
+    return data.update("tags", (tags) => tags?.toOrderedSet?.().toList() ?? tags);
+  },
+});
 
 // Sveltia enables Save on a new entry before anything is typed, which lit the "unsaved" ring (theme.css) on an
 // empty form. Until the first edit, body[data-fresh] is set: theme.css hides the ring and ← leaves without asking.
@@ -315,6 +455,11 @@ let seenStart = true;
 try { seenStart = !!localStorage.getItem("ch-seen-start"); } catch {}
 new MutationObserver(() => {
   document.querySelector('button[aria-label="Visit Live Site"]')?.setAttribute("aria-label", "CyberHeaven: visit the live site");
+  for (const input of document.querySelectorAll('section.field[data-key-path="tags"] input[aria-label="Item Value"]:not([list])')) input.setAttribute("list", "ch-tags");
+  // Only maintainers may change a team member's roles (scripts/check-roles.mjs enforces it on GitHub): for everyone
+  // else the field can't be used, which theme.css shows by dimming it
+  const roles = document.querySelector('[aria-label="Content Editor"] section.field[data-key-path="roles"] .field-wrapper');
+  if (roles && roles.inert !== (document.body.dataset.level === "volunteer")) roles.inert = document.body.dataset.level === "volunteer";
   // On phones the editor bar has no entry title: theme.css shows this one ("Articles › Title – CyberHeaven CMS")
   const spacer = document.querySelector('[aria-label="Content Editor"] [role="toolbar"][aria-label="Primary"] > .inner > .spacer');
   const title = document.title.replace(/ – .*$/, "").split(" › ").pop();

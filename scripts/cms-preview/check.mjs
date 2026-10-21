@@ -99,12 +99,12 @@ for (const browserName of ["chrome", "firefox"]) {
   let previewText = "";
   for (const frame of page.frames()) previewText += await frame.evaluate(() => document.body?.innerText ?? "").catch(() => "");
   check("new article preview shows 'Start with a title'", previewText.includes("Start with a title"));
-  check("new article preview has no reading time", !previewText.includes("min read"));
+  check("new article starts with the outline", previewText.includes("What you'll learn") && previewText.includes("✏️"));
 
   // Sveltia itself: an edit in the rich text editor re-writes the whole body. Before 0.249.1 it dropped "\" before
   // $ or < in table code spans (sveltia-cms#1100) and turned lists indented by 1-3 spaces into code blocks (#1101)
   const toggleMarkdown = () => page.click('section.field[data-key-path="body"] button[aria-label^="Edit in"]');
-  const body = "Paths:\n\n| Path |\n| --- |\n| `C:\\$MFT` |\n\nList:\n\n  * one\n  * two";
+  const body = "Paths:\n\n| Path |\n| --- |\n| `C:\\$MFT` |\n\nList:\n\n  * one\n  * two\n\n> **Tip:** Save often.\n\n> **Key takeaways**\n> - first\n> - second";
   await toggleMarkdown();
   await wait(800);
   await page.$eval('section.field[data-key-path="body"] textarea', (t, value) => {
@@ -123,6 +123,8 @@ for (const browserName of ["chrome", "firefox"]) {
   const saved = await page.$eval('section.field[data-key-path="body"] textarea', (t) => t.value);
   const rewritten = saved.includes("Paths:!"); // the typed "!" shows the editor really re-wrote the body
   check("editor keeps \\ in table code", rewritten && saved.includes("`C:\\$MFT`"), saved.split("\n")[4]);
+  // cms.js: Tip and Key takeaways (Insert menu) survive the editor's rewrite as written
+  check("editor keeps Tip and Key takeaways", rewritten && saved.includes("> **Tip:** Save often.") && saved.includes("> **Key takeaways**\n> - first\n> - second"), JSON.stringify(saved.slice(saved.indexOf("> **Tip"))));
   check("editor keeps indented lists as lists", rewritten && saved.includes("\n* one"), JSON.stringify(saved.slice(saved.indexOf("one") - 6)));
   acceptLeave = true; // the article now has unsaved changes
 
@@ -233,6 +235,10 @@ for (const browserName of ["chrome", "firefox"]) {
     await wait(3000);
     const shown = await sidebar();
     check(`${level} sidebar`, shown === expected, shown);
+    // cms.js + theme.css: only maintainers can use a team member's Roles field
+    await goTo(page, "#/collections/people/entries/purpleshonen");
+    const locked = await page.$eval('section.field[data-key-path="roles"] .field-wrapper', (w) => w.inert);
+    check(`${level}: Roles field ${level === "volunteer" ? "locked" : "usable"}`, locked === (level === "volunteer"), String(locked));
   }
 
   await browser.close();

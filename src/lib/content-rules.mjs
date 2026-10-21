@@ -52,8 +52,9 @@ export function bodyProblems(body) {
 
 // What to fix in an article before it goes live, as { text, quote } (quote: the line of Markdown it's about).
 // article: the article's fields as plain values, with its Markdown as body. live: the addresses of the articles and
-// people on the site ({ articles: [...], team: [...] }), or null to skip the link check. bodyProblems() would also
-// stop it from being published; the rest are good habits the checks don't enforce.
+// people on the site and every tag in use ({ articles: [...], team: [...], tags: [...] }), or null to skip those
+// checks. bodyProblems() and the leftover outline would also stop it from being published (check-content.mjs);
+// the rest are good habits the checks don't enforce.
 export function articleProblems(article, live) {
   const found = [];
   const excerpt = (article.excerpt || "").trim();
@@ -61,6 +62,12 @@ export function articleProblems(article, live) {
   if (!excerpt) found.push({ text: "No excerpt: it's the summary on the articles list and in Google results." });
   else if (excerpt.length > 160) found.push({ text: `The excerpt is ${excerpt.length} characters: Google cuts it at about 160.` });
   if (article.cover && !(article.coverAlt || "").trim()) found.push({ text: "The cover image has no alt text (Cover alt text)." });
+  for (const tag of article.tags ?? []) {
+    const close = live?.tags?.find((other) => other !== tag && similar(other, tag));
+    if (close && !(article.tags.includes(close) && close < tag)) // a pair in this article: once
+      found.push({ text: `The tag “${tag}” looks like “${close}”: if they mean the same, use one, so their articles are listed together.` });
+  }
+  if (body.includes(outlineMark)) found.push({ text: `The starting outline’s ${outlineMark} notes are still there: replace them with your text.` });
   if (/cyberheaven\.eu/i.test(`${article.title} ${excerpt}`)) found.push({ text: "The title or excerpt mentions the old cyberheaven.eu site." });
   for (const { line, message } of bodyProblems(body)) found.push({ text: message[0].toUpperCase() + message.slice(1), quote: body.split("\n")[line - 1] });
   let fence = false;
@@ -78,4 +85,15 @@ export function articleProblems(article, live) {
       if (live && !live[kind].includes(id)) found.push({ text: `Link to ${kind === "team" ? "a team member" : "an article"} that isn't on the site: /${kind}/${id}`, quote: line });
   }
   return found;
+}
+
+// A new article's body starts with an outline (public/admin/config.yml); its notes start with this mark
+export const outlineMark = "✏️";
+
+// Tags that are probably the same thing: "Malware Analysis" and "malware-analysis tools", "Linux Command" and
+// "Linux Commands", but not "Linux" and "Linux Networking" (the shorter must be most of the longer)
+const tagKey = (tag) => tag.toLowerCase().replace(/[^a-z0-9]/g, "").replace(/s$/, "");
+function similar(a, b) {
+  const [short, long] = [tagKey(a), tagKey(b)].sort((x, y) => x.length - y.length);
+  return long.includes(short) && short.length >= 0.7 * long.length;
 }

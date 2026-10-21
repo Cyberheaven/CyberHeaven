@@ -34,6 +34,15 @@ const extra = `
 .cms-share { padding: 0; overflow: hidden; }
 .cms-share img { display: block; width: 100%; aspect-ratio: 1.91; object-fit: cover; }
 .cms-share > div { padding: 14px 22px 18px; }
+.cms-check-sub { margin-top: 16px; color: var(--white); }
+.cms-related { display: grid; gap: 10px; padding-left: 20px; color: var(--white-60); }
+.cms-related code { display: block; font-size: 13px; color: var(--white-40); }
+/* Glossary terms (cms.js markTerms): the definition shows on hover */
+abbr.cms-term { text-decoration: underline dotted var(--white-40); text-underline-offset: 4px; cursor: help; }
+/* "On this page" (copied from components/Toc.astro, whose styles are scoped to the site page): keep them alike */
+.toc { display: flex; flex-direction: column; gap: 14px; margin-bottom: 32px; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border-left: 1px solid var(--white-20); }
+.toc a { display: block; padding: 6px 0 6px 16px; margin-left: -1px; border-left: 1px solid transparent; font-size: 14px; line-height: 1.4; color: var(--white-60); }
 .cms-check code { display: block; margin-top: 2px; font-size: 13px; color: var(--white-40); overflow-wrap: anywhere; }
 `;
 
