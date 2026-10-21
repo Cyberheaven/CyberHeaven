@@ -1,4 +1,5 @@
-# Weekly look-outs that open an issue instead of failing anything. See docs/cms.md#updating-sveltia.
+# Weekly look-outs that open (or update) an issue instead of failing anything: a newer Sveltia, dead links in the
+# content, a broken sign-in service. See docs/hosting.md#weekly-look-outs.
 name: Weekly
 
 on:
@@ -16,7 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # One open issue at most: it's updated while it stays open, and the next one opens after it's closed
       - env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -28,6 +28,36 @@ jobs:
           body="Sveltia CMS $latest is out; \`public/admin/index.html\` loads $pinned.
           What changed: https://github.com/sveltia/sveltia-cms/releases
           How to update and test it (version and integrity hash): $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/main/docs/cms.md#updating-sveltia."
-          issue=$(gh issue list --state open --search 'in:title "Update Sveltia CMS"' --json number --jq '.[0].number')
-          if [ -n "$issue" ]; then gh issue edit "$issue" --title "$title" --body "$body"
-          else gh issue create --title "$title" --body "$body"; fi
+          sh .github/issue.sh "Update Sveltia CMS" "$title" "$body"
+
+  links:
+    name: Dead links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/check-external-links.mjs > links.txt && { cat links.txt; exit 0; }
+          cat links.txt
+          sh .github/issue.sh "Dead links" "Dead links in the content" "$(cat links.txt)
+
+          Fix each link in the CMS (the article, page or list it's in), or remove it. Close this issue when they're done.
+          Only pages that are gone count; sites that refuse automated visits are skipped. How it works: \`scripts/check-external-links.mjs\`."
+
+  signin:
+    name: Sign-in service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # The tests from docs/cms-login.md: the service refuses other sites, and sends ours on to GitHub
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          W=$(grep -oP '^\s+base_url:\s*\K\S+' public/admin/config.yml)
+          refused=$(curl -s -m 30 "$W/auth?provider=github&site_id=evil.example" | grep -c UNSUPPORTED_DOMAIN)
+          ours=$(curl -s -m 30 -o /dev/null -w "%{http_code}" "$W/auth?provider=github&site_id=cyberheaven.github.io")
+          echo "$W: other site refused: $refused, ours: $ours"
+          [ "$refused" = 1 ] && [ "$ours" = 302 ] && exit 0
+          sh .github/issue.sh "Sign-in service" "Sign-in service isn't working" "The weekly test of $W failed (another site refused: $refused, expected 1; ours answered $ours, expected 302).
+          Volunteers probably can't sign in to the CMS. What to check: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/main/docs/cms-login.md"

@@ -38,6 +38,19 @@ through the same checks and review as any change: if the checks pass, a maintain
 failing step says what the update broke. Sveltia CMS isn't an npm package here, so it's watched separately
 ([cms.md](cms.md#updating-sveltia)).
 
+## Weekly look-outs
+
+Every Monday [`.github/workflows/weekly.yml`](../.github/workflows/weekly.yml) runs three jobs. None of them fails
+anything: each opens an issue when it finds something, or updates its issue if one is already open
+([`.github/issue.sh`](../.github/issue.sh)), so there's never a pile. Close the issue once it's dealt with.
+*Actions → Weekly → Run workflow* runs them now.
+
+| Job | Issue | What it checks |
+| --- | --- | --- |
+| New Sveltia version | *Update Sveltia CMS to …* | The pinned version against npm ([cms.md](cms.md#updating-sveltia)). |
+| Dead links | *Dead links in the content* | Every link to another site in articles, pages, people, resources, glossary and the career quiz ([`scripts/check-external-links.mjs`](../scripts/check-external-links.mjs)). Only pages that are gone (404, 410, or a domain that doesn't exist) count; sites that refuse automated visits are skipped. The labs' made-up addresses and example domains are left out. |
+| Sign-in service | *Sign-in service isn't working* | The two tests from [cms-login.md](cms-login.md): the login service refuses other sites and sends ours to GitHub. The address is `base_url` in `config.yml`. |
+
 ## A custom domain later
 
 The old `cyberheaven.eu` domain was dropped, but may be used again. To move the site to a domain (that or another):

@@ -106,6 +106,17 @@ Things that aren't obvious:
   in articles, title and excerpt lose stray spaces and duplicate tags go. An article whose body breaks the
   checks' Markdown rules isn't saved: Sveltia shows "There was an error while saving the entry… Not saved. Body,
   line N: …" (the first sentence is Sveltia's own). The unsaved changes stay in the editor.
+- **Lab exercises preview:** each lab's data file (and the career quiz) gets a plain read-through, one card per
+  exercise: what players see, then the answer (`labs` table in `cms.js`: per file, its list and which fields go
+  where). It's not the lab's own look; that's drawn by each lab's script on the site. A new field in a lab shows up
+  in the preview only once it's added to that table.
+- **Career quiz** (Lab exercises → Career quiz, `src/data/career.json`): "Points per path" has one number field per
+  path ID, listed in `config.yml`; a new path needs its field added there. On save, `cms.js` drops empty points and
+  empty "Starting level" / "Follow-up" IDs and keeps empty lists as lists, so the quiz code (`src/lib/career.mjs`)
+  gets the shapes it expects. `check-career.mjs` (in the checks) catches a quiz where a path can't win.
+- **Home section headings:** the section names in Pages → Home (Hero, About, Values…) are real `<h3>` headings
+  added before each section's first field (`homeSections` in `cms.js`, look in `theme.css` `.ch-section`), so screen
+  readers can jump between them.
 - **Roles field** for team members: unusable (`inert`, dimmed) for everyone but maintainers. The rule itself is
   enforced by `scripts/check-roles.mjs` on every pull request.
 - **Start here** page (`CMS.registerCustomPage`). A volunteer's first visit in each browser opens it once.
@@ -205,6 +216,18 @@ decide to skip that version; the next release opens a new one). *Actions → Wee
    update (take those first, on the old version; the sign-in background is animated, so it always differs).
    Variable names have stayed the same so far, but Sveltia doesn't promise that.
 3. If something broke, find the new markup with your browser's inspector, and Sveltia's rule with `find-css.mjs`.
+
+## Bringing back something deleted
+
+Sveltia has no bin, but every version is in the repo's history. To restore a deleted entry, as a maintainer:
+
+- **On GitHub:** open the folder (e.g. `src/content/articles`) → *History* → the commit that deleted it → the file →
+  *View file* at the commit before → copy the content → *Add file* in the folder, same name, paste, commit (as a pull
+  request if you're not a maintainer).
+- **With git:** `git log --diff-filter=D --oneline -- src/content/articles/<slug>.md` finds the commit; then
+  `git checkout <commit>^ -- src/content/articles/<slug>.md`, commit and push.
+
+Images it used are usually still in `public/media` (deleting an entry doesn't delete them).
 
 ## Known gaps
 

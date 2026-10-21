@@ -148,6 +148,17 @@ for (const browserName of ["chrome", "firefox"]) {
   await goTo(page, "#/collections/pages/entries/home");
   const band = await page.$eval('section.field[data-key-path="about"] .wrapper > .header', (h) => getComputedStyle(h).backgroundColor);
   check("grouped field header has no grey band", band === "rgba(0, 0, 0, 0)", band);
+  // cms.js: the names of Home's sections are real headings (Sveltia draws only the fields near the screen)
+  const sections = await page.$$eval("h3.ch-section", (list) => list.map((x) => x.textContent));
+  check("Home sections have headings", sections[0] === "Hero" && sections.length >= 5, sections.join(", "));
+
+  // cms.js: lab exercises have a read-through preview, one card per exercise (opened from the list: Sveltia
+  // doesn't redraw when the address jumps straight from one lab to another)
+  await goTo(page, "#/collections/interactive");
+  await goTo(page, "#/collections/interactive/entries/phishing");
+  let labCards = 0;
+  for (const f of page.frames().filter((f) => !f.isDetached())) labCards ||= await f.$$eval(".cms-lab", (l) => l.length).catch(() => 0);
+  check("lab preview has a card per exercise", labCards === 8, labCards);
   await goTo(page, "#/collections/articles/entries/a-beginners-guide-to-malware-analysis");
   const frame = await page.$eval('section.field[data-key-path="author"] .field-wrapper > .wrapper', (w) => getComputedStyle(w).borderTopWidth);
   check("radio buttons (Author) have no card outline", frame === "0px", frame);

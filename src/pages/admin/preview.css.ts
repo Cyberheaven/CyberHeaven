@@ -43,6 +43,13 @@ abbr.cms-term { text-decoration: underline dotted var(--white-40); text-underlin
 .toc { display: flex; flex-direction: column; gap: 14px; margin-bottom: 32px; }
 .toc ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border-left: 1px solid var(--white-20); }
 .toc a { display: block; padding: 6px 0 6px 16px; margin-left: -1px; border-left: 1px solid transparent; font-size: 14px; line-height: 1.4; color: var(--white-60); }
+/* Lab exercises (cms.js LabPreview): a card per exercise */
+.cms-labs { display: grid; gap: 16px; padding-block: 24px 48px; }
+.cms-lab { padding: 18px 22px; border: 1px solid var(--white-20); border-radius: 16px; color: var(--white-60); display: grid; gap: 8px; }
+.cms-lab h3 { color: var(--white); }
+.cms-lab .caption { margin-top: 8px; color: var(--white-40); text-transform: uppercase; letter-spacing: 0.08em; font-size: 12px; }
+.cms-lab p { white-space: pre-line; }
+.cms-lab pre { margin: 0; padding: 12px 14px; border-radius: 10px; background: var(--grey-50); font-size: 13px; overflow-x: auto; }
 .cms-check code { display: block; margin-top: 2px; font-size: 13px; color: var(--white-40); overflow-wrap: anywhere; }
 `;
 

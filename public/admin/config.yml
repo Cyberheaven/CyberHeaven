@@ -460,12 +460,12 @@ collections:
                 display_fields: ["glossary.*.name"]
               - { name: link, label: Learn-more link, widget: string, required: false, hint: "e.g. /articles/linux-command-line-cheat-sheet" }
 
-  # Data for the interactive tools. The career quiz (src/data/career.json) is edited in code.
+  # Data for the interactive tools, including the career quiz.
   - name: interactive
     label: Lab exercises
     icon: experiment
     description: "The exercises inside each lab. Each lab's card and page intro are under Pages → Interactive."
-    editor: { preview: false }
+    # The preview is a plain read-through of every exercise and its answer (cms.js "Lab exercises")
     files:
       - name: phishing
         label: Spot the phish
@@ -672,6 +672,84 @@ collections:
                   - { name: tests, label: Test results (in order), widget: list, field: { name: pass, label: Passes, widget: boolean } }
                   - { name: feedback, label: Feedback, widget: text }
               - { name: takeaway, label: Takeaway, widget: text }
+
+      # The quiz on /career. How it uses these fields: src/lib/career.mjs. The checks run scripts/check-career.mjs on
+      # every change, so a quiz where some path can't win, or that asks too many questions, can't be published.
+      # "Points per path" has one field per path id: a new path needs its field added here (and in cms.js nothing).
+      - name: career
+        label: Career quiz
+        file: src/data/career.json
+        format: json
+        fields:
+          - name: paths
+            label: Career paths
+            label_singular: Career path
+            widget: list
+            collapsed: auto
+            summary: "{{fields.name}}"
+            hint: "A new path also needs a points field under every answer: ask a developer (public/admin/config.yml)."
+            fields:
+              - { name: id, label: ID, widget: string, hint: "Short and lowercase. Answers give points to it by this ID, so don't change it." }
+              - { name: name, label: Name, widget: string }
+              - { name: tagline, label: Tagline, widget: string }
+              - { name: summary, label: Summary, widget: text }
+              - { name: day, label: A typical day, widget: list }
+              - { name: start, label: First steps, widget: list }
+              - { name: labs, label: Labs, widget: list, hint: "Lab addresses, e.g. /play/soc" }
+              - { name: guides, label: Guides, widget: relation, collection: articles, value_field: "{{slug}}", search_fields: [title], display_fields: [title], multiple: true, required: false }
+              - name: links
+                label: Links
+                label_singular: Link
+                widget: list
+                summary: "{{fields.label}}"
+                fields:
+                  - { name: label, label: Label, widget: string }
+                  - { name: href, label: Address, widget: string }
+          - name: levels
+            label: Starting levels
+            label_singular: Starting level
+            widget: list
+            collapsed: auto
+            summary: "{{fields.a}}"
+            hint: "The answers of the first question, and the first step shown for each."
+            fields:
+              - { name: id, label: ID, widget: string, hint: "An answer sets this level by its ID" }
+              - { name: a, label: Answer, widget: string }
+              - { name: step, label: First step, widget: text }
+          - name: questions
+            label: Questions
+            label_singular: Question
+            widget: list
+            collapsed: auto
+            summary: "{{fields.stage}} · {{fields.q}}"
+            hint: "start: asked to everyone, in order. follow: asked only after an answer that points to it. pick: chosen to tell apart the paths in the lead."
+            fields:
+              - { name: id, label: ID, widget: string, hint: "Answers point to a follow-up question by this ID" }
+              - { name: stage, label: When it's asked, widget: select, options: [start, follow, pick] }
+              - { name: q, label: Question, widget: string }
+              - { name: sub, label: Small print, widget: string, required: false }
+              - name: options
+                label: Answers
+                label_singular: Answer
+                widget: list
+                collapsed: auto
+                summary: "{{fields.a}}"
+                fields:
+                  - { name: a, label: Answer, widget: string }
+                  - { name: level, label: Starting level ID, widget: string, required: false, hint: "Only in the first question" }
+                  - { name: next, label: Follow-up question ID, widget: string, required: false }
+                  - name: score
+                    label: Points per path
+                    widget: object
+                    hint: "How much this answer points to each path. Leave empty for none."
+                    fields:
+                      - { name: soc, label: SOC Analyst, widget: number, value_type: int, required: false }
+                      - { name: dfir, label: DFIR, widget: number, value_type: int, required: false }
+                      - { name: malware, label: Malware analyst, widget: number, value_type: int, required: false }
+                      - { name: osint, label: OSINT, widget: number, value_type: int, required: false }
+                      - { name: pentest, label: Pentester, widget: number, value_type: int, required: false }
+                      - { name: cloud, label: Cloud security, widget: number, value_type: int, required: false }
+                      - { name: grc, label: GRC, widget: number, value_type: int, required: false }
 
   - divider: true
 

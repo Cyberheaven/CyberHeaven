@@ -374,6 +374,40 @@ function PersonPreview({ entry, widgetFor, getAsset, getCollection }) {
 CMS.registerPreviewTemplate("articles", ArticlePreview);
 CMS.registerPreviewTemplate("people", PersonPreview);
 
+// ---------- Lab exercises (and the career quiz): what players see, and the answer ----------
+
+// Not each lab's own look (the labs draw themselves with their own scripts on the site): a plain read-through of
+// every exercise, to proofread before publishing. Per data file (its name in config.yml): the list it holds, and for
+// one item [title, what the player sees, the answer]. A { code } part is shown as code.
+const lines = (list = [], max = 8) => ({ code: list.slice(0, max).join("\n") + (list.length > max ? `\n… ${list.length - max} more lines` : "") });
+const labs = {
+  phishing: ["messages", (m) => [m.subject, [`${m.kind} from ${m.fromName} <${m.fromAddress}>`, m.body, m.linkText && `Link “${m.linkText}” goes to ${m.linkUrl}`],
+    [m.phish ? "Phishing" : "Safe", ...(m.clues ?? [])]]],
+  loghunt: ["cases", (c) => [c.title, [`${c.file}: ${c.intro}`, lines(c.lines)],
+    (c.questions ?? []).map((q) => `${q.question} → ${(q.answers ?? []).join(" or ")}`)]],
+  decode: ["challenges", (c) => [c.title, [c.story, `Layers: ${(c.layers ?? []).join(" → ")}`, `Hint: ${c.hint}`], [c.message, c.explain]]],
+  rules: ["rounds", (r) => [r.title, [r.brief, { code: r.starter }, `Hint: ${r.hint}`], [{ code: r.solution }, r.explain]]],
+  permissions: ["challenges", (c) => [`${c.file}${c.directory ? "/" : ""}`, [c.task], [c.answer, c.explain]]],
+  triage: ["alerts", (a) => [`${a.severity} · ${a.rule}`, [a.details], [a.escalate ? "Escalate" : "Close", a.why, a.next]]],
+  infections: ["notes", (n) => [n.note?.slice(0, 60), [n.note], [`Type: ${n.type}`]]],
+  query: ["rounds", (r) => [r.title, [r.context, { code: r.code }, ...(r.options ?? []).map((o) => ({ code: o.code }))],
+    [r.why, ...(r.options ?? []).filter((o) => o.correct).map((o) => ({ code: o.code })), r.takeaway]]],
+  career: ["questions", (q) => [`${q.stage} · ${q.q}`, [q.sub, ...(q.options ?? []).map((o) => o.a)],
+    (q.options ?? []).map((o) => `${o.a}: ${Object.entries(o.score ?? {}).filter(([, n]) => typeof n === "number").map(([path, n]) => `${path} ${n}`).join(", ") || "no points"}${o.next ? ` → ${o.next}` : ""}`)]],
+};
+const part = (x, i) => (x && typeof x === "object" ? h("pre", { key: i }, h("code", null, x.code)) : x && h("p", { key: i }, x));
+function LabPreview({ items, show }) {
+  return h("main", { className: "shell cms-labs" }, items.map((item, i) => {
+    const [title, sees, answer] = show(item);
+    return h("article", { key: i, className: "cms-lab" },
+      h("h3", { className: "h4" }, `${i + 1}. ${title || ""}`),
+      h("p", { className: "caption" }, "Players see"), sees.map(part),
+      answer.length > 0 && h("p", { className: "caption" }, "Answer"), answer.map(part));
+  }));
+}
+for (const [file, [list, show]] of Object.entries(labs))
+  CMS.registerPreviewTemplate(file, ({ entry }) => h(LabPreview, { items: entry.getIn(["data", list])?.toJS() ?? [], show }));
+
 // ---------- Small fixes around Sveltia ----------
 
 // Every save: old @cyberheaven.eu email addresses become the project's (in any entry), and in articles the title and
@@ -384,10 +418,22 @@ CMS.registerPreviewTemplate("people", PersonPreview);
 const fixEmails = (value) =>
   typeof value === "string" ? value.replace(/[\w.+-]+@cyberheaven\.eu\b/gi, "cyberheavenhq@proton.me")
   : value?.map ? value.map(fixEmails) : value;
+// The career quiz (src/lib/career.mjs) adds up each answer's points per path and lists every path's guides and links:
+// points left empty in the form must go (not be saved as empty values), and empty lists must stay lists. Empty
+// "Starting level ID" and "Follow-up question ID" fields are left out, as in the file before.
+// x.clear() is an empty copy of the same kind (Immutable.js), since cms.js has no Immutable.js of its own.
+function tidyCareer(data) {
+  return data
+    .update("paths", (paths) => paths?.map((p) => ["guides", "links"].reduce((path, key) => path.update(key, (v) => v ?? data.get("paths").clear()), p)))
+    .update("questions", (questions) => questions?.map((q) => q.update("options", (options) => options?.map((o) =>
+      o.filter((value, key) => value !== "" || !["level", "next"].includes(key)) // empty optional fields aren't saved
+        .set("score", (o.get("score") ?? o.clear()).filter((points) => typeof points === "number"))))));
+}
 CMS.registerEventListener({
   name: "preSave",
   handler: ({ entry }) => {
     let data = fixEmails(entry.get("data"));
+    if (entry.get("path") === "src/data/career.json") return tidyCareer(data);
     if (entry.get("collection") !== "articles") return data;
     const problem = bodyProblems(data.get("body") || "")[0];
     if (problem) throw new Error(`Not saved. Body, line ${problem.line}: ${problem.message}.`);
@@ -451,11 +497,22 @@ window.addEventListener("beforeunload", (event) => { if (unsaved()) event.preven
 // - Sveltia's delete confirm opens with focus on Delete (so Enter deletes) and doesn't say what goes: focus moves
 //   to Cancel, and in the editor the question names the entry. (Deleting a team member who still has articles is
 //   refused by Sveltia itself: it lists the articles and switches Delete off. check.mjs tests that.)
+// The first field of each homepage section, and the section's name (field names are in config.yml)
+const homeSections = Object.entries({ tagline: "Hero", about: "About", principlesHeading: "Values", ticker: "Ticker", topicsHeading: "Topics",
+  toolsHeading: "Labs", picksHeading: "Resources", faqHeading: "FAQ", contact: "Contact" });
+
 let seenStart = true;
 try { seenStart = !!localStorage.getItem("ch-seen-start"); } catch {}
 new MutationObserver(() => {
   document.querySelector('button[aria-label="Visit Live Site"]')?.setAttribute("aria-label", "CyberHeaven: visit the live site");
   for (const input of document.querySelectorAll('section.field[data-key-path="tags"] input[aria-label="Item Value"]:not([list])')) input.setAttribute("list", "ch-tags");
+  // Pages → Home: a heading before the first field of each homepage section (theme.css .ch-section)
+  if (location.hash === "#/collections/pages/entries/home")
+    for (const [key, text] of homeSections) {
+      const field = document.querySelector(`[aria-label="Content Editor"] section.field[data-key-path="${key}"]`);
+      if (field && !field.previousElementSibling?.matches(".ch-section"))
+        field.before(Object.assign(document.createElement("h3"), { className: "ch-section", textContent: text }));
+    }
   // Only maintainers may change a team member's roles (scripts/check-roles.mjs enforces it on GitHub): for everyone
   // else the field can't be used, which theme.css shows by dimming it
   const roles = document.querySelector('[aria-label="Content Editor"] section.field[data-key-path="roles"] .field-wrapper');

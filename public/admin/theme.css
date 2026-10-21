@@ -532,15 +532,12 @@ section.field:is(:hover, :focus-within) > header button[aria-label="Show Field O
 section.field > header > h4 { font-size: 13px; font-weight: 600; color: hsl(var(--sui-foreground-color-2-hsl)); }
 /* More room between top-level fields (fields inside lists and objects keep Sveltia's tighter spacing) */
 section.field[data-key-path]:not([data-key-path*="."]) { padding-block: 22px; }
-/* Pages → Home has ~20 fields: a caption above the first field of each homepage section groups them.
-   The editor is recognised by its picksHeading field (only Home has it). Field names are in config.yml. */
-[aria-label="Content Editor"]:has(section.field[data-key-path="picksHeading"]) section.field:is(
-  [data-key-path="tagline"], [data-key-path="about"], [data-key-path="principlesHeading"], [data-key-path="ticker"],
-  [data-key-path="topicsHeading"], [data-key-path="toolsHeading"], [data-key-path="picksHeading"],
-  [data-key-path="faqHeading"], [data-key-path="contact"])::before {
+/* Pages → Home has ~20 fields: a heading above the first field of each homepage section groups them. cms.js adds
+   them (real headings, so screen readers can jump between sections); this is their look. */
+.ch-section {
   display: block;
   max-width: 768px;   /* lines up with the field labels, like Sveltia's field header */
-  margin: 8px auto 20px;
+  margin: 30px auto -2px;   /* it sits between two fields: closer to the one it names (which has 22px padding) */
   padding-inline: 2px;
   font-size: 12px;
   font-weight: 600;
@@ -548,15 +545,6 @@ section.field[data-key-path]:not([data-key-path*="."]) { padding-block: 22px; }
   text-transform: uppercase;
   color: rgb(255 255 255 / 60%);
 }
-section.field[data-key-path="tagline"]::before { content: "Hero"; }
-section.field[data-key-path="about"]::before { content: "About"; }
-section.field[data-key-path="principlesHeading"]::before { content: "Values"; }
-section.field[data-key-path="ticker"]::before { content: "Ticker"; }
-section.field[data-key-path="topicsHeading"]::before { content: "Topics"; }
-section.field[data-key-path="toolsHeading"]::before { content: "Labs"; }
-section.field[data-key-path="picksHeading"]::before { content: "Resources"; }
-section.field[data-key-path="faqHeading"]::before { content: "FAQ"; }
-section.field[data-key-path="contact"]::before { content: "Contact"; }
 /* Items in lists (FAQ, values, lab exercises…) and grouped fields (Home → About): quiet outlined cards like the
    site's, instead of Sveltia's grey header band. The outline brightens while you point at or work in one.
    Only wrappers with a header are groups: dropdowns and radio buttons (Category, Author) have a .wrapper too. */
