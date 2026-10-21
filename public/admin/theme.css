@@ -146,6 +146,47 @@
   letter-spacing: -0.04em;
   color: #fff;
 }
+/* A lead line under the heading, like the site's page intros. Only with the sign-in buttons: the same screen
+   shows while the CMS loads, without them. */
+.container:has(> .inner > img.logo) > .inner:has(> .buttons)::after {
+  content: "Write and edit the CyberHeaven site. Sign in with your GitHub account to start.";
+  order: 1;
+  max-width: 420px;
+  margin-top: -12px;
+  font-size: 16px;
+  line-height: 1.5;
+  text-align: center;
+  color: rgb(255 255 255 / 60%);
+}
+.container:has(> .inner > img.logo) > .inner > .buttons { order: 2; }
+/* GitHub sign-in is the main action: the site's white pill. The token sign-in stays an outline. */
+.container:has(> .inner > img.logo) .buttons > button[data-label^="Sign In with"] {
+  border-color: #fff;
+  background: #fff;
+  color: #121212;
+  font-weight: 600;
+}
+@media (hover: hover) and (pointer: fine) {
+  .container:has(> .inner > img.logo) .buttons > button[data-label^="Sign In with"]:hover { border-color: transparent; background: rgb(255 255 255 / 60%); color: #121212; }
+}
+/* "Work with Local Repository" only shows on localhost: it moves below the sign-in buttons as an outline, with its
+   note as a small caption. Firefox can't open a local folder, so there the greyed-out button and its warning go. */
+.container:has(> .inner > img.logo) .buttons > button[data-label="Work with Local Repository"] {
+  order: 1;
+  margin-top: 12px;
+  border-color: rgb(255 255 255 / 40%);
+  background: transparent;
+  color: #fff;
+}
+.container:has(> .inner > img.logo) .buttons > button[data-label="Work with Local Repository"] + * {
+  order: 2;
+  font-size: 13px;
+  text-align: center;
+  color: rgb(255 255 255 / 60%);
+}
+.container:has(> .inner > img.logo) .buttons > button[data-label="Work with Local Repository"][aria-disabled="true"],
+.container:has(> .inner > img.logo) .buttons > button[data-label="Work with Local Repository"][aria-disabled="true"] + [role="alert"] { display: none; }
+.container:has(> .inner > img.logo) .buttons > .spacer { display: none; }
 
 /*
  * Top bar, like the site's nav (Topbar.astro): the logo with the CyberHeaven name beside it (the logo tilts on
