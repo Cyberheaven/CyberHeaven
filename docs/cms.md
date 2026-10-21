@@ -18,6 +18,7 @@ check it still works after a change or a Sveltia update.
 | `public/admin/logo.webp` | The logo on the sign-in screen and in the top bar. |
 | `src/pages/admin/preview.css.ts` | Builds `/admin/preview.css` for the preview pane from the site's real stylesheets. |
 | `src/pages/admin/youtube.mjs.ts` | Serves `src/lib/youtube.mjs` to `cms.js`, so the preview draws YouTube embeds like the site. |
+| `src/pages/admin/content-rules.mjs.ts` | Serves `src/lib/content-rules.mjs` (the Markdown rules of `scripts/check-content.mjs`) to `cms.js`, for the "Before you submit" card. |
 | `src/pages/admin/start.astro` | The "Start here" guide inside the CMS. Its "Where everything is" table repeats the README's: change both. |
 | `.github/CODEOWNERS` | Who must approve changes to which files ([access-levels.md](access-levels.md)). |
 | `scripts/cms-preview/` | A local copy of the CMS for testing, plus screenshot and behaviour checks (below). |
@@ -73,6 +74,12 @@ Things that aren't obvious:
 
 - **Previews** for articles and team members use the same markup and classes as `src/pages/articles/[slug].astro`
   and `src/pages/team/[person].astro`, styled by the site's real CSS. If you change those pages, change `cms.js` too.
+- **Before you submit** card at the top of the article preview, updated as you type. It lists: no excerpt or one
+  over 160 characters, a cover or body image without alt text, a heading 1 in the body or a skipped heading level,
+  the old `cyberheaven.eu` site, links to `/articles/…` or `/team/…` pages that don't exist (hidden articles count
+  as missing), the pull request checks' Markdown rules (`src/lib/content-rules.mjs`, shared with
+  `check-content.mjs`, so those would also fail the checks), and "Hide from the site" being on. Only what's in the
+  preview is checked: it doesn't stop a save.
 - **Interactive widget** in the article editor's Insert menu (saved as `<div data-widget="…"></div>`).
 - **Start here** page (`CMS.registerCustomPage`). A volunteer's first visit in each browser opens it once.
 - **Unsaved changes:** the ← button asks before throwing them away (Sveltia wouldn't); closing the tab asks too.
@@ -90,6 +97,9 @@ Things that aren't obvious:
   line above Settings). It's only tidying: a direct link still opens them, and GitHub decides what goes live.
   Writers, editors and contributors all count as volunteers (telling them apart needs the `read:org` sign-in scope).
   If GitHub can't be asked, or in the demo, everything shows. `check.mjs` fakes GitHub's answer to test both levels.
+- **Team members with articles can't be deleted.** That's Sveltia itself (since 0.250.0 at least): its delete
+  dialog lists the articles that name them and switches Delete off. `check.mjs` tests it, so an update that drops
+  it fails there. (The site doesn't build without every article's author.)
 - **Logo name:** screen readers hear "CyberHeaven: visit the live site", matching what the logo shows.
 
 ## Left as Sveltia draws it, on purpose
@@ -99,7 +109,14 @@ dates keep three formats (the browser's date picker, the live page's long date i
 lists); the editor's ⋮ menu keeps all 9 items (Delete already asks first); × on a list item removes it without
 asking (Revert All Changes brings it back before saving); disabled Assets actions stay visible; the coloured ring
 on Save means "unsaved changes", not "live". Sveltia's own jargon (Entry, Slug, UTC…) is explained in Start here
-rather than rewritten. Articles have no draft marker in the list: the Workflow page shows unpublished changes.
+rather than rewritten. Unpublished changes have no marker in the list (the Workflow page shows them); articles hidden
+with "Hide from the site" (`draft` in the file) read "Hidden · Title" there (`summary` in `config.yml`).
+
+## Uploads
+
+`config.yml` → `media_libraries.default.config.transformations` turns uploaded photos and screenshots (PNG, JPEG…)
+into WebP at quality 85, shrunk to fit 2000 × 2000 px (smaller ones keep their size). The upload dialog shows it
+("converted from PNG image"). SVGs and files already in `public/media` aren't touched. `check.mjs` tests it.
 
 ## The editor rewrites Markdown
 

@@ -18,6 +18,9 @@ Unlike the review rule ([access-levels.md](access-levels.md)), maintainers can't
 | `npm run build` | The site doesn't build (the build has its own checks, e.g. an article whose author doesn't exist). |
 | `scripts/check-links.mjs` | A link or image on the built site points to a page or file of the site that doesn't exist. |
 
+The Markdown rules of `check-content.mjs` live in `src/lib/content-rules.mjs`; the CMS's "Before you submit" card
+uses the same file, so volunteers see those problems while writing ([cms.md](cms.md#behaviour-added-in-cmsjs)).
+
 All of them run on every pull request, even after one fails, so one run lists everything to fix. Run them
 yourself before pushing:
 

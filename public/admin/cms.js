@@ -10,10 +10,11 @@
  * Not shown in the preview: animations, the "On this page" list, comments, and interactive widgets
  * (they appear as a labelled box), because the site's scripts don't run here.
  *
- * Also adds "Interactive widget" to the article editor's Insert menu (registerEditorComponent below), and the
- * "Start here" guide to the sidebar.
+ * Also adds "Interactive widget" to the article editor's Insert menu (registerEditorComponent below), the
+ * "Start here" guide to the sidebar, and a "Before you submit" card at the top of the article preview.
  */
 import { youtubeHtml, youtubeId } from "./youtube.mjs";
+import { bodyProblems } from "./content-rules.mjs";
 
 const { React } = CMS;
 const h = React.createElement;
@@ -113,6 +114,52 @@ function useLoaded(load, deps) {
   return value;
 }
 
+// ---------- "Before you submit": what to fix before an article goes live ----------
+
+// Problems with an article, as { text, quote } (quote: the line of Markdown it's about). The Markdown rules are the
+// pull request checks' own (lib/content-rules.mjs), so those would also stop it from being published; the rest are
+// good habits the checks don't enforce. live: the addresses of articles and people on the site (null while loading).
+const quoted = (line) => (line.length > 60 ? `${line.slice(0, 60)}…` : line);
+function articleProblems(get, live) {
+  const found = [];
+  const excerpt = (get("excerpt") || "").trim();
+  const body = get("body") || "";
+  if (!excerpt) found.push({ text: "No excerpt: it's the summary on the articles list and in Google results." });
+  else if (excerpt.length > 160) found.push({ text: `The excerpt is ${excerpt.length} characters: Google cuts it at about 160.` });
+  if (get("cover") && !(get("coverAlt") || "").trim()) found.push({ text: "The cover image has no alt text (Cover alt text)." });
+  if (/cyberheaven\.eu/i.test(`${get("title")} ${excerpt}`)) found.push({ text: "The title or excerpt mentions the old cyberheaven.eu site." });
+  for (const { line, message } of bodyProblems(body)) found.push({ text: message[0].toUpperCase() + message.slice(1), quote: body.split("\n")[line - 1] });
+  let fence = false;
+  let level = 1; // the title is the page's heading 1
+  for (const line of body.split("\n")) {
+    if (line.startsWith("```")) fence = !fence;
+    if (fence) continue;
+    const heading = line.match(/^(#{1,6})\s/)?.[1].length;
+    if (heading === 1) found.push({ text: "Heading 1 in the text: the title is already the page's main heading. Use Heading 2.", quote: line });
+    else if (heading > level + 1) found.push({ text: `Heading ${heading} right after heading ${level}: don't skip a level.`, quote: line });
+    if (heading) level = heading;
+    if (/!\[\s*\]\(/.test(line)) found.push({ text: "An image without alt text: describe it between the [ ].", quote: line });
+    if (/cyberheaven\.eu/i.test(line)) found.push({ text: "Link or email on the old cyberheaven.eu site: link to cyberheaven.github.io, email cyberheavenhq@proton.me.", quote: line });
+    for (const [, kind, id] of line.matchAll(/\]\((?:https?:\/\/cyberheaven\.github\.io)?\/(articles|team)\/([\w-]+)/g))
+      if (live && !live[kind].includes(id)) found.push({ text: `Link to ${kind === "team" ? "a team member" : "an article"} that isn't on the site: /${kind}/${id}`, quote: line });
+  }
+  if (get("draft")) found.push({ text: "Hide from the site is on: this article won't appear on the site." });
+  return found;
+}
+
+function Checklist({ get, getCollection }) {
+  const live = useLoaded(async () => ({
+    // Like the site: hidden articles and files starting with _ have no page
+    articles: (await getCollection("articles")).filter((a) => !a.get("data").get("draft") && !a.get("slug").startsWith("_")).map((a) => a.get("slug")),
+    team: (await getCollection("people")).map((p) => p.get("slug")).filter((id) => !id.startsWith("_")),
+  }), []);
+  const found = articleProblems(get, live);
+  return h("aside", { className: "shell", "aria-label": "Before you submit" },
+    h("div", { className: "cms-check", "data-ok": found.length ? null : "" },
+      h("p", { className: "body-sb" }, found.length ? `Before you submit: ${found.length} to fix` : "Before you submit: nothing to fix"),
+      found.length > 0 && h("ul", null, found.map((f, i) => h("li", { key: i }, f.text, f.quote && h("code", null, quoted(f.quote)))))));
+}
+
 // ---------- Article: src/pages/articles/[slug].astro ----------
 
 function ArticlePreview({ entry, widgetFor, getAsset, getCollection }) {
@@ -131,6 +178,7 @@ function ArticlePreview({ entry, widgetFor, getAsset, getCollection }) {
   const bio = (author?.get("body") || "").trim().split(/\n\s*\n/)[0].replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_`]/g, "");
 
   return h("main", null,
+    h(Checklist, { get, getCollection }),
     h("article", null,
       h("header", { className: "phead shell post-head" },
         // A new article has no title yet: show where it will go instead of an empty pane
@@ -261,7 +309,8 @@ window.addEventListener("beforeunload", (event) => { if (unsaved()) event.preven
 // - the logo reads "CyberHeaven" (theme.css), so its name for screen readers starts with that too;
 // - a volunteer's first visit opens the "Start here" guide, once per browser;
 // - Sveltia's delete confirm opens with focus on Delete (so Enter deletes) and doesn't say what goes: focus moves
-//   to Cancel, and in the editor the question names the entry.
+//   to Cancel, and in the editor the question names the entry. (Deleting a team member who still has articles is
+//   refused by Sveltia itself: it lists the articles and switches Delete off. check.mjs tests that.)
 let seenStart = true;
 try { seenStart = !!localStorage.getItem("ch-seen-start"); } catch {}
 new MutationObserver(() => {

@@ -19,6 +19,12 @@ const extra = `
 /* Stand-in for an interactive widget, which only runs on the live site */
 .cms-widget { margin: 40px 0; padding: 28px; border: 1px dashed var(--white-40); border-radius: 16px; color: var(--white-60); }
 .cms-widget strong { display: block; margin-bottom: 4px; color: var(--white); }
+/* "Before you submit" card above the article (cms.js): not part of the site */
+.cms-check { margin-top: 24px; padding: 18px 22px; border: 1px solid var(--white-20); border-radius: 16px; font-size: 15px; }
+.cms-check > p { color: var(--white); }
+.cms-check[data-ok] > p { color: var(--success); }
+.cms-check ul { margin: 10px 0 0; padding-left: 20px; color: var(--white-60); display: grid; gap: 8px; }
+.cms-check code { display: block; margin-top: 2px; font-size: 13px; color: var(--white-40); overflow-wrap: anywhere; }
 `;
 
 export const GET: APIRoute = () =>

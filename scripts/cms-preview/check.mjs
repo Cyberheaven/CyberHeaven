@@ -1,7 +1,7 @@
 // Checks the CMS behaviour that public/admin/cms.js, config.yml and theme.css add on top of Sveltia, in Chrome
 // and Firefox. Run it after updating Sveltia or changing those files. Uses the demo (setup.mjs without --github).
 // Usage: node scripts/cms-preview/check.mjs   → prints PASS/FAIL per check, exits with 1 if anything failed
-import { openCms, goTo, wait } from "./open.mjs";
+import { openCms, goTo, wait, clickButton } from "./open.mjs";
 
 let failed = 0;
 const check = (name, ok, detail = "") => {
@@ -126,6 +126,17 @@ for (const browserName of ["chrome", "firefox"]) {
   check("editor keeps indented lists as lists", rewritten && saved.includes("\n* one"), JSON.stringify(saved.slice(saved.indexOf("one") - 6)));
   acceptLeave = true; // the article now has unsaved changes
 
+  // cms.js: the "Before you submit" card checks the body as you type (the editor is in Markdown mode here)
+  await page.$eval('section.field[data-key-path="body"] textarea', (t) => {
+    t.value = "# Big\n\n![](/media/x.png)\n\nSee [this](/articles/no-such-article).\n\n<b>bold</b>";
+    t.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await wait(1000);
+  let bodyCard = "";
+  for (const f of page.frames()) bodyCard ||= await f.$eval(".cms-check", (c) => c.innerText).catch(() => "");
+  for (const [name, text] of [["heading 1", "Heading 1 in the text"], ["image alt", "image without alt text"], ["missing article", "/articles/no-such-article"], ["HTML (check-content rule)", "HTML: the site would show it"]])
+    check(`card flags ${name}`, bodyCard.includes(text));
+
   // config.yml: team rows read "Name · Roles", like article rows
   await goTo(page, "#/collections/people");
   const teamRow = await page.$eval('[role="grid"][aria-label="Entries"] [role="row"]', (r) => r.textContent.trim());
@@ -138,6 +149,50 @@ for (const browserName of ["chrome", "firefox"]) {
   await goTo(page, "#/collections/articles/entries/a-beginners-guide-to-malware-analysis");
   const frame = await page.$eval('section.field[data-key-path="author"] .field-wrapper > .wrapper', (w) => getComputedStyle(w).borderTopWidth);
   check("radio buttons (Author) have no card outline", frame === "0px", frame);
+
+  // cms.js: a "Before you submit" card above the article preview lists what to fix (here: a long excerpt)
+  const card = async () => {
+    for (const f of page.frames()) {
+      const text = await f.$eval(".cms-check", (c) => c.innerText).catch(() => null);
+      if (text) return text;
+    }
+    return "";
+  };
+  const malwareCard = await card();
+  check("article preview has a 'Before you submit' card", /excerpt is \d+ characters/.test(malwareCard), malwareCard.replace(/\s+/g, " "));
+
+  // Sveltia itself: a team member who still has articles can't be deleted (the site doesn't build without every
+  // article's author). cms.js relies on this instead of its own guard
+  await goTo(page, "#/collections/people/entries/purpleshonen");
+  await page.click('[role="toolbar"][aria-label="Primary"] button[aria-label="Show Editor Options"]');
+  await wait(600);
+  await page.evaluate(() => [...document.querySelectorAll('[role="menuitem"]')].find((m) => m.textContent.trim() === "Delete").click());
+  await wait(800);
+  const refused = await page.evaluate(() => {
+    const dialog = document.querySelector('dialog[role="alertdialog"][open]');
+    return { off: dialog?.querySelector('button[data-label="Delete"]')?.disabled, text: dialog?.querySelector('[id$="-body"]')?.textContent.trim() };
+  });
+  check("team member with articles can't be deleted", refused.off === true && refused.text?.includes("Articles"), refused.text?.slice(0, 60));
+  await page.keyboard.press("Escape");
+
+  // config.yml: "Hide from the site" puts "Hidden ·" before the article in the list, and the card says it's on
+  await goTo(page, "#/collections/articles/entries/linux-command-line-cheat-sheet");
+  await page.click('section.field[data-key-path="draft"] [role="switch"]');
+  await wait(800);
+  check("hidden article: the card says so", (await card()).includes("Hide from the site is on"));
+  await page.click('[role="toolbar"][aria-label="Primary"] button[data-label="Save"]');
+  await wait(2500);
+  await goTo(page, "#/collections/articles");
+  const rows = await page.$$eval('[role="grid"][aria-label="Entries"] [role="row"]', (r) => r.map((row) => row.textContent.trim()));
+  check("hidden article: list row starts with 'Hidden ·'", rows.some((r) => r.startsWith("Hidden · Linux")), rows.find((r) => r.includes("Linux")));
+
+  // config.yml: an uploaded PNG is saved as WebP
+  await goTo(page, "#/assets");
+  await (await page.$('input[type="file"]')).uploadFile("public/media/2026/08/checksum-1024x576.png");
+  await wait(2000);
+  const upload = await page.$eval("dialog[open]", (d) => d.innerText.replace(/\s+/g, " ")).catch(() => "");
+  check("uploaded PNG becomes WebP", /checksum-1024x576\.webp.*converted from/.test(upload), upload.slice(0, 120));
+  await clickButton(page, "^\\s*Cancel\\s*$");
 
   // cms.js + theme.css: only maintainers see Pages and Settings in the sidebar. The demo has no GitHub sign-in, so
   // this gives it a pretend token and answers GitHub's "what may this person do" request itself.

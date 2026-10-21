@@ -15,7 +15,7 @@ const articles = defineCollection({
     cover: z.string(),
     coverAlt: z.string(),
     tags: z.array(z.string()).default([]),
-    draft: z.boolean().default(false), // not in the CMS (it has its own review workflow); set it in the file to hide a published article
+    draft: z.boolean().default(false), // "Hide from the site" in the CMS: kept in the repo, left out of the site
   }),
 });
 

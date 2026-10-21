@@ -41,13 +41,12 @@ once(json("src/data/glossary.json").terms.map((t) => t.term), "src/data/glossary
 once(json("src/data/resources.json").items.map((r) => r.url), "src/data/resources.json: link");
 
 // Content fields vs the CMS form
-const notInForm = { "src/content/articles": ["draft"] }; // set by hand in the file, on purpose (see content.config.ts)
-function inForm(fields, value, where, allowed = []) {
+function inForm(fields, value, where) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return;
   for (const [key, v] of Object.entries(value)) {
     const field = fields.find((f) => f.name === key);
     if (!field) {
-      if (!allowed.includes(key)) report(`${where}: "${key}" isn't in the CMS form (public/admin/config.yml)`);
+      report(`${where}: "${key}" isn't in the CMS form (public/admin/config.yml)`);
     } else if (field.fields) {
       for (const [i, item] of (Array.isArray(v) ? v : [v]).entries())
         inForm(field.fields, item, Array.isArray(v) ? `${where} → ${key} ${i + 1}` : `${where} → ${key}`);
@@ -57,7 +56,7 @@ function inForm(fields, value, where, allowed = []) {
 const config = yaml.load(readFileSync("public/admin/config.yml", "utf8"));
 for (const collection of config.collections) {
   if (collection.folder)
-    for (const path of markdown(collection.folder)) inForm(collection.fields, frontmatter(path), path, notInForm[collection.folder]);
+    for (const path of markdown(collection.folder)) inForm(collection.fields, frontmatter(path), path);
   for (const file of collection.files ?? [])
     inForm(file.fields, file.file.endsWith(".json") ? json(file.file) : frontmatter(file.file), file.file);
 }

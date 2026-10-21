@@ -14,6 +14,13 @@ publish_mode: editorial_workflow
 
 media_folder: public/media
 public_folder: /media
+# Photos and screenshots are turned into WebP when they're uploaded (several times smaller than PNG, so pages load
+# faster), and shrunk to fit 2000 × 2000 px. SVGs and images already on the site stay as they are.
+media_libraries:
+  default:
+    config:
+      transformations:
+        raster_image: { format: webp, quality: 85, width: 2000, height: 2000 }
 
 # Branding: name in the browser tab and on the login page, logo (also the tab icon), and where the
 # logo and the "view site" link go. The look itself (colours, font, buttons) is in theme.css.
@@ -35,7 +42,7 @@ collections:
     slug: "{{slug}}"
     extension: md
     format: frontmatter
-    summary: "{{title}} · {{category}} · {{date | date('D MMM YYYY')}}"
+    summary: "{{draft | ternary('Hidden · ', '')}}{{title}} · {{category}} · {{date | date('D MMM YYYY')}}"
     sortable_fields:
       fields: [date, title, category]
       default: { field: date, direction: descending }
@@ -76,6 +83,12 @@ collections:
         widget: string
         hint: Describes the cover image for screen reader users
       - { name: tags, label: Tags, widget: list, required: false, default: [] }
+      - name: draft
+        label: Hide from the site
+        widget: boolean
+        default: false
+        required: false
+        hint: "Takes a published article off the site (and the homepage carousel) without deleting it. Links to it from other pages must go first: the checks list them."
       - name: body
         label: Body
         widget: markdown

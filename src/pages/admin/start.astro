@@ -60,9 +60,12 @@ const places = [
         <h2>Writing an article</h2>
         <ul>
           <li>The preview on the right shows the article the way the site will, without the animations.</li>
+          <li>Above the preview, <em>Before you submit</em> lists what to fix as you type: a missing excerpt or alt text, skipped headings, links to pages that don’t exist, and anything that would stop the article from being published.</li>
           <li>To add a YouTube video, paste its link on a line of its own.</li>
           <li>To add an interactive widget, use <em>Insert → Interactive widget</em> in the editor.</li>
           <li>Keep lists at the left edge and don’t paste HTML (like tables or embeds copied from another site): the editor can garble it when it saves.</li>
+          <li>Images you upload are turned into WebP and shrunk to fit 2000 pixels, so pages stay quick to load.</li>
+          <li>To take an article off the site without deleting it, turn on <em>Hide from the site</em>. It shows as <em>Hidden</em> in the list, and turning it off brings it back.</li>
         </ul>
 
         <h2>Words the CMS uses</h2>
@@ -76,6 +79,15 @@ const places = [
 
         <h2>Text in curly brackets</h2>
         <p>Some text has placeholders like <code>{"{count}"} terms</code>. Keep them exactly as they are: the site fills in the real number when it builds, so it never goes out of date. Each field’s hint says which placeholders it supports.</p>
+
+        <h2>When something goes wrong</h2>
+        <ul>
+          <li><strong>“Entry Changed by Someone Else”:</strong> someone saved this entry while you had it open. <em>Save Anyway</em> replaces their changes with yours, so don’t pick it unless you’ve checked with them. Copy your changes somewhere, reload, and add them again.</li>
+          <li><strong>“Restore Draft”:</strong> the CMS kept the changes you hadn’t saved when the tab closed. Pick it to get them back.</li>
+          <li><strong>“Couldn’t publish the entry”:</strong> the change still needs an approval, or the checks found a problem. The checks run on GitHub for every change; the <em>Before you submit</em> card catches most of what they look for.</li>
+          <li><strong>Deleted something by mistake?</strong> Ask a maintainer on Discord: every version is kept on GitHub, so it can be brought back.</li>
+          <li><strong>A team member can’t be deleted</strong> while they have articles. Pick another author for those first.</li>
+        </ul>
 
         <h2>Need a hand?</h2>
         <p>Ask on <a href={site.discord} target="_blank" rel="noreferrer">Discord</a> or email <a href={`mailto:${site.email}`}>{site.email}</a>. Nothing you do here is final: every change is kept on GitHub, so a mistake can always be undone.</p>
