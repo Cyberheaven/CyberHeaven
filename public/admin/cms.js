@@ -124,7 +124,8 @@ function ArticlePreview({ entry, widgetFor, getAsset, getCollection }) {
   const body = get("body") || "";
   const minutes = Math.max(1, Math.ceil(body.split(/\s+/).filter(Boolean).length / 200));
   const authorId = get("author");
-  const author = useLoaded(async () => authorId && (await getCollection("people", authorId))?.get("data"), [authorId]);
+  // A new article has no author yet (an empty string), which would break the whole preview
+  const author = useLoaded(async () => (authorId ? (await getCollection("people", authorId))?.get("data") : null), [authorId]);
   const name = author?.get("name") || authorId || "";
   // ponytail: only the bio's first paragraph, with links/emphasis stripped; the card shows 3 lines of it anyway
   const bio = (author?.get("body") || "").trim().split(/\n\s*\n/)[0].replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_`]/g, "");
@@ -132,7 +133,8 @@ function ArticlePreview({ entry, widgetFor, getAsset, getCollection }) {
   return h("main", null,
     h("article", null,
       h("header", { className: "phead shell post-head" },
-        h("h1", { className: "h1 balance phead-title" }, words(title)),
+        // A new article has no title yet: show where it will go instead of an empty pane
+        h("h1", { className: "h1 balance phead-title", style: title ? null : { opacity: 0.4 } }, words(title || "Start with a title")),
         h("div", { className: "phead-extra" },
           h("p", { className: "post-meta body" },
             get("category") && h("a", { href: "/articles" }, get("category")),
@@ -203,3 +205,31 @@ function PersonPreview({ entry, widgetFor, getAsset, getCollection }) {
 
 CMS.registerPreviewTemplate("articles", ArticlePreview);
 CMS.registerPreviewTemplate("people", PersonPreview);
+
+// ---------- Small fixes around Sveltia ----------
+
+// Leaving an entry with ← while it has unsaved changes asks first: Sveltia would drop the changes without a word.
+// Closing or reloading the tab asks too (the browser shows its own message).
+// ponytail: the browser's Back button can't be stopped this way; add a hashchange guard if volunteers hit it.
+const unsaved = () => document.querySelector('[role="toolbar"][aria-label="Primary"] button[data-label="Save"][aria-disabled="false"]');
+document.addEventListener("click", (event) => {
+  if (event.target.closest?.('button[aria-label="Cancel Editing"]') && unsaved() && !confirm("Leave without saving? Your changes will be lost.")) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }
+}, true);
+window.addEventListener("beforeunload", (event) => { if (unsaved()) event.preventDefault(); });
+
+// Sveltia draws its own markup whenever it likes, so these checks run after each change to the page:
+// - the logo reads "CyberHeaven" (theme.css), so its name for screen readers starts with that too;
+// - a volunteer's first visit opens the "Start here" guide, once per browser.
+let seenStart = true;
+try { seenStart = !!localStorage.getItem("ch-seen-start"); } catch {}
+new MutationObserver(() => {
+  document.querySelector('button[aria-label="Visit Live Site"]')?.setAttribute("aria-label", "CyberHeaven: visit the live site");
+  if (!seenStart && /^#\/collections(\/[\w-]+)?$/.test(location.hash)) {
+    seenStart = true;
+    try { localStorage.setItem("ch-seen-start", "1"); } catch {}
+    location.hash = "#/pages/start";
+  }
+}).observe(document.body, { childList: true, subtree: true });

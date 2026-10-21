@@ -214,12 +214,34 @@
   [role="toolbar"][aria-label="Global"] button:has(> img.logo):hover img.logo { transform: rotate(-12deg) scale(1.06); }
 }
 [role="toolbar"][aria-label="Global"] [aria-label="Switch Page"] { margin-inline-start: 16px; }
+/* The logo and the switches keep their full width; the search box takes what's left */
+/* Layout of the bar. Sveltia gives each button group half the bar and the search box a fixed 640px, which no
+   longer fits once the switches have names. Here the logo and switches take what they need, the search box fills
+   the rest up to 640px, and the buttons on the right stay at the edge. Sveltia's own rules sit under
+   ".toolbar-wrapper", so these start with it too, to outrank them. */
+.toolbar-wrapper > [role="toolbar"][aria-label="Global"][aria-orientation="horizontal"] > .inner > .buttons { width: auto; }
+.toolbar-wrapper > [role="toolbar"][aria-label="Global"][aria-orientation="horizontal"] > .inner > .buttons:first-child,
+.toolbar-wrapper > [role="toolbar"][aria-label="Global"][aria-orientation="horizontal"] > .inner > .buttons:first-child > * { flex: none; }
+.toolbar-wrapper > [role="toolbar"][aria-label="Global"][aria-orientation="horizontal"] > .inner > .buttons:last-child { flex: none; margin-inline-start: auto; }
+.toolbar-wrapper > [role="toolbar"][aria-label="Global"][aria-orientation="horizontal"] .wrapper .sui.search-bar { flex: 1 1 auto; width: auto; min-width: 0; max-width: 640px; }
 [role="toolbar"][aria-label="Global"] [aria-label="Switch Page"] [role="radio"] {
   background: transparent;
   color: rgb(255 255 255 / 60%);
   transition: color 0.2s ease;
 }
 [role="toolbar"][aria-label="Global"] [aria-label="Switch Page"] [role="radio"]:is([aria-checked="true"], :hover) { color: #fff; }
+/* Each switch shows its name next to its icon ("Contents", "Assets", "Start here"), so nobody has to guess */
+[role="toolbar"][aria-label="Global"] [aria-label="Switch Page"] [role="radio"] {
+  width: auto;
+  aspect-ratio: auto;
+  gap: 6px;
+  padding: 0 12px 0 8px;
+}
+[role="toolbar"][aria-label="Global"] [aria-label="Switch Page"] [role="radio"]::after {
+  content: attr(aria-label);
+  font-size: 14px;
+  font-weight: 500;
+}
 /* Sveltia sizes the search icon's box and the text's side padding from the button height */
 [role="toolbar"][aria-label="Global"] .search-bar {
   --sui-button-medium-height: 44px;
@@ -234,7 +256,7 @@
   background: rgb(230 230 230 / 5%);
   font-size: 15px;
 }
-[role="toolbar"][aria-label="Global"] .search-bar input::placeholder { color: rgb(255 255 255 / 40%); }
+[role="toolbar"][aria-label="Global"] .search-bar input::placeholder { color: rgb(255 255 255 / 60%); }
 @media (prefers-reduced-motion: reduce) {
   [role="toolbar"][aria-label="Global"] img.logo { transition: none; }
 }
@@ -344,6 +366,8 @@ nav.primary-sidebar :is([role="treeitem"][aria-selected="true"] > .row, [role="o
   --sui-highlighted-foreground-color: rgb(18 18 18 / 65%);
 }
 nav.primary-sidebar :is([role="treeitem"] > .row, [role="option"]) > .count { font-size: 12px; font-weight: 400; }
+/* Keyboard focus: Sveltia draws the ring just inside the item, where it vanishes on the white pill, so it moves outside */
+nav.primary-sidebar :is([role="treeitem"]:focus-visible > .row, [role="option"]:focus-visible) { outline: 2px solid #fff; outline-offset: 3px; }
 @media (hover: hover) and (pointer: fine) {
   nav.primary-sidebar :is([role="treeitem"]:not([aria-selected="true"]) > .row, [role="option"]:not([aria-selected="true"])):hover {
     background: transparent;
@@ -372,6 +396,11 @@ nav.primary-sidebar [role="group"] > .label { font-size: 12px; }
   pointer-events: none;
 }
 [role="toolbar"][aria-label="Primary"] button[data-label="Save"][aria-disabled="false"]::after { opacity: 1; }
+/* On articles, Save says what it will do: "Publish" when the article is live (or about to be), "Save draft" while
+   its Draft switch is on. Other collections keep "Save". The ring above uses ::after, so the new label is ::before. */
+[aria-label="Content Editor"]:has(section.field[data-key-path="draft"]) [role="toolbar"][aria-label="Primary"] button[data-label="Save"] > .label { display: none; }
+[aria-label="Content Editor"]:has(section.field[data-key-path="draft"]) [role="toolbar"][aria-label="Primary"] button[data-label="Save"]::before { content: "Publish"; }
+[aria-label="Content Editor"]:has(section.field[data-key-path="draft"] [role="switch"][aria-checked="true"]) [role="toolbar"][aria-label="Primary"] button[data-label="Save"]::before { content: "Save draft"; }
 
 /*
  * Editor typography. The top bar reads "Articles › Entry title": the entry title is a small display heading
@@ -385,6 +414,26 @@ nav.primary-sidebar [role="group"] > .label { font-size: 12px; }
 [role="toolbar"][aria-label="Primary"] button[data-label="Save"] { height: 40px; padding: 0 20px; font-size: 15px; font-weight: 600; }
 /* Nothing to save yet: a faint pill instead of a solid grey one */
 [role="toolbar"][aria-label="Primary"] button[data-label="Save"][aria-disabled="true"] { background: rgb(255 255 255 / 8%); color: rgb(255 255 255 / 45%); }
+/* The icons down the right edge (Slug, Validation, History, Backlinks) show their name on hover and keyboard focus */
+[aria-label="Sidebar Panels"] [role="radio"] { position: relative; }
+[aria-label="Sidebar Panels"] [role="radio"]::after {
+  content: attr(aria-label);
+  position: absolute;
+  inset-inline-end: calc(100% + 8px);
+  top: 50%;
+  translate: 0 -50%;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fff;
+  color: #121212;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+[aria-label="Sidebar Panels"] [role="radio"]:is(:hover, :focus-visible)::after { opacity: 1; }
 /* "Edit" and "Preview" above the two panes: small captions, so the fields and the preview are what you see first */
 [aria-label="Content Editor"] [role="toolbar"][aria-label="Secondary"] h3 {
   font-size: 12px;

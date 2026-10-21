@@ -55,7 +55,7 @@ Here’s where to find each thing on the site:
 
 | In the CMS | What you can change |
 | --- | --- |
-| **Articles** | Every article: title, category, date, author, summary, cover image and body. New articles start as **Draft** (hidden); switch Draft off and save to publish. |
+| **Articles** | Every article: title, category, date, author, summary, cover image and body. New articles start as **Draft** (hidden; the button says “Save draft”); switch Draft off and the button says “Publish”. |
 | **Pages → Home** | The carousel articles at the top (pick and drag to set the order; leave it empty for the 5 newest), the tagline, the About band, the values cards, the scrolling ticker, the topics, the labs and resources headings, the FAQ and the contact section. |
 | **Pages → Articles** | The heading and intro of the articles list. |
 | **Pages → Interactive** | The heading and intro of the Interactive page, and every lab and tool listed on it: its card, whether it’s featured on the homepage, its topic, and the heading and intro on its own page (this includes the career quiz and the glossary). |

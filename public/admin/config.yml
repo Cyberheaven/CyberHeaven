@@ -26,7 +26,7 @@ collections:
     slug: "{{slug}}"
     extension: md
     format: frontmatter
-    summary: "{{title}} · {{category}} · {{date | date('D MMM YYYY')}}{{draft | ternary(' · Draft', '')}}"
+    summary: "{{draft | ternary('Draft · ', '')}}{{title}} · {{category}} · {{date | date('D MMM YYYY')}}"
     sortable_fields:
       fields: [date, title, category]
       default: { field: date, direction: descending }
@@ -51,6 +51,7 @@ collections:
       - name: date
         label: Date
         widget: datetime
+        default: "{{now}}"
         format: "YYYY-MM-DD"
         date_format: "YYYY-MM-DD"
         time_format: false
