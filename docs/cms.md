@@ -18,7 +18,8 @@ check it still works after a change or a Sveltia update.
 | `public/admin/logo.webp` | The logo on the sign-in screen and in the top bar. |
 | `src/pages/admin/preview.css.ts` | Builds `/admin/preview.css` for the preview pane from the site's real stylesheets. |
 | `src/pages/admin/youtube.mjs.ts` | Serves `src/lib/youtube.mjs` to `cms.js`, so the preview draws YouTube embeds like the site. |
-| `src/pages/admin/content-rules.mjs.ts` | Serves `src/lib/content-rules.mjs` (the Markdown rules of `scripts/check-content.mjs`) to `cms.js`, for the "Before you submit" card. |
+| `src/pages/admin/content-rules.mjs.ts` | Serves `src/lib/content-rules.mjs` to `cms.js`: the rules shared by `scripts/check-content.mjs`, the "Before you submit" card and "Content health". |
+| `src/pages/admin/health.astro` | The "Content health" page inside the CMS: small fixes across the live content, built with the site. |
 | `src/pages/admin/start.astro` | The "Start here" guide inside the CMS. Its "Where everything is" table repeats the README's: change both. |
 | `.github/CODEOWNERS` | Who must approve changes to which files ([access-levels.md](access-levels.md)). |
 | `scripts/cms-preview/` | A local copy of the CMS for testing, plus screenshot and behaviour checks (below). |
@@ -80,6 +81,14 @@ Things that aren't obvious:
   as missing), the pull request checks' Markdown rules (`src/lib/content-rules.mjs`, shared with
   `check-content.mjs`, so those would also fail the checks), and "Hide from the site" being on. Only what's in the
   preview is checked: it doesn't stop a save.
+- **In Google / when shared** under the article preview: the Google result (address, `Title | CyberHeaven`,
+  excerpt) with counters that turn red past about 60 and 160 characters, and the card a shared link shows. Shared
+  links use the site's image (`/assets/og.jpg`, set in `layouts/Base.astro`), not the cover, so the card does too.
+- **Content health** page (`CMS.registerCustomPage`, `src/pages/admin/health.astro`), next to Start here: every
+  article with something from the "Before you submit" rules, team members without a photo, headline or bio,
+  glossary terms without a definition (or a long one), resources without a description or an `https://` link.
+  Built with the site, so it shows the published content as of the last deploy. Each row opens the entry
+  (`target="_parent"` link to `../#/collections/…`).
 - **Interactive widget** in the article editor's Insert menu (saved as `<div data-widget="…"></div>`).
 - **Start here** page (`CMS.registerCustomPage`). A volunteer's first visit in each browser opens it once.
 - **Unsaved changes:** the ← button asks before throwing them away (Sveltia wouldn't); closing the tab asks too.

@@ -312,10 +312,10 @@
   [role="toolbar"]:is([aria-label="Collection"], [aria-label="Folder"]) .description { font-size: 15px; }
 }
 
-/* "Start here" (src/pages/admin/start.astro) has its own big heading, so Sveltia's bar above it would repeat the
-   title. The bar goes; on phones only its back arrow stays. */
-main[aria-label="Start here"] > [role="toolbar"]:not(:has(button.back)) { display: none; }
-main[aria-label="Start here"] > [role="toolbar"] h2 { visibility: hidden; }
+/* "Start here" and "Content health" (src/pages/admin) have their own big heading, so Sveltia's bar above them would
+   repeat the title. The bar goes; on phones only its back arrow stays. */
+:is(main[aria-label="Start here"], main[aria-label="Content health"]) > [role="toolbar"]:not(:has(button.back)) { display: none; }
+:is(main[aria-label="Start here"], main[aria-label="Content health"]) > [role="toolbar"] h2 { visibility: hidden; }
 
 /* List rows at the site's scale: taller rows, larger titles and thumbnails */
 :is([aria-label="Entries"], [aria-label="Files"])[role="grid"] { --sui-primary-row-height: 72px; }

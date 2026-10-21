@@ -161,6 +161,24 @@ for (const browserName of ["chrome", "firefox"]) {
   const malwareCard = await card();
   check("article preview has a 'Before you submit' card", /excerpt is \d+ characters/.test(malwareCard), malwareCard.replace(/\s+/g, " "));
 
+  // cms.js: under the article, how it shows in Google, with the excerpt's counter in red when it's too long
+  let search = null;
+  for (const f of page.frames())
+    search ??= await f.$eval(".cms-search", (s) => ({ text: s.innerText, over: s.querySelector("[data-over]")?.textContent })).catch(() => null);
+  check("search card shows the address", search?.text.includes("articles › a-beginners-guide-to-malware-analysis"));
+  check("search card flags the long excerpt", /^excerpt \d+\/160$/.test(search?.over ?? ""), search?.over);
+
+  // cms.js + health.astro: "Content health" lists fixes, without Sveltia's title bar, and a row opens the entry
+  await goTo(page, "#/pages/health");
+  const healthFrame = page.frames().find((f) => f.url().includes("/admin/health"));
+  const healthLink = await healthFrame?.$eval('a[target="_parent"][href*="/collections/articles/entries/"]', (a) => a.textContent).catch(() => null);
+  check("Content health lists articles to fix", !!healthLink, healthLink);
+  const healthBar = await page.$eval('main[aria-label="Content health"] > [role="toolbar"]', (t) => getComputedStyle(t).display).catch(() => "missing");
+  check("Content health has one title", healthBar === "none", healthBar);
+  await healthFrame?.click('a[target="_parent"][href*="/collections/articles/entries/"]');
+  await wait(4000);
+  check("Content health row opens the entry", hashOf(page).startsWith("#/collections/articles/entries/"), hashOf(page));
+
   // Sveltia itself: a team member who still has articles can't be deleted (the site doesn't build without every
   // article's author). cms.js relies on this instead of its own guard
   await goTo(page, "#/collections/people/entries/purpleshonen");

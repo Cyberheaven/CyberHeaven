@@ -1,0 +1,89 @@
+---
+// "Content health" in the CMS (registered in public/admin/cms.js): small fixes across everything on the live site,
+// worked out when the site is built, so it shows published content as of the last deploy (not unsaved drafts).
+// Each row opens that entry in the CMS. The article rules are the "Before you submit" card's (lib/content-rules.mjs).
+// A plain page like start.astro: the site's fonts and styles, no top bar or site scripts.
+import "@fontsource/sora/400.css";
+import "@fontsource/sora/600.css";
+import "../../styles/global.css";
+import "../../styles/prose.css";
+import PageHead from "../../components/PageHead.astro";
+import { getArticles, getPeople, site } from "../../lib/site";
+import { articleProblems } from "../../lib/content-rules.mjs";
+import glossary from "../../data/glossary.json";
+import resources from "../../data/resources.json";
+
+const articles = (await getArticles()).filter((a) => !a.id.startsWith("_"));
+const people = await getPeople();
+const live = { articles: articles.map((a) => a.id), team: people.map((p) => p.id) };
+
+// One group per CMS list: [heading, rows]; a row is [name, where it opens in the CMS, problems as { text, quote? }]
+const editor = (collection: string, entry: string) => `../#/collections/${collection}/entries/${entry}`;
+type Problem = { text: string; quote?: string };
+const only = (list: (string | false)[]): Problem[] => list.filter((x): x is string => !!x).map((text) => ({ text }));
+const groups: [string, [string, string, Problem[]][]][] = [
+  ["Articles", articles.map((a) => [a.data.title, editor("articles", a.id),
+    articleProblems({ ...a.data, body: a.body }, live)])],
+  ["Team members", people.map((p) => [p.data.name, editor("people", p.id), only([
+    !p.data.avatar && "No photo: the site shows their initials.",
+    !p.data.headline && "No headline (the line under their name).",
+    !p.body?.trim() && "No bio.",
+  ])])],
+  ["Glossary", glossary.terms.map((t) => [t.term, editor("glossary", "glossary"), only([
+    !t.definition?.trim() && "No definition.",
+    t.definition?.length > 300 && `The definition is ${t.definition.length} characters: keep it to a sentence or two.`,
+  ])])],
+  ["Resource list", resources.items.map((r) => [r.name, editor("resources", "resources"), only([
+    !r.description?.trim() && "No description.",
+    !/^https:\/\//.test(r.url) && "The link doesn't start with https://.",
+  ])])],
+];
+const todo = groups.map(([heading, rows]) => [heading, rows.filter(([, , problems]) => problems.length)] as const);
+const total = todo.reduce((n, [, rows]) => n + rows.length, 0);
+const built = new Date().toLocaleDateString("en-GB", { dateStyle: "long", timeZone: "UTC" });
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Content health | {site.name} CMS</title>
+</head>
+<body>
+  <main class="st">
+    <PageHead title="Content health" lead={`Small fixes across the live site: ${total ? `${total} entr${total === 1 ? "y" : "ies"} to look at` : "nothing to fix"}. A good first task if you’re new. Updated at each publish (last: ${built}); your unpublished changes don’t show here yet.`} />
+
+    <div class="shell">
+      <div class="prose st-body">
+        {todo.map(([heading, rows]) => (
+          <section>
+            <h2>{heading} <span class="muted">{rows.length || "all good"}</span></h2>
+            {rows.length > 0 && (
+              <ul class="hl">
+                {rows.map(([name, href, problems]) => (
+                  <li><a href={href} target="_parent">{name}</a><ul>{problems.map((p) => <li>{p.text}{p.quote && <code>{p.quote.length > 60 ? `${p.quote.slice(0, 60)}…` : p.quote}</code>}</li>)}</ul></li>
+                ))}
+              </ul>
+            )}
+          </section>
+        ))}
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+
+<style is:global>
+  /* Shown inside the CMS (an iframe): dark scrollbar, like the CMS around it */
+  :root { color-scheme: dark; scrollbar-color: hsl(0 0% 30%) transparent; }
+</style>
+
+<style>
+  .st { padding-bottom: 96px; }
+  .st-body { max-width: 760px; }
+  .st-body section:first-child h2 { margin-top: 0; }
+  .muted { color: var(--white-40); font-weight: 400; }
+  .hl ul { color: var(--white-60); }
+  .hl code { display: block; width: fit-content; margin-top: 4px; font-size: 13px; color: var(--white-40); overflow-wrap: anywhere; }
+</style>

@@ -9,7 +9,7 @@ export default defineConfig({
   site: "https://cyberheaven.github.io", // GitHub Pages: docs/hosting.md
   // Styles go into the page itself, so the first paint does not wait for a stylesheet request.
   build: { inlineStylesheets: "always" },
-  // sitemap-index.xml for search engines; the 404 page and the CMS guide (/admin/start) are left out.
+  // sitemap-index.xml for search engines; the 404 page and the CMS pages (/admin/…) are left out.
   // Old addresses of pages that moved, so existing links keep working.
   redirects: {
     "/privacy": "/legal#privacy",
@@ -18,5 +18,5 @@ export default defineConfig({
   },
   // YouTube embeds and links in Markdown become the site's own video player.
   markdown: { processor: satteri({ hastPlugins: [youtube] }) },
-  integrations: [sitemap({ filter: (page) => !/\/(404|admin\/start)\/?$/.test(page) })],
+  integrations: [sitemap({ filter: (page) => !/\/(404\/?|admin\/.*)$/.test(page) })],
 });

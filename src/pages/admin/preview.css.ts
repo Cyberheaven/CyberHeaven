@@ -24,6 +24,16 @@ const extra = `
 .cms-check > p { color: var(--white); }
 .cms-check[data-ok] > p { color: var(--success); }
 .cms-check ul { margin: 10px 0 0; padding-left: 20px; color: var(--white-60); display: grid; gap: 8px; }
+/* Google result and shared-link card under the article (cms.js SearchCard): not part of the site */
+.cms-search { display: grid; gap: 12px; margin-block: 24px 48px; font-size: 15px; }
+.cms-search .caption { color: var(--white-60); margin-top: 12px; }
+.cms-search [data-over] { color: var(--error); }
+.cms-google, .cms-share { max-width: 600px; padding: 18px 22px; border: 1px solid var(--white-20); border-radius: 16px; color: var(--white-60); }
+.cms-url { font-size: 13px; color: var(--white-40); }
+.cms-title { color: var(--white); font-weight: 600; margin-block: 2px 4px; }
+.cms-share { padding: 0; overflow: hidden; }
+.cms-share img { display: block; width: 100%; aspect-ratio: 1.91; object-fit: cover; }
+.cms-share > div { padding: 14px 22px 18px; }
 .cms-check code { display: block; margin-top: 2px; font-size: 13px; color: var(--white-40); overflow-wrap: anywhere; }
 `;
 

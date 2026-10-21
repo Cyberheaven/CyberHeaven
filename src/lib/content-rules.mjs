@@ -1,5 +1,6 @@
-// Rules for a Markdown body, shared by scripts/check-content.mjs (pull request checks) and the CMS's
-// "Before you submit" card (public/admin/cms.js, served by src/pages/admin/content-rules.mjs.ts).
+// Rules for content, shared by scripts/check-content.mjs (pull request checks), the CMS's "Before you submit" card
+// (public/admin/cms.js, served by src/pages/admin/content-rules.mjs.ts) and the CMS's "Content health" page
+// (src/pages/admin/health.astro).
 // Tested against Sveltia 0.250.0.
 //
 // Why the safety rules matter: the site shows HTML written in Markdown as-is, scripts included, and the site
@@ -47,4 +48,34 @@ export function bodyProblems(body) {
     for (const message of found.length ? found : unsafe(text)) problems.push({ line: i + 1, message });
   });
   return problems;
+}
+
+// What to fix in an article before it goes live, as { text, quote } (quote: the line of Markdown it's about).
+// article: the article's fields as plain values, with its Markdown as body. live: the addresses of the articles and
+// people on the site ({ articles: [...], team: [...] }), or null to skip the link check. bodyProblems() would also
+// stop it from being published; the rest are good habits the checks don't enforce.
+export function articleProblems(article, live) {
+  const found = [];
+  const excerpt = (article.excerpt || "").trim();
+  const body = article.body || "";
+  if (!excerpt) found.push({ text: "No excerpt: it's the summary on the articles list and in Google results." });
+  else if (excerpt.length > 160) found.push({ text: `The excerpt is ${excerpt.length} characters: Google cuts it at about 160.` });
+  if (article.cover && !(article.coverAlt || "").trim()) found.push({ text: "The cover image has no alt text (Cover alt text)." });
+  if (/cyberheaven\.eu/i.test(`${article.title} ${excerpt}`)) found.push({ text: "The title or excerpt mentions the old cyberheaven.eu site." });
+  for (const { line, message } of bodyProblems(body)) found.push({ text: message[0].toUpperCase() + message.slice(1), quote: body.split("\n")[line - 1] });
+  let fence = false;
+  let level = 1; // the title is the page's heading 1
+  for (const line of body.split("\n")) {
+    if (line.startsWith("```")) fence = !fence;
+    if (fence) continue;
+    const heading = line.match(/^(#{1,6})\s/)?.[1].length;
+    if (heading === 1) found.push({ text: "Heading 1 in the text: the title is already the page's main heading. Use Heading 2.", quote: line });
+    else if (heading > level + 1) found.push({ text: `Heading ${heading} right after heading ${level}: don't skip a level.`, quote: line });
+    if (heading) level = heading;
+    if (/!\[\s*\]\(/.test(line)) found.push({ text: "An image without alt text: describe it between the [ ].", quote: line });
+    if (/cyberheaven\.eu/i.test(line)) found.push({ text: "Link or email on the old cyberheaven.eu site: link to cyberheaven.github.io, email cyberheavenhq@proton.me.", quote: line });
+    for (const [, kind, id] of line.matchAll(/\]\((?:https?:\/\/cyberheaven\.github\.io)?\/(articles|team)\/([\w-]+)/g))
+      if (live && !live[kind].includes(id)) found.push({ text: `Link to ${kind === "team" ? "a team member" : "an article"} that isn't on the site: /${kind}/${id}`, quote: line });
+  }
+  return found;
 }

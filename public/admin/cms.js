@@ -14,7 +14,7 @@
  * "Start here" guide to the sidebar, and a "Before you submit" card at the top of the article preview.
  */
 import { youtubeHtml, youtubeId } from "./youtube.mjs";
-import { bodyProblems } from "./content-rules.mjs";
+import { articleProblems } from "./content-rules.mjs";
 
 const { React } = CMS;
 const h = React.createElement;
@@ -23,6 +23,8 @@ CMS.registerPreviewStyle("/admin/preview.css");
 
 // "Start here" in the sidebar: a short guide for volunteers (src/pages/admin/start.astro)
 CMS.registerCustomPage({ id: "start", label: "Start here", icon: "waving_hand", url: "/admin/start/" });
+// "Content health": small fixes across the live site, a to-do list for volunteers (src/pages/admin/health.astro)
+CMS.registerCustomPage({ id: "health", label: "Content health", icon: "health_and_safety", url: "/admin/health/" });
 
 // ---------- Small pieces shared by both templates ----------
 
@@ -116,48 +118,45 @@ function useLoaded(load, deps) {
 
 // ---------- "Before you submit": what to fix before an article goes live ----------
 
-// Problems with an article, as { text, quote } (quote: the line of Markdown it's about). The Markdown rules are the
-// pull request checks' own (lib/content-rules.mjs), so those would also stop it from being published; the rest are
-// good habits the checks don't enforce. live: the addresses of articles and people on the site (null while loading).
 const quoted = (line) => (line.length > 60 ? `${line.slice(0, 60)}…` : line);
-function articleProblems(get, live) {
-  const found = [];
-  const excerpt = (get("excerpt") || "").trim();
-  const body = get("body") || "";
-  if (!excerpt) found.push({ text: "No excerpt: it's the summary on the articles list and in Google results." });
-  else if (excerpt.length > 160) found.push({ text: `The excerpt is ${excerpt.length} characters: Google cuts it at about 160.` });
-  if (get("cover") && !(get("coverAlt") || "").trim()) found.push({ text: "The cover image has no alt text (Cover alt text)." });
-  if (/cyberheaven\.eu/i.test(`${get("title")} ${excerpt}`)) found.push({ text: "The title or excerpt mentions the old cyberheaven.eu site." });
-  for (const { line, message } of bodyProblems(body)) found.push({ text: message[0].toUpperCase() + message.slice(1), quote: body.split("\n")[line - 1] });
-  let fence = false;
-  let level = 1; // the title is the page's heading 1
-  for (const line of body.split("\n")) {
-    if (line.startsWith("```")) fence = !fence;
-    if (fence) continue;
-    const heading = line.match(/^(#{1,6})\s/)?.[1].length;
-    if (heading === 1) found.push({ text: "Heading 1 in the text: the title is already the page's main heading. Use Heading 2.", quote: line });
-    else if (heading > level + 1) found.push({ text: `Heading ${heading} right after heading ${level}: don't skip a level.`, quote: line });
-    if (heading) level = heading;
-    if (/!\[\s*\]\(/.test(line)) found.push({ text: "An image without alt text: describe it between the [ ].", quote: line });
-    if (/cyberheaven\.eu/i.test(line)) found.push({ text: "Link or email on the old cyberheaven.eu site: link to cyberheaven.github.io, email cyberheavenhq@proton.me.", quote: line });
-    for (const [, kind, id] of line.matchAll(/\]\((?:https?:\/\/cyberheaven\.github\.io)?\/(articles|team)\/([\w-]+)/g))
-      if (live && !live[kind].includes(id)) found.push({ text: `Link to ${kind === "team" ? "a team member" : "an article"} that isn't on the site: /${kind}/${id}`, quote: line });
-  }
-  if (get("draft")) found.push({ text: "Hide from the site is on: this article won't appear on the site." });
-  return found;
-}
 
-function Checklist({ get, getCollection }) {
+// The rules are in lib/content-rules.mjs, shared with the pull request checks and the "Content health" page.
+function Checklist({ entry, getCollection }) {
   const live = useLoaded(async () => ({
     // Like the site: hidden articles and files starting with _ have no page
     articles: (await getCollection("articles")).filter((a) => !a.get("data").get("draft") && !a.get("slug").startsWith("_")).map((a) => a.get("slug")),
     team: (await getCollection("people")).map((p) => p.get("slug")).filter((id) => !id.startsWith("_")),
   }), []);
-  const found = articleProblems(get, live);
+  const found = articleProblems(entry.get("data").toJS(), live);
+  if (entry.getIn(["data", "draft"])) found.push({ text: "Hide from the site is on: this article won't appear on the site." });
   return h("aside", { className: "shell", "aria-label": "Before you submit" },
     h("div", { className: "cms-check", "data-ok": found.length ? null : "" },
       h("p", { className: "body-sb" }, found.length ? `Before you submit: ${found.length} to fix` : "Before you submit: nothing to fix"),
       found.length > 0 && h("ul", null, found.map((f, i) => h("li", { key: i }, f.text, f.quote && h("code", null, quoted(f.quote)))))));
+}
+
+// ---------- How the article shows up in Google and when shared ----------
+
+// The article page's <title> is "Title | CyberHeaven" and its description is the excerpt (layouts/Base.astro).
+// Shared links use the site's own image (/assets/og.jpg), not the cover. Google cuts titles at about 60
+// characters and descriptions at about 160.
+const cut = (text, max) => (text.length > max ? `${text.slice(0, max).trimEnd()}…` : text);
+function SearchCard({ title, excerpt, slug }) {
+  const pageTitle = `${title || "Title"} | CyberHeaven`;
+  const count = (label, n, max) => h("span", { "data-over": n > max ? "" : null }, `${label} ${n}/${max}`);
+  return h("aside", { className: "shell cms-search", "aria-label": "In Google and when shared" },
+    h("p", { className: "caption" }, "In Google · ", count("title", pageTitle.length, 60), " · ", count("excerpt", excerpt.length, 160)),
+    h("div", { className: "cms-google" },
+      h("p", { className: "cms-url" }, `cyberheaven.github.io › articles › ${slug || "…"}`),
+      h("p", { className: "cms-title" }, cut(pageTitle, 60)),
+      h("p", null, cut(excerpt, 160) || "No excerpt: Google picks some text from the page.")),
+    h("p", { className: "caption" }, "When the link is shared"),
+    h("div", { className: "cms-share" },
+      h("img", { src: "/assets/og.jpg", alt: "" }),
+      h("div", null,
+        h("p", { className: "cms-url" }, "cyberheaven.github.io"),
+        h("p", { className: "cms-title" }, pageTitle),
+        h("p", null, cut(excerpt, 110)))));
 }
 
 // ---------- Article: src/pages/articles/[slug].astro ----------
@@ -178,7 +177,7 @@ function ArticlePreview({ entry, widgetFor, getAsset, getCollection }) {
   const bio = (author?.get("body") || "").trim().split(/\n\s*\n/)[0].replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_`]/g, "");
 
   return h("main", null,
-    h(Checklist, { get, getCollection }),
+    h(Checklist, { entry, getCollection }),
     h("article", null,
       h("header", { className: "phead shell post-head" },
         // A new article has no title yet: show where it will go instead of an empty pane
@@ -204,7 +203,8 @@ function ArticlePreview({ entry, widgetFor, getAsset, getCollection }) {
                 h("span", { className: "h4" }, name),
                 author?.get("headline") && h("span", { className: "body muted" }, author.get("headline")))),
             bio && h("div", { className: "body muted author-card-bio" }, h("p", null, bio)),
-            h("a", { className: "text-link body-sb", href: "/team" }, "View profile", h(Icon, { name: "arrow-right" })))))));
+            h("a", { className: "text-link body-sb", href: "/team" }, "View profile", h(Icon, { name: "arrow-right" })))))),
+    h(SearchCard, { title, excerpt: (get("excerpt") || "").trim(), slug: entry.get("slug") }));
 }
 
 // ---------- Team member: src/pages/team/[person].astro ----------
