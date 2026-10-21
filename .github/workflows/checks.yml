@@ -1,0 +1,46 @@
+# Checks every change before it can be published: the site must build, and the content must be safe and fit
+# together. Runs on every pull request, including the ones the CMS opens, and the rule on main
+# (.github/rulesets/review-before-publishing.json) requires it to pass. See docs/checks.md.
+name: Checks
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch: # "Run workflow" button on the Actions tab
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Checks # the name the rule on main asks for: keep them the same
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Every check runs even if an earlier one failed, so one run lists everything to fix
+      - name: Content is safe and survives the CMS editor
+        run: node scripts/check-content.mjs
+      - name: Categories, duplicates and CMS form
+        if: ${{ !cancelled() }}
+        run: node scripts/check-data.mjs
+      - name: Labs
+        if: ${{ !cancelled() }}
+        run: node scripts/check-labs.mjs
+      - name: Career quiz
+        if: ${{ !cancelled() }}
+        run: node scripts/check-career.mjs
+      - name: YouTube links
+        if: ${{ !cancelled() }}
+        run: node scripts/check-youtube.mjs
+      - id: build
+        name: Site builds
+        if: ${{ !cancelled() }}
+        run: npm run build
+      - name: Links on the site lead somewhere
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-links.mjs
