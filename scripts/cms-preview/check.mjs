@@ -135,6 +135,9 @@ for (const browserName of ["chrome", "firefox"]) {
   await goTo(page, "#/collections/pages/entries/home");
   const band = await page.$eval('section.field[data-key-path="about"] .wrapper > .header', (h) => getComputedStyle(h).backgroundColor);
   check("grouped field header has no grey band", band === "rgba(0, 0, 0, 0)", band);
+  await goTo(page, "#/collections/articles/entries/a-beginners-guide-to-malware-analysis");
+  const frame = await page.$eval('section.field[data-key-path="author"] .field-wrapper > .wrapper', (w) => getComputedStyle(w).borderTopWidth);
+  check("radio buttons (Author) have no card outline", frame === "0px", frame);
 
   // cms.js + theme.css: only maintainers see Pages and Settings in the sidebar. The demo has no GitHub sign-in, so
   // this gives it a pretend token and answers GitHub's "what may this person do" request itself.

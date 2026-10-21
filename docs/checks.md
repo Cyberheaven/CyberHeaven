@@ -37,11 +37,21 @@ exception. Code shown in an article belongs in `backticks` or a code block, wher
 - **In the CMS:** *Publish* says *"Couldn't publish the entry. Please try again."* (the same message as a missing
   approval). The reason is on the pull request on GitHub: *Checks* tab → the red step → its output names the file
   and line.
-- **Publishing while the checks still run:** the CMS turns on GitHub's auto-merge, and the change goes live by
-  itself once they pass (repo setting `allow_auto_merge`, see [access-levels.md](access-levels.md)).
+- **Publishing while the checks still run:** the CMS turns on GitHub's auto-merge, says nothing, and goes back to
+  the list; the change goes live by itself once they pass (repo setting `allow_auto_merge`, see
+  [access-levels.md](access-levels.md)). GitHub can take a few minutes to notice the checks passed.
 - **Contributors' pull requests** (from a fork): GitHub doesn't run workflows for someone's first contribution until
   a maintainer presses *Approve and run* on the pull request (repo setting: Actions → *Require approval for
   first-time contributors*). Until then the check shows as waiting.
+- **Contributors' forks** fall behind whenever a file in `.github/workflows` changes: the CMS signs contributors in
+  without GitHub's `workflow` permission (`auth_scope: public_repo` in `config.yml`), so it can't copy workflow
+  changes into their fork. Their pull requests still work and contain only their edit. Adding `workflow` to
+  `auth_scope` would fix it, but would let the CMS change GitHub Actions in every repo the contributor can push to.
+
+Tested on 21 Oct 2026 in a sandbox copy (Sveltia 0.250.0): a contributor whose fork predated the workflow saved an
+article (pull request with only that file; its checks waited for *Approve and run*, then passed); a writer's
+approved change with a `javascript:` link failed the content check, and *Publish* gave the message above; a
+writer's approved change published while checks ran was merged by auto-merge once they passed.
 
 ## Changing the checks
 

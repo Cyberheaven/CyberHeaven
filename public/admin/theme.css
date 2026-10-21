@@ -555,12 +555,13 @@ section.field[data-key-path="picksHeading"]::before { content: "Resources"; }
 section.field[data-key-path="faqHeading"]::before { content: "FAQ"; }
 section.field[data-key-path="contact"]::before { content: "Contact"; }
 /* Items in lists (FAQ, values, lab exercises…) and grouped fields (Home → About): quiet outlined cards like the
-   site's, instead of Sveltia's grey header band. The outline brightens while you point at or work in one. */
-section.field :is(.item-list > .item-wrapper > .item, .field-wrapper > .wrapper) {
+   site's, instead of Sveltia's grey header band. The outline brightens while you point at or work in one.
+   Only wrappers with a header are groups: dropdowns and radio buttons (Category, Author) have a .wrapper too. */
+section.field :is(.item-list > .item-wrapper > .item, .field-wrapper > .wrapper:has(> .header)) {
   border: 1px solid rgb(255 255 255 / 16%);
   transition: border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
-section.field :is(.item-list > .item-wrapper > .item, .field-wrapper > .wrapper):is(:hover, :focus-within) { border-color: rgb(255 255 255 / 40%); }
+section.field :is(.item-list > .item-wrapper > .item, .field-wrapper > .wrapper:has(> .header)):is(:hover, :focus-within) { border-color: rgb(255 255 255 / 40%); }
 section.field :is(.item, .wrapper) > .header { background: transparent; }
 /* The item's number, in the small muted caption style */
 section.field .item > .header .position { font-size: 12px; font-weight: 400; color: hsl(var(--sui-foreground-color-4-hsl)); }
