@@ -4,9 +4,8 @@ Anyone can suggest a change through the CMS, but a change only goes live once so
 The rules are enforced by GitHub, not by the CMS: the CMS just follows them. How the CMS itself is built:
 [cms.md](cms.md).
 
-> **Status (21 Oct 2026):** set up and tested on the sandbox repo `Cyberheaven/cms-sandbox`. The real repo
-> (`Cyberheaven/CyberHeaven`) still saves straight to `main` until the `access-levels` branch is merged and the
-> steps under [Setting it up on a repo](#setting-it-up-on-a-repo) are done there. Update this line when that happens.
+> **Status (21 Oct 2026):** live on `Cyberheaven/CyberHeaven` (ruleset *Review before publishing*, id 25525380).
+> Maintainers: PurpleShonen, medhansh5, timo123421. Editors and Writers: nobody yet.
 
 ## The four levels
 
@@ -74,7 +73,7 @@ admins (Settings → Collaborators and teams) can also skip the review rule; kee
 
 ## Setting it up on a repo
 
-What was done on `Cyberheaven/cms-sandbox`; do the same on `Cyberheaven/CyberHeaven` when rolling out.
+How it was done on `Cyberheaven/CyberHeaven` (and first on a sandbox copy). Repeat it for a new or moved repo.
 
 1. **The CMS:** `public/admin/config.yml` has `publish_mode: editorial_workflow`, and under `backend:`
    `open_authoring: true` and `auth_scope: public_repo` (a public repo needs no wider access).
