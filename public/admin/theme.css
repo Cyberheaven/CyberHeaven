@@ -338,6 +338,35 @@ nav.primary-sidebar [role="group"] > .label { font-size: 12px; }
 [role="toolbar"][aria-label="Primary"] h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.04em; color: #fff; }
 [role="toolbar"][aria-label="Primary"] h2:has(bdi + bdi) { color: rgb(255 255 255 / 60%); }
 [role="toolbar"][aria-label="Primary"] h2 bdi:last-child { color: #fff; }
+/* The editor's bar is as tall as the main top bar, and Save is the site's white pill (like "Join" in its nav) */
+[aria-label="Content Editor"] > [role="toolbar"][aria-label="Primary"][aria-orientation="horizontal"] { height: 64px; padding: 0 9px; }
+[role="toolbar"][aria-label="Primary"] button[data-label="Save"] { height: 40px; padding: 0 20px; font-size: 15px; font-weight: 600; }
+/* Nothing to save yet: a faint pill instead of a solid grey one */
+[role="toolbar"][aria-label="Primary"] button[data-label="Save"][aria-disabled="true"] { background: rgb(255 255 255 / 8%); color: rgb(255 255 255 / 45%); }
+/* "Edit" and "Preview" above the two panes: small captions, so the fields and the preview are what you see first */
+[aria-label="Content Editor"] [role="toolbar"][aria-label="Secondary"] h3 {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: rgb(255 255 255 / 60%);
+}
+/* Fields at the site's scale: taller text boxes with 16px text; the title box reads like the page heading it becomes */
+[aria-label="Content Editor"] [role="group"][data-mode="edit"] {
+  --sui-textbox-height: 44px;
+  --sui-textbox-font-size: 16px;   /* under 16px, iPhones zoom in when a box is tapped */
+  --sui-textbox-singleline-padding: 0 14px;
+}
+/* Buttons that sit inside or beside a text box (the dropdown arrow, "Today") match its height */
+[aria-label="Content Editor"] [role="group"][data-mode="edit"] :is(.combobox, [data-field-type="datetime"] .field-wrapper) { --sui-button-medium-height: 44px; }
+[aria-label="Content Editor"] section.field[data-key-path="title"] input {
+  height: 56px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+/* Required marks in the site's grey instead of red: red is kept for real errors */
+section.field > header > .required { color: rgb(255 255 255 / 60%); }
 /* Field labels: the site's caption weight in the body grey, so they stand apart from the muted hints below */
 section.field > header > h4 { font-size: 13px; font-weight: 600; color: hsl(var(--sui-foreground-color-2-hsl)); }
 /* More room between top-level fields (fields inside lists and objects keep Sveltia's tighter spacing) */
