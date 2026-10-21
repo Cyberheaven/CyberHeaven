@@ -81,8 +81,8 @@ the look is `public/admin/theme.css`; the previews, which copy `src/pages/articl
 `src/pages/team/[person].astro`, are in `public/admin/cms.js`: if you change the markup of one of those pages,
 change it in `cms.js` too.
 
-The CMS editor rewrites the Markdown when it saves, and some Markdown doesn’t survive that (indented lists, HTML
-tables, `<iframe>` embeds). If you edit content files directly, run `node scripts/check-content.mjs` before pushing.
+The CMS editor rewrites the Markdown when it saves, and some Markdown doesn’t survive that (HTML tables, `<iframe>`
+embeds, `* * *` dividers). If you edit content files directly, run `node scripts/check-content.mjs` before pushing.
 
 Some text has placeholders in curly brackets, like `{count} terms`. Keep them as they are: the site fills in the
 real number when it builds, so it never goes out of date. Each field’s hint says which placeholders it supports.

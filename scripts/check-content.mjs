@@ -1,13 +1,11 @@
 // Run: node scripts/check-content.mjs — finds Markdown that the CMS editor (Sveltia) changes or breaks
-// when someone edits and saves the page there. Tested against Sveltia 0.248.1.
+// when someone edits and saves the page there. Tested against Sveltia 0.250.0.
 import { readFileSync, readdirSync } from "node:fs";
 
 const rules = [
-  [/^ {1,3}([*+-]|\d+\.) /, "list starts indented: each CMS save indents it further until it becomes a code block. Remove the leading spaces"],
   [/^\s*<table/, "HTML table: the CMS escapes it as text. Use a Markdown table (| a | b |)"],
   [/^\s*<iframe/, "embed: paste the YouTube link on its own line instead, e.g. [Video title](https://www.youtube.com/watch?v=…)"],
   [/^\* \* \*$/, "'* * *' line: the CMS turns it into a bullet point. Use *** for a divider"],
-  [/^\|.*`[^`]*\\[$<][^`]*`/, "backslash before $ or < in a table cell: the CMS drops it on save. Reword the cell"],
 ];
 
 let problems = 0;

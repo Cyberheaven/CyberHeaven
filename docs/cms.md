@@ -103,11 +103,12 @@ rather than rewritten. Articles have no draft marker in the list: the Workflow p
 
 ## The editor rewrites Markdown
 
-Sveltia's rich-text editor re-writes the Markdown body on every save, and some Markdown doesn't survive: lists
-indented by 1–3 spaces, HTML tables, `<iframe>` lines, `* * *` rules. Content is kept in forms that survive, and
-`node scripts/check-content.mjs` flags anything that wouldn't. Reported upstream:
-[sveltia-cms#1100](https://github.com/sveltia/sveltia-cms/issues/1100) and
-[#1101](https://github.com/sveltia/sveltia-cms/issues/1101).
+Sveltia's rich-text editor re-writes the Markdown body on every save, and some Markdown doesn't survive: HTML
+tables, `<iframe>` lines, `* * *` rules. Content is kept in forms that survive, and `node scripts/check-content.mjs`
+flags anything that wouldn't. Two bugs we reported are fixed since Sveltia 0.249.1 (backslashes in table code,
+[sveltia-cms#1100](https://github.com/sveltia/sveltia-cms/issues/1100); lists indented by 1–3 spaces,
+[#1101](https://github.com/sveltia/sveltia-cms/issues/1101)); `check.mjs` tests both, so an update that brings
+them back fails there.
 
 ## Testing the CMS locally
 
@@ -142,7 +143,8 @@ TOKEN=$(gh auth token) node scripts/cms-preview/shoot.mjs /tmp/sandbox-shots
 
 1. Change the version in the script URL in `public/admin/index.html`.
 2. Run `setup.mjs`, `check.mjs` and `shoot.mjs` (above), and compare the screenshots with ones taken before the
-   update. Variable names have stayed the same so far, but Sveltia doesn't promise that.
+   update (take those first, on the old version; the sign-in background is animated, so it always differs).
+   Variable names have stayed the same so far, but Sveltia doesn't promise that.
 3. If something broke, find the new markup with your browser's inspector, and Sveltia's rule with `find-css.mjs`.
 
 ## Known gaps

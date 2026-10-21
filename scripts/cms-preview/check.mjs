@@ -101,6 +101,31 @@ for (const browserName of ["chrome", "firefox"]) {
   check("new article preview shows 'Start with a title'", previewText.includes("Start with a title"));
   check("new article preview has no reading time", !previewText.includes("min read"));
 
+  // Sveltia itself: an edit in the rich text editor re-writes the whole body. Before 0.249.1 it dropped "\" before
+  // $ or < in table code spans (sveltia-cms#1100) and turned lists indented by 1-3 spaces into code blocks (#1101)
+  const toggleMarkdown = () => page.click('section.field[data-key-path="body"] button[aria-label^="Edit in"]');
+  const body = "Paths:\n\n| Path |\n| --- |\n| `C:\\$MFT` |\n\nList:\n\n  * one\n  * two";
+  await toggleMarkdown();
+  await wait(800);
+  await page.$eval('section.field[data-key-path="body"] textarea', (t, value) => {
+    t.value = value;
+    t.dispatchEvent(new Event("input", { bubbles: true }));
+  }, body);
+  await wait(500);
+  await toggleMarkdown();
+  await wait(1000);
+  await page.click('section.field[data-key-path="body"] [contenteditable] p'); // "Paths:"
+  await page.keyboard.press("End");
+  await page.keyboard.type("!");
+  await wait(800);
+  await toggleMarkdown();
+  await wait(1000);
+  const saved = await page.$eval('section.field[data-key-path="body"] textarea', (t) => t.value);
+  const rewritten = saved.includes("Paths:!"); // the typed "!" shows the editor really re-wrote the body
+  check("editor keeps \\ in table code", rewritten && saved.includes("`C:\\$MFT`"), saved.split("\n")[4]);
+  check("editor keeps indented lists as lists", rewritten && saved.includes("\n* one"), JSON.stringify(saved.slice(saved.indexOf("one") - 6)));
+  acceptLeave = true; // the article now has unsaved changes
+
   // config.yml: team rows read "Name · Roles", like article rows
   await goTo(page, "#/collections/people");
   const teamRow = await page.$eval('[role="grid"][aria-label="Entries"] [role="row"]', (r) => r.textContent.trim());
