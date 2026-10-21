@@ -432,6 +432,8 @@ nav.primary-sidebar [role="group"] > .label { font-size: 12px; }
   pointer-events: none;
 }
 [role="toolbar"][aria-label="Primary"] button[data-label="Save"][aria-disabled="false"]::after { opacity: 1; }
+/* …but not on a new entry nobody has typed in yet (body[data-fresh], set in cms.js) */
+body[data-fresh="1"] [role="toolbar"][aria-label="Primary"] button[data-label="Save"]::after { opacity: 0; }
 
 /*
  * Editor typography. The top bar reads "Articles › Entry title": the entry title is a small display heading
@@ -487,8 +489,15 @@ nav.primary-sidebar [role="group"] > .label { font-size: 12px; }
   letter-spacing: -0.03em;
   color: #fff;
 }
-/* Required marks in the site's grey instead of red: red is kept for real errors */
-section.field > header > .required { color: rgb(255 255 255 / 60%); }
+/* Most fields are required, so a star on nearly every one said nothing: the few optional fields say "optional"
+ * instead (screen readers already hear "required" from the inputs). Switches are left alone: off is an answer. */
+section.field > header > .required { display: none; }
+section.field:not([data-field-type="boolean"]) > header:not(:has(> .required)) > h4::after {
+  content: "optional";
+  margin-inline-start: 8px;
+  font-weight: 400;
+  color: rgb(255 255 255 / 60%);
+}
 /* Field labels: the site's caption weight in the body grey, so they stand apart from the muted hints below */
 section.field > header > h4 { font-size: 13px; font-weight: 600; color: hsl(var(--sui-foreground-color-2-hsl)); }
 /* More room between top-level fields (fields inside lists and objects keep Sveltia's tighter spacing) */

@@ -208,10 +208,22 @@ CMS.registerPreviewTemplate("people", PersonPreview);
 
 // ---------- Small fixes around Sveltia ----------
 
+// Sveltia enables Save on a new entry before anything is typed, which lit the "unsaved" ring (theme.css) on an
+// empty form. Until the first edit, body[data-fresh] is set: theme.css hides the ring and ← leaves without asking.
+// ponytail: any click on a field counts as an edit (Sveltia's pickers don't all fire input events).
+const markFresh = () => { document.body.dataset.fresh = /\/new$/.test(location.hash) ? "1" : ""; };
+markFresh();
+window.addEventListener("hashchange", markFresh);
+for (const type of ["input", "change", "click"]) {
+  document.addEventListener(type, (event) => {
+    if (event.target.closest?.("section.field")) document.body.dataset.fresh = "";
+  }, true);
+}
+
 // Leaving an entry with ← while it has unsaved changes asks first: Sveltia would drop the changes without a word.
 // Closing or reloading the tab asks too (the browser shows its own message).
 // ponytail: the browser's Back button can't be stopped this way; add a hashchange guard if volunteers hit it.
-const unsaved = () => document.querySelector('[role="toolbar"][aria-label="Primary"] button[data-label="Save"][aria-disabled="false"]');
+const unsaved = () => !document.body.dataset.fresh && document.querySelector('[role="toolbar"][aria-label="Primary"] button[data-label="Save"][aria-disabled="false"]');
 document.addEventListener("click", (event) => {
   if (event.target.closest?.('button[aria-label="Cancel Editing"]') && unsaved() && !confirm("Leave without saving? Your changes will be lost.")) {
     event.preventDefault();
@@ -227,11 +239,23 @@ window.addEventListener("beforeunload", (event) => { if (unsaved()) event.preven
 
 // Sveltia draws its own markup whenever it likes, so these checks run after each change to the page:
 // - the logo reads "CyberHeaven" (theme.css), so its name for screen readers starts with that too;
-// - a volunteer's first visit opens the "Start here" guide, once per browser.
+// - a volunteer's first visit opens the "Start here" guide, once per browser;
+// - Sveltia's delete confirm opens with focus on Delete (so Enter deletes) and doesn't say what goes: focus moves
+//   to Cancel, and in the editor the question names the entry.
 let seenStart = true;
 try { seenStart = !!localStorage.getItem("ch-seen-start"); } catch {}
 new MutationObserver(() => {
   document.querySelector('button[aria-label="Visit Live Site"]')?.setAttribute("aria-label", "CyberHeaven: visit the live site");
+  const confirmDelete = document.querySelector('dialog[role="alertdialog"][open]:has(button[data-label="Delete"]):not([data-checked])');
+  if (confirmDelete) {
+    confirmDelete.dataset.checked = "1"; // once per dialog: Sveltia makes a new one each time
+    const title = document.querySelector('[role="toolbar"][aria-label="Primary"] h2 bdi:last-child')?.textContent;
+    const body = confirmDelete.querySelector('[id$="-body"]');
+    // Only Sveltia's text node is changed (not the element), so its own updates keep working
+    const text = [...(body?.childNodes ?? [])].find((n) => n.nodeType === Node.TEXT_NODE && n.nodeValue.includes("delete this entry"));
+    if (title && text) text.nodeValue = `Delete “${title}”? Every version stays on GitHub, so it can be brought back.`;
+    setTimeout(() => confirmDelete.querySelector('button[data-label="Cancel"]')?.focus()); // after Sveltia focuses Delete
+  }
   if (!seenStart && /^#\/collections(\/[\w-]+)?$/.test(location.hash)) {
     seenStart = true;
     try { localStorage.setItem("ch-seen-start", "1"); } catch {}

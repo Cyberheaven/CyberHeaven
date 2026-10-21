@@ -55,6 +55,29 @@ for (const browserName of ["chrome", "firefox"]) {
   const title = await page.$eval('section.field[data-key-path="title"] input', (i) => i.value);
   check("Clear All asks, Cancel keeps the fields", title !== "", title);
 
+  // cms.js: the delete confirm focuses Cancel (so Enter doesn't delete) and names the entry
+  await page.keyboard.press("Escape"); // the ⋮ menu is still open from Clear All
+  await wait(400);
+  await page.click('[role="toolbar"][aria-label="Primary"] button[aria-label="Show Editor Options"]');
+  await wait(600);
+  await page.evaluate(() => [...document.querySelectorAll('[role="menuitem"]')].find((m) => m.textContent.trim() === "Delete").click());
+  await wait(800);
+  const confirmDelete = await page.evaluate(() => ({
+    focus: document.activeElement?.dataset.label,
+    text: document.querySelector('dialog[role="alertdialog"] [id$="-body"]')?.textContent.trim(),
+  }));
+  check("delete confirm focuses Cancel", confirmDelete.focus === "Cancel", confirmDelete.focus);
+  check("delete confirm names the entry", confirmDelete.text?.includes("Malware Analysis"), confirmDelete.text);
+  await page.keyboard.press("Escape");
+
+  // cms.js + theme.css: an untouched new article has no "unsaved" ring, and ← leaves without asking
+  await goTo(page, "#/collections/articles/new");
+  const ring = await page.$eval('[role="toolbar"][aria-label="Primary"] button[data-label="Save"]', (b) => getComputedStyle(b, "::after").opacity);
+  check("empty new article: no unsaved ring", ring === "0", ring);
+  await page.click('button[aria-label="Cancel Editing"]');
+  await wait(800);
+  check("empty new article: ← leaves without asking", !hashOf(page).includes("/new"), hashOf(page));
+
   // config.yml: a new article's date is today; cms.js: its preview shows where the title goes
   await goTo(page, "#/collections/articles/new");
   const date = await page.$eval('section.field[data-key-path="date"] input', (i) => i.value);

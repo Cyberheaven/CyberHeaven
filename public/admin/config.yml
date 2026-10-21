@@ -337,7 +337,7 @@ collections:
     fields:
       - { name: name, label: Name, widget: string }
       - { name: headline, label: Headline, widget: string, required: false, hint: "One line, e.g. DFIR analyst and CTF player" }
-      - { name: pronouns, label: Pronouns, widget: string, required: false, hint: "Optional, e.g. she/her" }
+      - { name: pronouns, label: Pronouns, widget: string, required: false, hint: "e.g. she/her" }
       - { name: avatar, label: Photo, widget: image, required: false, media_folder: /public/media/people, public_folder: /media/people, hint: "Square works best. Without one, their initials are shown." }
       - name: roles
         label: Roles
@@ -349,7 +349,7 @@ collections:
         display_fields: ["roles.*.name"]
         multiple: true
         hint: Add or rename roles under Settings → Categories.
-      - { name: location, label: Based in, widget: string, required: false, hint: "Optional, e.g. Berlin, Germany" }
+      - { name: location, label: Based in, widget: string, required: false, hint: "e.g. Berlin, Germany" }
       - { name: joined, label: Joined CyberHeaven, widget: datetime, required: false, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, picker_utc: true }
       - name: links
         label: Links
@@ -427,7 +427,7 @@ collections:
                 value_field: "glossary.*.name"
                 search_fields: ["glossary.*.name"]
                 display_fields: ["glossary.*.name"]
-              - { name: link, label: Learn-more link, widget: string, required: false, hint: "Optional, e.g. /articles/linux-command-line-cheat-sheet" }
+              - { name: link, label: Learn-more link, widget: string, required: false, hint: "e.g. /articles/linux-command-line-cheat-sheet" }
 
   # Data for the interactive tools. The career quiz (src/data/career.json) is edited in code.
   - name: interactive

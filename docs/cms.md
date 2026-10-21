@@ -60,6 +60,8 @@ Things that aren't obvious:
   field: rename or reorder those fields in `config.yml` and update the list in `theme.css`.
 - **Destructive buttons** are a muted red outline (Sveltia's `--sui-error-*` colours), never the white pill used
   for safe actions. List item buttons (move, ⋮, remove ×) grow to 44px on phones.
+- **Optional fields** say "optional" next to their label; Sveltia's required star is hidden, since nearly every
+  field is required. Switches (boolean fields) get neither. A hint doesn't need to start with "Optional".
 - **Respect `prefers-reduced-motion`** for every animation; keep text contrast at 4.5:1 or more.
 
 ## Behaviour added in `cms.js`
@@ -71,6 +73,10 @@ Things that aren't obvious:
 - **Unsaved changes:** the ← button asks before throwing them away (Sveltia wouldn't); closing the tab asks too.
   The browser's own Back button isn't covered.
 - **Clear All** in the editor's ⋮ menu asks before emptying every field (Sveltia wouldn't).
+- **New entries:** Sveltia enables Save on a new entry before anything is typed. Until the first click or edit in
+  a field, `body[data-fresh]` is set: no "unsaved" ring on Save, and ← leaves without asking.
+- **Delete confirm:** focus starts on Cancel instead of Delete (so Enter doesn't delete), and in the editor the
+  question names the entry and says it can be brought back from GitHub.
 - **Logo name:** screen readers hear "CyberHeaven: visit the live site", matching what the logo shows.
 
 ## The editor rewrites Markdown
