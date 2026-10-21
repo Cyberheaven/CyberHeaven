@@ -87,7 +87,7 @@ collections:
     label: Pages
     label_singular: Page
     icon: web
-    description: "The text on every page of the site, one entry per page. Text in {curly brackets} is filled in automatically: keep it as it is."
+    description: "The text on every page of the site, one entry per page. The About section, values, ticker, FAQ and contact section also appear on the About and Join pages, but are edited under Home. Text in {curly brackets} is filled in automatically: keep it as it is."
     editor: { preview: false }
     files:
       - name: home
@@ -236,7 +236,7 @@ collections:
         file: src/content/pages/about.md
         format: frontmatter
         fields:
-          - { name: title, label: Title, widget: string, hint: "Shown in the browser tab." }
+          - { name: title, label: Title, widget: string, hint: "Shown in the browser tab. The About section, values, ticker and contact section on this page are edited under Pages → Home." }
           - { name: heading, label: Heading, widget: string }
           - { name: description, label: Intro, widget: text, hint: "Also used in Google results and link previews." }
           - { name: storyHeading, label: Story heading, widget: string }
@@ -273,7 +273,7 @@ collections:
         file: src/content/pages/join.json
         format: json
         fields:
-          - { name: title, label: Heading, widget: string }
+          - { name: title, label: Heading, widget: string, hint: "The FAQ on this page is edited under Pages → Home." }
           - { name: lead, label: Intro, widget: text }
           - { name: seo, label: Search engine description, widget: text, hint: "Shown in Google results and link previews." }
           - name: channels

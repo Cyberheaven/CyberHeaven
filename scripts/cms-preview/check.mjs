@@ -70,6 +70,20 @@ for (const browserName of ["chrome", "firefox"]) {
   check("delete confirm names the entry", confirmDelete.text?.includes("Malware Analysis"), confirmDelete.text);
   await page.keyboard.press("Escape");
 
+  // theme.css: a field's ⋮ menu is faint until the field is hovered
+  const faint = await page.$eval('section.field[data-key-path="category"] button[aria-label="Show Field Options"]', (b) => getComputedStyle(b).opacity);
+  check("field ⋮ menu is faint", faint === "0.5", faint);
+
+  // cms.js + theme.css: on a phone the editor bar still shows the entry's title
+  await page.setViewport({ width: 390, height: 844 });
+  await wait(1000);
+  const phoneTitle = await page.evaluate(() => {
+    const spacer = document.querySelector('[role="toolbar"][aria-label="Primary"] > .inner > .spacer');
+    return spacer && getComputedStyle(spacer, "::before").content;
+  });
+  check("phone editor bar shows the title", phoneTitle?.includes("Malware Analysis"), phoneTitle);
+  await page.setViewport({ width: 1024, height: 768 });
+
   // cms.js + theme.css: an untouched new article has no "unsaved" ring, and ← leaves without asking
   await goTo(page, "#/collections/articles/new");
   const ring = await page.$eval('[role="toolbar"][aria-label="Primary"] button[data-label="Save"]', (b) => getComputedStyle(b, "::after").opacity);

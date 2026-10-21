@@ -246,6 +246,10 @@ let seenStart = true;
 try { seenStart = !!localStorage.getItem("ch-seen-start"); } catch {}
 new MutationObserver(() => {
   document.querySelector('button[aria-label="Visit Live Site"]')?.setAttribute("aria-label", "CyberHeaven: visit the live site");
+  // On phones the editor bar has no entry title: theme.css shows this one ("Articles › Title – CyberHeaven CMS")
+  const spacer = document.querySelector('[aria-label="Content Editor"] [role="toolbar"][aria-label="Primary"] > .inner > .spacer');
+  const title = document.title.replace(/ – .*$/, "").split(" › ").pop();
+  if (spacer && spacer.dataset.title !== title) spacer.dataset.title = title;
   const confirmDelete = document.querySelector('dialog[role="alertdialog"][open]:has(button[data-label="Delete"]):not([data-checked])');
   if (confirmDelete) {
     confirmDelete.dataset.checked = "1"; // once per dialog: Sveltia makes a new one each time
@@ -261,4 +265,4 @@ new MutationObserver(() => {
     try { localStorage.setItem("ch-seen-start", "1"); } catch {}
     location.hash = "#/pages/start";
   }
-}).observe(document.body, { childList: true, subtree: true });
+}).observe(document.documentElement, { childList: true, subtree: true }); // the whole page, so <title> changes count too

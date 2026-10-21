@@ -60,6 +60,8 @@ Things that aren't obvious:
   field: rename or reorder those fields in `config.yml` and update the list in `theme.css`.
 - **Destructive buttons** are a muted red outline (Sveltia's `--sui-error-*` colours), never the white pill used
   for safe actions. List item buttons (move, ⋮, remove ×) grow to 44px on phones.
+- **Field ⋮ menus** (one on every field, rarely needed) are faint until the field is hovered or focused. They
+  stay in the Tab order.
 - **Optional fields** say "optional" next to their label; Sveltia's required star is hidden, since nearly every
   field is required. Switches (boolean fields) get neither. A hint doesn't need to start with "Optional".
 - **Respect `prefers-reduced-motion`** for every animation; keep text contrast at 4.5:1 or more.
@@ -77,6 +79,8 @@ Things that aren't obvious:
   a field, `body[data-fresh]` is set: no "unsaved" ring on Save, and ← leaves without asking.
 - **Delete confirm:** focus starts on Cancel instead of Delete (so Enter doesn't delete), and in the editor the
   question names the entry and says it can be brought back from GitHub.
+- **Phone editor title:** on phones Sveltia leaves the entry's title out of the editor bar. `cms.js` copies it from
+  the browser tab title into `data-title` on the bar's spacer, and `theme.css` shows it after ←.
 - **Logo name:** screen readers hear "CyberHeaven: visit the live site", matching what the logo shows.
 
 ## The editor rewrites Markdown
@@ -125,6 +129,9 @@ TOKEN=$(gh auth token) node scripts/cms-preview/shoot.mjs /tmp/sandbox-shots
 
 ## Known gaps
 
+- Sveltia shows no collection description (the lead line) on phones.
+- The Pages list can't show a description per page: the Pages description says which Home sections also appear
+  on About and Join, and those pages' first field has a hint pointing to Home.
 - Team members without a photo show a person icon in the list, not their initials like the site (CSS can't
   read the name there).
 - Sveltia's message when publishing isn't allowed yet is vague: "Couldn't publish the entry. Please try again."

@@ -498,6 +498,27 @@ section.field:not([data-field-type="boolean"]) > header:not(:has(> .required)) >
   font-weight: 400;
   color: rgb(255 255 255 / 60%);
 }
+/* Every field has a ⋮ menu (rarely needed): it's faint until the field is hovered or has keyboard focus */
+:is(section.field > header, [role="toolbar"][aria-label="Secondary"]) button:is([aria-label="Show Field Options"], [aria-label="Show Content Options"]) { opacity: 0.5; transition: opacity 0.2s ease; }
+:is(section.field > header, [role="toolbar"][aria-label="Secondary"]) button:is([aria-label="Show Field Options"], [aria-label="Show Content Options"]):is(:hover, :focus-visible, [aria-expanded="true"]),
+section.field:is(:hover, :focus-within) > header button[aria-label="Show Field Options"] { opacity: 1; }
+/* On phones Sveltia leaves the entry's title out of the editor bar; cms.js puts it on the empty space after ←
+   (data-title) and it shows there, cut short with "…" when it's long */
+[role="toolbar"][aria-label="Primary"] > .inner:not(:has(> h2)) > .spacer[data-title] {
+  min-width: 0;
+  overflow: hidden;
+}
+[role="toolbar"][aria-label="Primary"] > .inner:not(:has(> h2)) > .spacer[data-title]::before {
+  content: attr(data-title);
+  display: block;
+  overflow: hidden;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #fff;
+}
 /* Field labels: the site's caption weight in the body grey, so they stand apart from the muted hints below */
 section.field > header > h4 { font-size: 13px; font-weight: 600; color: hsl(var(--sui-foreground-color-2-hsl)); }
 /* More room between top-level fields (fields inside lists and objects keep Sveltia's tighter spacing) */
