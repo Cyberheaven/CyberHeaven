@@ -32,6 +32,10 @@ so a script slipped into an article could act as any maintainer who opens it. Re
 a long article; the check doesn't. The interactive widget line (`<div data-widget="…"></div>`) is the one
 exception. Code shown in an article belongs in `backticks` or a code block, where anything goes.
 
+Pull requests that change the CMS itself also run *CMS check* (`.github/workflows/cms-check.yml`), which opens the
+CMS in Chrome and Firefox; it isn't required by the rule, see [cms.md](cms.md#testing-the-cms-locally). Dependabot's
+weekly update pull requests run the checks above like any other ([hosting.md](hosting.md#keeping-packages-up-to-date)).
+
 ## When a check fails
 
 - **In the CMS:** *Publish* says *"Couldn't publish the entry. Please try again."* (the same message as a missing

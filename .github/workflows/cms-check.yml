@@ -1,0 +1,34 @@
+# Opens the CMS in Chrome and Firefox and runs scripts/cms-preview/check.mjs, on pull requests that change the
+# CMS or its test kit. Not required by the rule on main (it only runs for those files). See docs/cms.md.
+name: CMS check
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - public/admin/**
+      - src/pages/admin/**
+      - scripts/cms-preview/**
+      - .github/workflows/cms-check.yml
+  workflow_dispatch: # "Run workflow" button on the Actions tab
+
+permissions:
+  contents: read
+
+jobs:
+  cms:
+    name: CMS check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm i --no-save puppeteer-core@23.11.1
+      - run: node scripts/cms-preview/setup.mjs "$RUNNER_TEMP/cms"
+      # The runner comes with Chrome and Firefox at the paths open.mjs expects
+      - run: |
+          python3 -m http.server 4399 --directory "$RUNNER_TEMP/cms" > /dev/null 2>&1 &
+          node scripts/cms-preview/check.mjs

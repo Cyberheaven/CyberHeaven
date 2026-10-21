@@ -130,6 +130,12 @@ The kit links the built site's `dist/_astro` too, so the "Start here" page gets 
 Run `setup.mjs` again after changing `config.yml` or anything in `src/pages/admin` (it copies or builds those).
 Browsers are expected at `/usr/bin/google-chrome` and `/usr/bin/firefox`; set `CHROME` / `FIREFOX` otherwise.
 
+GitHub runs the same `setup.mjs` + `check.mjs` on every pull request that changes `public/admin`, `src/pages/admin`
+or `scripts/cms-preview` ([`.github/workflows/cms-check.yml`](../.github/workflows/cms-check.yml), check name
+*CMS check*; GitHub's Ubuntu runner has both browsers at those paths). The rule on main doesn't require it, since it
+only runs for those files: don't merge a CMS change while it's red. It doesn't take screenshots; run `shoot.mjs`
+yourself for anything visual.
+
 The demo has no review workflow. To test against a real GitHub repo (a sandbox copy, see
 [access-levels.md](access-levels.md#testing-changes-safely)), use `--github owner/repo` and sign in with a token:
 
@@ -140,6 +146,11 @@ TOKEN=$(gh auth token) node scripts/cms-preview/shoot.mjs /tmp/sandbox-shots
 ```
 
 ## Updating Sveltia
+
+Every Monday [`.github/workflows/weekly.yml`](../.github/workflows/weekly.yml) compares the pinned version with
+the latest on npm and, if they differ, opens an issue *"Update Sveltia CMS to … (we use …)"*. There is never more
+than one: while it's open it's updated with the newest version. Close it once the update is merged (or if you
+decide to skip that version; the next release opens a new one). *Actions → Weekly → Run workflow* checks now.
 
 1. Change the version in the script URL in `public/admin/index.html`.
 2. Run `setup.mjs`, `check.mjs` and `shoot.mjs` (above), and compare the screenshots with ones taken before the

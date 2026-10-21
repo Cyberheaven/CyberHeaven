@@ -1,0 +1,33 @@
+# Weekly look-outs that open an issue instead of failing anything. See docs/cms.md#updating-sveltia.
+name: Weekly
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+  workflow_dispatch: # "Run workflow" button on the Actions tab
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  sveltia:
+    name: New Sveltia version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # One open issue at most: it's updated while it stays open, and the next one opens after it's closed
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pinned=$(grep -oP '@sveltia/cms@\K[\d.]+' public/admin/index.html)
+          latest=$(npm view @sveltia/cms version)
+          echo "Pinned $pinned, latest $latest"
+          [ "$pinned" = "$latest" ] && exit 0
+          title="Update Sveltia CMS to $latest (we use $pinned)"
+          body="Sveltia CMS $latest is out; \`public/admin/index.html\` loads $pinned.
+          What changed: https://github.com/sveltia/sveltia-cms/releases
+          How to update and test it: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/main/docs/cms.md#updating-sveltia."
+          issue=$(gh issue list --state open --search 'in:title "Update Sveltia CMS"' --json number --jq '.[0].number')
+          if [ -n "$issue" ]; then gh issue edit "$issue" --title "$title" --body "$body"
+          else gh issue create --title "$title" --body "$body"; fi

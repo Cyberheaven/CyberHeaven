@@ -1,0 +1,19 @@
+# Opens one pull request a week per kind when the site's packages (package.json) or the GitHub Actions in
+# .github/workflows have updates. They go through the same checks and review as any change. See docs/hosting.md.
+# Sveltia CMS isn't an npm package here (index.html loads it from unpkg): .github/workflows/weekly.yml watches it.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      packages:
+        patterns: ["*"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]

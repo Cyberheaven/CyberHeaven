@@ -30,6 +30,14 @@ To go back to an older version: revert the bad commit on `main` (or re-run an ol
   such page could read it. (CyberBot's page was there until 21 Oct 2026; it was taken down for this reason.) Check:
   `gh api orgs/Cyberheaven/repos --jq '.[]|select(.has_pages)|.name'` lists only `cyberheaven.github.io`.
 
+## Keeping packages up to date
+
+Dependabot ([`.github/dependabot.yml`](../.github/dependabot.yml)) checks weekly and opens one pull request for
+the site's npm packages and one for the GitHub Actions in `.github/workflows`, when there are updates. They go
+through the same checks and review as any change: if the checks pass, a maintainer approves and merges; if not, the
+failing step says what the update broke. Sveltia CMS isn't an npm package here, so it's watched separately
+([cms.md](cms.md#updating-sveltia)).
+
 ## A custom domain later
 
 The old `cyberheaven.eu` domain was dropped, but may be used again. To move the site to a domain (that or another):
