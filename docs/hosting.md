@@ -24,6 +24,11 @@ To go back to an older version: revert the bad commit on `main` (or re-run an ol
   `robots.txt` and the sitemap. Change it if the address changes.
 - Pages serves `dist/404.html` for unknown addresses, and the redirects in `astro.config.mjs` (`/privacy` →
   `/legal#privacy`, …) are built as small HTML pages, since Pages has no server-side redirects.
+- **No other repo in the Cyberheaven organisation may turn on GitHub Pages without its own custom domain.** Every
+  organisation Pages site without one is served at `cyberheaven.github.io/<repo>/`, the same web address as the CMS.
+  The CMS keeps each signed-in person's GitHub token in the browser's storage for that address, so a script on any
+  such page could read it. (CyberBot's page was there until 21 Oct 2026; it was taken down for this reason.) Check:
+  `gh api orgs/Cyberheaven/repos --jq '.[]|select(.has_pages)|.name'` lists only `cyberheaven.github.io`.
 
 ## A custom domain later
 

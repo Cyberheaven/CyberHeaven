@@ -136,4 +136,6 @@ Tested on 21 Oct 2026, in Chrome and Firefox:
 
 Everyone signs in at <https://cyberheaven.github.io/admin/> with *Sign In with GitHub* (working since 21 Oct 2026).
 How that works and how to fix it: [cms-login.md](cms-login.md). The level someone gets depends only on their GitHub
-teams, never on how they signed in.
+teams, never on how they signed in. Signed-in tokens are kept in the browser for the address
+`cyberheaven.github.io`, which is why no other organisation repo may publish a GitHub Pages site there
+([hosting.md](hosting.md#settings)).
