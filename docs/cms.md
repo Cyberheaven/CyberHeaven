@@ -2,7 +2,7 @@
 
 Volunteers edit the site at `/admin` with [Sveltia CMS](https://github.com/sveltia/sveltia-cms), a Git-based CMS: it
 reads and writes the Markdown and JSON files in this repo through GitHub. There is no server and no database.
-Who may publish what is in [access-levels.md](access-levels.md).
+Who may publish what is in [access-levels.md](access-levels.md); how signing in works is in [cms-login.md](cms-login.md).
 
 This page is for whoever maintains the CMS itself: how it's put together, why it looks the way it does, and how to
 check it still works after a change or a Sveltia update.

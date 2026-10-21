@@ -27,16 +27,19 @@ To go back to an older version: revert the bad commit on `main` (or re-run an ol
 
 ## A custom domain later
 
-Buy the domain, add it under *Settings → Pages → Custom domain* (GitHub explains the DNS records there), then change
-`site` in `astro.config.mjs`. Nothing else in the site depends on the address. The old `cyberheaven.eu` domain was
-dropped, so old WordPress links no longer reach this site and no redirects for them were made.
+The old `cyberheaven.eu` domain was dropped, but may be used again. To move the site to a domain (that or another):
+
+1. Own the domain. Add it under *Settings → Pages → Custom domain*; GitHub lists the DNS records to create there.
+2. Change `site` in `astro.config.mjs`.
+3. Let the CMS sign-in work on it: add it to the login service's `ALLOWED_DOMAINS` and update the OAuth app's
+   homepage ([cms-login.md](cms-login.md#changing-the-domain)).
+
+Nothing else in the site depends on the address. Old WordPress links (`cyberheaven.eu/<post>/`) only work again if
+redirects for them are added (`redirects` in `astro.config.mjs`).
 
 ## Signing in to the CMS on the live site
 
-`https://cyberheaven.github.io/admin/` works, but "Sign In with GitHub" needs a small free auth service
-([sveltia-cms-auth](https://github.com/sveltia/sveltia-cms-auth), e.g. on Cloudflare Workers) and a GitHub OAuth
-app; that isn't set up yet. Until it is, volunteers sign in with *Sign In Using Access Token* (a classic personal
-access token with the `public_repo` scope).
+"Sign In with GitHub" goes through a small login service on Cloudflare Workers: [cms-login.md](cms-login.md).
 
 ## Renamed repo
 

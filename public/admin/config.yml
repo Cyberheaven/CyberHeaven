@@ -5,6 +5,8 @@ backend:
   # People without write access can still edit: the CMS works in their own fork and sends a pull request.
   open_authoring: true
   auth_scope: public_repo
+  # "Sign In with GitHub" goes through our small login service on Cloudflare: see docs/cms-login.md
+  base_url: https://sveltia-cms-auth.cyberheavenhq.workers.dev
 
 # Every change is saved to its own branch and pull request first (Draft → In review → Ready), and only goes
 # live when someone allowed to publishes it. Who may publish what is set on GitHub: see .github/CODEOWNERS.

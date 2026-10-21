@@ -95,6 +95,7 @@ article, add `<div data-widget="soc-ladder"></div>` or `<div data-widget="malwar
 
 - [docs/hosting.md](docs/hosting.md): where the site runs (GitHub Pages) and how changes get online
 - [docs/access-levels.md](docs/access-levels.md): who can publish what, and the GitHub setup behind it
+- [docs/cms-login.md](docs/cms-login.md): how "Sign In with GitHub" works (login service on Cloudflare), and fixing it
 - [docs/cms.md](docs/cms.md): how the CMS is built, themed and tested
 
 ## Running it locally
