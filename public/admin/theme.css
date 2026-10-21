@@ -148,6 +148,56 @@
 }
 
 /*
+ * Top bar, like the site's nav (Topbar.astro): the logo with the CyberHeaven name beside it (the logo tilts on
+ * hover), the Contents / Assets switch as plain icons (the open one white, the other at 60%, like the site's
+ * nav links), and the search box in the site's search style (.search in global.css). On phones Sveltia
+ * replaces this bar with a bottom bar, so none of this shows there.
+ */
+[role="toolbar"][aria-label="Global"][aria-orientation="horizontal"] { height: 64px; padding: 0 9px; }   /* logo lines up with the sidebar icons */
+[role="toolbar"][aria-label="Global"] button:has(> img.logo) {
+  width: auto;
+  gap: 10px;
+  padding: 0 8px;
+  background: transparent;
+}
+[role="toolbar"][aria-label="Global"] button:has(> img.logo)::after {
+  content: "CyberHeaven";
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+[role="toolbar"][aria-label="Global"] img.logo { width: 30px; height: 30px; transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+@media (hover: hover) and (pointer: fine) {
+  [role="toolbar"][aria-label="Global"] button:has(> img.logo):hover img.logo { transform: rotate(-12deg) scale(1.06); }
+}
+[role="toolbar"][aria-label="Global"] [aria-label="Switch Page"] { margin-inline-start: 16px; }
+[role="toolbar"][aria-label="Global"] [aria-label="Switch Page"] [role="radio"] {
+  background: transparent;
+  color: rgb(255 255 255 / 60%);
+  transition: color 0.2s ease;
+}
+[role="toolbar"][aria-label="Global"] [aria-label="Switch Page"] [role="radio"]:is([aria-checked="true"], :hover) { color: #fff; }
+/* Sveltia sizes the search icon's box and the text's side padding from the button height */
+[role="toolbar"][aria-label="Global"] .search-bar {
+  --sui-button-medium-height: 44px;
+  --sui-textbox-placeholder-text-align: start;
+}
+[role="toolbar"][aria-label="Global"] .search-bar > span:first-child { height: 100%; margin-inline-start: 4px; }
+[role="toolbar"][aria-label="Global"] .search-bar .icon { font-size: 20px; opacity: 0.6; }
+[role="toolbar"][aria-label="Global"] .search-bar input {
+  height: 40px;
+  border: 1px solid rgb(255 255 255 / 20%);
+  border-radius: 999px;
+  background: rgb(230 230 230 / 5%);
+  font-size: 15px;
+}
+[role="toolbar"][aria-label="Global"] .search-bar input::placeholder { color: rgb(255 255 255 / 40%); }
+@media (prefers-reduced-motion: reduce) {
+  [role="toolbar"][aria-label="Global"] img.logo { transition: none; }
+}
+
+/*
  * Collection pages (and the Assets page, whose bar is labelled "Folder") open like the site's inner pages
  * (PageHead): a big tight heading with the collection's description as a lead line under it, instead of Sveltia's small title with the description squeezed beside
  * it. New and Delete stay on the heading's line, to the right.
