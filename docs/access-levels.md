@@ -119,8 +119,8 @@ Tested on 21 Oct 2026, in Chrome and Firefox:
 | Editor | Not tested with a real editor account. Checked that GitHub asks editors and maintainers to review article changes, and only maintainers for settings. |
 | Contributor | First sign-in offered a fork; saving went to the fork; *In Review* opened a pull request; no Publish button. A maintainer approved and merged it on GitHub. |
 
-## Before volunteers can use it on the live site
+## Signing in
 
-They sign in with GitHub. That needs an OAuth app and a small auth service for Sveltia
-([Sveltia's docs](https://github.com/sveltia/sveltia-cms-auth)), which isn't set up yet. Until then, people can
-sign in with a personal access token (classic, `public_repo` scope is enough on this public repo).
+Everyone signs in at <https://cyberheaven.github.io/admin/> with *Sign In with GitHub* (working since 21 Oct 2026).
+How that works and how to fix it: [cms-login.md](cms-login.md). The level someone gets depends only on their GitHub
+teams, never on how they signed in.

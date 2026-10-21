@@ -1,7 +1,9 @@
 # CMS sign-in ("Sign In with GitHub")
 
 How volunteers sign in to the CMS at <https://cyberheaven.github.io/admin/>, what keeps it working, and how to fix
-it. Who may do what once signed in: [access-levels.md](access-levels.md). The CMS itself: [cms.md](cms.md).
+it.
+
+> **Status:** working since 21 Oct 2026 (tested by signing in on the live site). Who may do what once signed in: [access-levels.md](access-levels.md). The CMS itself: [cms.md](cms.md).
 
 ## Why there's a separate login service
 
