@@ -2,6 +2,13 @@ backend:
   name: github
   repo: Cyberheaven/CyberHeaven
   branch: main
+  # People without write access can still edit: the CMS works in their own fork and sends a pull request.
+  open_authoring: true
+  auth_scope: public_repo
+
+# Every change is saved to its own branch and pull request first (Draft → In review → Ready), and only goes
+# live when someone allowed to publishes it. Who may publish what is set on GitHub: see .github/CODEOWNERS.
+publish_mode: editorial_workflow
 
 media_folder: public/media
 public_folder: /media
@@ -20,20 +27,16 @@ collections:
     label: Articles
     label_singular: Article
     icon: article
-    description: "Guides and tutorials. New articles start as drafts: switch Draft off when one is ready to go live."
+    description: "Guides and tutorials. Saving keeps your work as a draft; it goes live when a maintainer or editor publishes it."
     folder: src/content/articles
     create: true
     slug: "{{slug}}"
     extension: md
     format: frontmatter
-    summary: "{{draft | ternary('Draft · ', '')}}{{title}} · {{category}} · {{date | date('D MMM YYYY')}}"
+    summary: "{{title}} · {{category}} · {{date | date('D MMM YYYY')}}"
     sortable_fields:
       fields: [date, title, category]
       default: { field: date, direction: descending }
-    view_filters:
-      filters:
-        - { name: drafts, label: Drafts, field: draft, eq: true }
-        - { name: live, label: Live on the site, field: draft, eq: false }
     view_groups:
       groups:
         - { name: category, label: Category, field: category }
@@ -71,7 +74,6 @@ collections:
         widget: string
         hint: Describes the cover image for screen reader users
       - { name: tags, label: Tags, widget: list, required: false, default: [] }
-      - { name: draft, label: Draft, widget: boolean, default: true, required: false, hint: "On: hidden from the site. Switch it off when the article is ready: saving then publishes it to the live site. To feature it at the top of the homepage, add it under Pages → Home." }
       - name: body
         label: Body
         widget: markdown

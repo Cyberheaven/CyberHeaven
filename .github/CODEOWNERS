@@ -1,0 +1,12 @@
+# Who must approve a change before it can go live. The CMS saves every change as a pull request; GitHub only lets
+# it merge (publish) once someone listed here for those files has approved it. Maintainers can publish anything
+# without an approval. Teams and their members: https://github.com/orgs/Cyberheaven/teams
+# The last matching line wins, so the general rule comes first.
+
+# Everything: pages, settings, labs, the CMS, the site's code
+*                         @Cyberheaven/maintainers
+
+# Articles, team profiles and their images: editors can approve these too
+/src/content/articles/    @Cyberheaven/editors @Cyberheaven/maintainers
+/src/content/people/      @Cyberheaven/editors @Cyberheaven/maintainers
+/public/media/            @Cyberheaven/editors @Cyberheaven/maintainers

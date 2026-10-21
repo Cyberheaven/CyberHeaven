@@ -396,11 +396,6 @@ nav.primary-sidebar [role="group"] > .label { font-size: 12px; }
   pointer-events: none;
 }
 [role="toolbar"][aria-label="Primary"] button[data-label="Save"][aria-disabled="false"]::after { opacity: 1; }
-/* On articles, Save says what it will do: "Publish" when the article is live (or about to be), "Save draft" while
-   its Draft switch is on. Other collections keep "Save". The ring above uses ::after, so the new label is ::before. */
-[aria-label="Content Editor"]:has(section.field[data-key-path="draft"]) [role="toolbar"][aria-label="Primary"] button[data-label="Save"] > .label { display: none; }
-[aria-label="Content Editor"]:has(section.field[data-key-path="draft"]) [role="toolbar"][aria-label="Primary"] button[data-label="Save"]::before { content: "Publish"; }
-[aria-label="Content Editor"]:has(section.field[data-key-path="draft"] [role="switch"][aria-checked="true"]) [role="toolbar"][aria-label="Primary"] button[data-label="Save"]::before { content: "Save draft"; }
 
 /*
  * Editor typography. The top bar reads "Articles › Entry title": the entry title is a small display heading
