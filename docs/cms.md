@@ -52,6 +52,10 @@ Things that aren't obvious:
   `color-scheme: dark`, or Firefox draws a light scrollbar in them.
 - **Labels added with CSS** (`content: "Workflow"`) must contain words from the element's accessible name, so
   screen-reader users can say what they see.
+- **Some rules match names from `config.yml`.** The person icon for team members without a photo matches
+  `main[aria-label*="Team members"]`, and the "Start here" rule matches the page's label. Rename the collection
+  or page and you must change `theme.css` too. The Assets page's lead line (Sveltia has no description there)
+  is written in `theme.css` as well.
 - **Respect `prefers-reduced-motion`** for every animation; keep text contrast at 4.5:1 or more.
 
 ## Behaviour added in `cms.js`
@@ -109,7 +113,7 @@ TOKEN=$(gh auth token) node scripts/cms-preview/shoot.mjs /tmp/sandbox-shots
 
 ## Known gaps
 
-- The "Start here" page shows its title twice (Sveltia's bar and the page heading).
-- Team members without a photo show a black square in the list (the site shows their initials).
+- Team members without a photo show a person icon in the list, not their initials like the site (CSS can't
+  read the name there).
 - Sveltia's message when publishing isn't allowed yet is vague: "Couldn't publish the entry. Please try again."
   It means the change still needs an approval ([access-levels.md](access-levels.md)).

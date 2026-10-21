@@ -293,11 +293,29 @@
 }
 /* Sveltia cuts the description to one line; the lead line may wrap */
 [role="toolbar"]:is([aria-label="Collection"], [aria-label="Folder"]) .description .truncated-text { display: block; max-width: 640px; -webkit-line-clamp: unset !important; white-space: normal; }
+/* The Assets page has no description in Sveltia, so its lead line is written here (the toolbar's inner box is
+   "display: contents", so this line wraps under the heading like a collection's description) */
+[role="toolbar"][aria-label="Folder"][aria-orientation="horizontal"]::after {
+  content: "Images and files used on the site. Upload here, or straight from an image field in an entry.";
+  order: 1;
+  flex: 1 0 100%;
+  max-width: 640px;
+  margin-inline-end: auto;   /* Sveltia centres the toolbar's items; this keeps the line on the left */
+  font-size: 16px;
+  line-height: 1.5;
+  color: rgb(255 255 255 / 60%);
+}
 @media (max-width: 767px) {
   [role="toolbar"]:is([aria-label="Collection"], [aria-label="Folder"])[aria-orientation="horizontal"] { padding: 20px 16px 16px; }
+  [role="toolbar"][aria-label="Folder"][aria-orientation="horizontal"]::after { font-size: 15px; }
   [role="toolbar"]:is([aria-label="Collection"], [aria-label="Folder"]) h2 { font-size: 30px; }
   [role="toolbar"]:is([aria-label="Collection"], [aria-label="Folder"]) .description { font-size: 15px; }
 }
+
+/* "Start here" (src/pages/admin/start.astro) has its own big heading, so Sveltia's bar above it would repeat the
+   title. The bar goes; on phones only its back arrow stays. */
+main[aria-label="Start here"] > [role="toolbar"]:not(:has(button.back)) { display: none; }
+main[aria-label="Start here"] > [role="toolbar"] h2 { visibility: hidden; }
 
 /* List rows at the site's scale: taller rows, larger titles and thumbnails */
 :is([aria-label="Entries"], [aria-label="Files"])[role="grid"] { --sui-primary-row-height: 72px; }
@@ -307,6 +325,22 @@
   letter-spacing: -0.02em;
 }
 :not(.grid-view) > :is([aria-label="Entries"], [aria-label="Files"])[role="grid"] [role="gridcell"].image > * { width: 48px; height: 48px; }
+/* No image: Sveltia draws a near-black square; here it's a quiet outlined box the size of a thumbnail. Team
+   members without a photo get a person icon in it (the site shows their initials instead). */
+:not(.grid-view) > :is([aria-label="Entries"], [aria-label="Files"])[role="grid"] [role="gridcell"].image:empty::before {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 4%);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 12%);
+}
+main[aria-label*="Team members"] :not(.grid-view) > [aria-label="Entries"][role="grid"] [role="gridcell"].image:empty::before {
+  content: "person";
+  display: grid;
+  place-items: center;
+  font: 26px / 1 "Material Symbols Outlined";
+  color: rgb(255 255 255 / 45%);
+}
 
 /*
  * Entry lists (articles, people, pages, labs…): hovering or keyboard-focusing a row sweeps it white from the
