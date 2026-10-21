@@ -2,7 +2,7 @@
 name: PurpleShonen
 headline: Self-taught programmer, obsessed with cybersecurity
 pronouns: ''
-avatar: /media/people/purpleshonen.webp
+avatar: /media/people/logo.webp
 roles:
   - Maintainer
   - Author
