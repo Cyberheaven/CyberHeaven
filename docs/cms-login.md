@@ -82,7 +82,8 @@ GitHub tokens, so remove a domain from `ALLOWED_DOMAINS` as soon as we stop owni
 | Popup at `api.netlify.com/auth…`: **Not Found** | `base_url` is missing from `config.yml`. | Add it (see the table at the top). |
 | "Your domain is not allowed to use the authenticator" (`UNSUPPORTED_DOMAIN`) | The site's address isn't in `ALLOWED_DOMAINS`. | Redeploy with it added. |
 | "OAuth app client ID or secret is not configured" (`MISCONFIGURED_CLIENT`) | A `GITHUB_*` secret is missing on the Worker. | Add it under *Variables and Secrets* (type Secret), deploy. |
-| GitHub says **"The redirect_uri is not associated with this application"** | The OAuth app's callback URL isn't exactly `<worker>/callback`. | Fix it in the OAuth app settings. |
+| GitHub says **"The redirect_uri is not associated with this application"** | The OAuth app's redirect URI (callback URL) isn't exactly `<worker>/callback`. | Fix it in the OAuth app settings. |
+| Volunteers get signed out every few hours | *Expire user access tokens* is on in the OAuth app. | Turn it off. |
 | "Potential CSRF attack detected" | The popup took over 10 minutes, or the browser blocked the Worker's cookie. | Try again; allow cookies for `workers.dev`. |
 | GitHub error **"bad_verification_code"** or sign-in suddenly fails for everyone | The client secret was regenerated or deleted. | Generate a new secret in the OAuth app and put it in the Worker's `GITHUB_CLIENT_SECRET`. |
 | Nothing opens | The browser blocked the popup. | Allow popups for `cyberheaven.github.io`. |
@@ -102,9 +103,15 @@ If the service is down, volunteers can still use *Sign In Using Access Token* wi
 If the Worker or the OAuth app is lost:
 
 1. Deploy the Worker (commands above) to the CyberHeaven Cloudflare account; note its URL.
-2. Create the OAuth app at <https://github.com/organizations/Cyberheaven/settings/applications/new>: name
-   `CyberHeaven CMS`, homepage `https://cyberheaven.github.io`, callback `<worker URL>/callback`. Generate a
-   client secret.
+2. Create the OAuth app at <https://github.com/organizations/Cyberheaven/settings/applications/new>:
+   - *Application name* `CyberHeaven CMS`; *Homepage URL* `https://cyberheaven.github.io`; *Application
+     description* `Sign in to write and edit the CyberHeaven site.` (volunteers see it on GitHub's Authorize page)
+   - *Redirect URI* (older GitHub pages call it *Authorization callback URL*): `<worker URL>/callback`, only that one
+   - *Allow wildcard matching*: **off** (it would let tokens go to addresses we don't control)
+   - *Enable Device Flow*: **off** (not used)
+   - *Expire user access tokens*: **off** (the Worker doesn't handle refresh tokens, so volunteers would be signed
+     out every 8 hours)
+   - *Register application*, then *Generate a new client secret*.
 3. In Cloudflare, add `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` to the Worker as **Secrets**.
 4. Put the Worker URL in `base_url` in `public/admin/config.yml`, and update the table at the top of this page.
 5. Test (above).
