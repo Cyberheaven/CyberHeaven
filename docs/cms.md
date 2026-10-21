@@ -61,6 +61,8 @@ Things that aren't obvious:
   field: rename or reorder those fields in `config.yml` and update the list in `theme.css`.
 - **Destructive buttons** are a muted red outline (Sveltia's `--sui-error-*` colours), never the white pill used
   for safe actions. List item buttons (move, ⋮, remove ×) grow to 44px on phones.
+- **Items in lists and grouped fields** (FAQ items, lab exercises, Home → About) are outlined cards with no grey
+  header band; the item number is a small muted caption, and the outline brightens on hover or while editing inside.
 - **Field ⋮ menus** (one on every field, rarely needed) are faint until the field is hovered or focused. They
   stay in the Tab order.
 - **Optional fields** say "optional" next to their label; Sveltia's required star is hidden, since nearly every
@@ -89,6 +91,15 @@ Things that aren't obvious:
   Writers, editors and contributors all count as volunteers (telling them apart needs the `read:org` sign-in scope).
   If GitHub can't be asked, or in the demo, everything shows. `check.mjs` fakes GitHub's answer to test both levels.
 - **Logo name:** screen readers hear "CyberHeaven: visit the live site", matching what the logo shows.
+
+## Left as Sveltia draws it, on purpose
+
+Decided on 21 Oct 2026 (with [Jev](https://docs.typesafe.ai), a decision model, weighing upkeep against benefit):
+dates keep three formats (the browser's date picker, the live page's long date in the preview, a short date in
+lists); the editor's ⋮ menu keeps all 9 items (Delete already asks first); × on a list item removes it without
+asking (Revert All Changes brings it back before saving); disabled Assets actions stay visible; the coloured ring
+on Save means "unsaved changes", not "live". Sveltia's own jargon (Entry, Slug, UTC…) is explained in Start here
+rather than rewritten. Articles have no draft marker in the list: the Workflow page shows unpublished changes.
 
 ## The editor rewrites Markdown
 

@@ -99,6 +99,17 @@ for (const browserName of ["chrome", "firefox"]) {
   let previewText = "";
   for (const frame of page.frames()) previewText += await frame.evaluate(() => document.body?.innerText ?? "").catch(() => "");
   check("new article preview shows 'Start with a title'", previewText.includes("Start with a title"));
+  check("new article preview has no reading time", !previewText.includes("min read"));
+
+  // config.yml: team rows read "Name · Roles", like article rows
+  await goTo(page, "#/collections/people");
+  const teamRow = await page.$eval('[role="grid"][aria-label="Entries"] [role="row"]', (r) => r.textContent.trim());
+  check("team rows read 'Name · Roles'", / · /.test(teamRow), teamRow);
+
+  // theme.css: list items and grouped fields are outlined cards without Sveltia's grey header band
+  await goTo(page, "#/collections/pages/entries/home");
+  const band = await page.$eval('section.field[data-key-path="about"] .wrapper > .header', (h) => getComputedStyle(h).backgroundColor);
+  check("grouped field header has no grey band", band === "rgba(0, 0, 0, 0)", band);
 
   // cms.js + theme.css: only maintainers see Pages and Settings in the sidebar. The demo has no GitHub sign-in, so
   // this gives it a pretend token and answers GitHub's "what may this person do" request itself.

@@ -333,7 +333,7 @@ collections:
     identifier_field: name
     extension: md
     format: frontmatter
-    summary: "{{name}} ({{roles}})"
+    summary: "{{name}} · {{roles}}"
     fields:
       - { name: name, label: Name, widget: string }
       - { name: headline, label: Headline, widget: string, required: false, hint: "One line, e.g. DFIR analyst and CTF player" }
@@ -634,6 +634,7 @@ collections:
                 label_singular: Fix
                 collapsed: auto
                 widget: list
+                summary: "{{fields.correct | ternary('Correct · ', '')}}{{fields.code | truncate(60)}}"
                 fields:
                   - { name: code, label: Code, widget: code, output_code_only: true, allow_language_selection: false }
                   - { name: correct, label: "Is this the fix to approve?", widget: boolean, default: false }

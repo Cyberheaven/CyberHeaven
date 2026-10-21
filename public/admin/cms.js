@@ -140,7 +140,7 @@ function ArticlePreview({ entry, widgetFor, getAsset, getCollection }) {
             get("category") && h("a", { href: "/articles" }, get("category")),
             date && h("time", null, longDate(date)),
             name && h("a", { href: "/team" }, `By ${name}`),
-            h("span", null, `${minutes} min read`)))),
+            body.trim() && h("span", null, `${minutes} min read`)))), // not on an article with no text yet
       cover && h("div", { className: "shell post-cover" },
         h("div", { className: "post-cover-clip" }, h("img", { src: String(getAsset(cover) ?? cover), alt: get("coverAlt") || "" }))),
       h("div", { className: "shell post-layout" },
