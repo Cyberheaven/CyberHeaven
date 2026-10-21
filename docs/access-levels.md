@@ -117,18 +117,28 @@ or closed on GitHub. `CODEOWNERS` can stay; without the rule it only requests re
 
 ## Testing changes safely
 
-Test changes to this setup on a throwaway copy of the repo, never on the live one. The copy used on 21 Oct 2026
-(`Cyberheaven/cms-sandbox`) was deleted afterwards; to make a new one:
+Test changes to this setup on a copy of the repo, never on the live one. The copy is **`Cyberheaven/cms-sandbox`**,
+kept for future tests (since 21 Oct 2026). How it's set up:
 
-1. `gh repo create Cyberheaven/cms-sandbox --public`, then push `main` to it, with `repo:` in
-   `public/admin/config.yml` changed to `Cyberheaven/cms-sandbox` (one extra commit on a local branch).
-2. Give it the same settings as the real repo (steps 3–5 of [Setting it up on a repo](#setting-it-up-on-a-repo)).
-3. Run the CMS against it locally: `node scripts/cms-preview/setup.mjs /tmp/sb --github Cyberheaven/cms-sandbox`
-   ([cms.md](cms.md#testing-the-cms-locally)), and sign in with a token (`gh auth token`).
-4. To test a lower level, use a second GitHub account: add it to the sandbox as a collaborator with write access
-   (a writer), or with no access at all (a contributor).
-5. Afterwards delete the sandbox, and any forks the test accounts made of it (deleting a repo doesn't delete its
-   forks).
+- Its `main` is the real repo's `main` plus one extra commit changing `repo:` in `public/admin/config.yml` to
+  `Cyberheaven/cms-sandbox`, and a few test pull requests the CMS merged. Its checks workflow has an extra
+  `sleep 150` step (sandbox only), so there's time to press *Publish* while checks still run.
+- Same settings, teams and both rulesets as the real repo (steps 3–5 of
+  [Setting it up on a repo](#setting-it-up-on-a-repo)). GitHub Pages stays **off** (its deploy run fails, that's
+  expected): with Pages on it would share the CMS's address ([hosting.md](hosting.md#settings)).
+- `rahul-cyberheaven` (a second GitHub account) is a collaborator with write access, so it tests as a writer. Its
+  fork `rahul-cyberheaven/cms-sandbox` is also kept (made while it was a contributor). To test it as a contributor
+  again, remove it as a collaborator.
+
+To use it:
+
+1. Bring it up to date with the real repo: on a local branch, take `main`, add the `repo:` commit, and push it to
+   the sandbox's `main` (`git push git@github.com:Cyberheaven/cms-sandbox.git <branch>:main`; add `--force` if the
+   CMS merged something there since). Keep or drop the `sleep 150` step as the test needs.
+2. Run the CMS against it locally: `node scripts/cms-preview/setup.mjs /tmp/sb --github Cyberheaven/cms-sandbox`
+   ([cms.md](cms.md#testing-the-cms-locally)), and sign in with a token (`gh auth token -u <account>`).
+3. Close any test pull requests you leave open. If it's ever deleted, recreate it with
+   `gh repo create Cyberheaven/cms-sandbox --public` and the steps above; deleting a repo doesn't delete its forks.
 
 Tested on 21 Oct 2026, in Chrome and Firefox:
 
