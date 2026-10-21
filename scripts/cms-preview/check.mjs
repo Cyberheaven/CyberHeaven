@@ -100,6 +100,29 @@ for (const browserName of ["chrome", "firefox"]) {
   for (const frame of page.frames()) previewText += await frame.evaluate(() => document.body?.innerText ?? "").catch(() => "");
   check("new article preview shows 'Start with a title'", previewText.includes("Start with a title"));
 
+  // cms.js + theme.css: only maintainers see Pages and Settings in the sidebar. The demo has no GitHub sign-in, so
+  // this gives it a pretend token and answers GitHub's "what may this person do" request itself.
+  // The pretend answer is the "check-permissions" item in localStorage.
+  await page.evaluateOnNewDocument(() => {
+    const realFetch = window.fetch;
+    window.fetch = (url, options) => String(url).startsWith("https://api.github.com/repos/")
+      ? Promise.resolve(new Response(`{"permissions":${localStorage.getItem("check-permissions")}}`))
+      : realFetch(url, options);
+  });
+  await page.evaluate(() => localStorage.setItem("sveltia-cms.user", JSON.stringify({ ...JSON.parse(localStorage.getItem("sveltia-cms.user")), token: "demo" })));
+  const sidebar = () => page.$$eval('[aria-label="Collection List"] [role="treeitem"]', (items) => items.filter((i) => i.offsetParent).map((i) => i.dataset.label).join(", "));
+  for (const [level, perms, expected] of [
+    ["volunteer", { push: true }, "Articles, Team members, Resource list, Glossary, Lab exercises"],
+    ["maintainer", { push: true, maintain: true }, "Articles, Pages, Team members, Resource list, Glossary, Lab exercises, Settings"],
+  ]) {
+    await page.evaluate((p) => localStorage.setItem("check-permissions", p), JSON.stringify(perms));
+    await goTo(page, "#/collections/articles");
+    await page.reload(); // cms.js asks GitHub once per sign-in; a reload is a fresh start
+    await wait(3000);
+    const shown = await sidebar();
+    check(`${level} sidebar`, shown === expected, shown);
+  }
+
   await browser.close();
 }
 console.log(failed ? `\n${failed} check(s) failed` : "\nAll checks passed");

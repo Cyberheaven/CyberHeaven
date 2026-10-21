@@ -21,6 +21,11 @@ site's `/team` page (Founder, Author…) are only for display; they aren't linke
 
 The repo is public, so there's no separate read-only level: anyone can already read everything.
 
+**The sidebar follows the level, loosely.** Only maintainers see *Pages* and *Settings* in the CMS sidebar (the
+site's structure, which only they can approve). Writers, editors and contributors see the same sidebar. This is only
+tidying: a direct link still opens those sections, and the rules above still decide what goes live. How it works:
+[cms.md](cms.md#behaviour-added-in-cmsjs).
+
 ## How it works
 
 - **Every save is a draft.** In the CMS (`publish_mode: editorial_workflow` in `public/admin/config.yml`), saving

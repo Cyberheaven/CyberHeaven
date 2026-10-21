@@ -412,6 +412,12 @@ nav.primary-sidebar :is([role="treeitem"]:focus-visible > .row, [role="option"]:
 }
 /* The group headings ("Collections", "Your Site"), in the site's small caption style */
 nav.primary-sidebar [role="group"] > .label { font-size: 12px; }
+/* Pages and Settings are for maintainers only: everyone else gets body[data-level="volunteer"] from cms.js. This
+   matches the collections' labels in config.yml. Settings is last, so the line above it goes too. */
+body[data-level="volunteer"] [aria-label="Collection List"] :is(
+  [role="treeitem"]:is([data-label="Pages"], [data-label="Settings"]),
+  [role="separator"]:has(+ [data-label="Settings"])
+) { display: none; }
 
 /*
  * The one colour in the CMS: when an entry has unsaved changes, its Save button gets a ring in the site's

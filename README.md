@@ -74,6 +74,8 @@ Here’s where to find each thing on the site:
 | **Settings → Site** | The site name, contact email, Discord link, top menu, footer menu, social links, footer note and copyright year. |
 | **Settings → Categories** | The categories for articles and resources, the glossary topics and the team roles. |
 
+Pages and Settings only show in the sidebar for maintainers ([docs/access-levels.md](docs/access-levels.md)).
+
 How the CMS is built, themed and tested (and how to update Sveltia safely): [docs/cms.md](docs/cms.md). In short:
 the look is `public/admin/theme.css`; the previews, which copy `src/pages/articles/[slug].astro` and
 `src/pages/team/[person].astro`, are in `public/admin/cms.js`: if you change the markup of one of those pages,

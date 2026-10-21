@@ -53,7 +53,8 @@ Things that aren't obvious:
 - **Labels added with CSS** (`content: "Workflow"`) must contain words from the element's accessible name, so
   screen-reader users can say what they see.
 - **Some rules match names from `config.yml`.** The person icon for team members without a photo matches
-  `main[aria-label*="Team members"]`, and the "Start here" rule matches the page's label. Rename the collection
+  `main[aria-label*="Team members"]`, and the "Start here" rule matches the page's label. The maintainers-only
+  sidebar rule matches the labels "Pages" and "Settings". Rename the collection
   or page and you must change `theme.css` too. The Assets page's lead line (Sveltia has no description there)
   is written in `theme.css` as well. The section captions in Pages → Home (Hero, About, Values…) are attached to
   the first field of each homepage section by its `name`, and recognise the Home editor by its `picksHeading`
@@ -81,6 +82,12 @@ Things that aren't obvious:
   question names the entry and says it can be brought back from GitHub.
 - **Phone editor title:** on phones Sveltia leaves the entry's title out of the editor bar. `cms.js` copies it from
   the browser tab title into `data-title` on the bar's spacer, and `theme.css` shows it after ←.
+- **Sidebar per level:** Pages and Settings show only for maintainers. `cms.js` asks GitHub for the signed-in
+  person's access to the repo (`GET /repos/<repo>`, the repo read from `config.yml`): `admin` or `maintain` sets
+  `body[data-level="maintainer"]`, anything else `"volunteer"`, and `theme.css` hides the two items (and the
+  line above Settings). It's only tidying: a direct link still opens them, and GitHub decides what goes live.
+  Writers, editors and contributors all count as volunteers (telling them apart needs the `read:org` sign-in scope).
+  If GitHub can't be asked, or in the demo, everything shows. `check.mjs` fakes GitHub's answer to test both levels.
 - **Logo name:** screen readers hear "CyberHeaven: visit the live site", matching what the logo shows.
 
 ## The editor rewrites Markdown

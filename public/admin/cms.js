@@ -220,6 +220,26 @@ for (const type of ["input", "change", "click"]) {
   }, true);
 }
 
+// Pages and Settings are the site's structure, which only maintainers can publish, so everyone else doesn't see them
+// in the sidebar (theme.css, under body[data-level="volunteer"]). This only tidies the sidebar: a direct link still
+// opens them, and GitHub still decides what goes live. The level is the signed-in person's access to the repo, so
+// writers, editors and contributors look the same here (telling writers and editors apart needs a wider sign-in).
+// If GitHub can't be asked, everything stays visible.
+let levelChecked = null;
+async function setLevel() {
+  let token = null;
+  try { token = JSON.parse(localStorage.getItem("sveltia-cms.user"))?.token; } catch {}
+  if (!token || token === levelChecked) return; // not signed in yet (or the demo), or already checked
+  levelChecked = token;
+  const repo = (await (await fetch("config.yml")).text()).match(/^\s+repo:\s*(\S+)/m)?.[1];
+  const response = await fetch(`https://api.github.com/repos/${repo}`, { headers: { Authorization: `Bearer ${token}` } });
+  if (!response.ok) return;
+  const { permissions = {} } = await response.json();
+  document.body.dataset.level = permissions.admin || permissions.maintain ? "maintainer" : "volunteer";
+}
+setLevel().catch(() => {});
+window.addEventListener("hashchange", () => setLevel().catch(() => {})); // signing in changes the address
+
 // Leaving an entry with ← while it has unsaved changes asks first: Sveltia would drop the changes without a word.
 // Closing or reloading the tab asks too (the browser shows its own message).
 // ponytail: the browser's Back button can't be stopped this way; add a hashchange guard if volunteers hit it.
