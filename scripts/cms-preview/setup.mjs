@@ -39,7 +39,7 @@ if (githubRepo) {
   // It has no review workflow, so those settings go.
   config = config
     .replace(/^  name: github$/m, "  name: test-repo")
-    .replace(/^  (repo|branch|open_authoring|auth_scope):.*\n/gm, "")
+    .replace(/^  (repo|branch|open_authoring|auth_scope|base_url):.*\n/gm, "")
     .replace(/^publish_mode:.*\n/m, "");
   index = index.replace("<title>", '<link rel="cms-seed-url" href="/manifest.json">\n    <title>');
   const files = [];

@@ -19,7 +19,7 @@ Without it, Sveltia falls back to Netlify's login service, which doesn't know th
 
 | Piece | Where | Who can manage it |
 | --- | --- | --- |
-| Login service (Worker `sveltia-cms-auth`) | Cloudflare account **cyberheavenhq@proton.me** (account id `980d3a553e327394723e423ce87b7a88`) → *Workers & Pages* → `sveltia-cms-auth`. URL: **<https://sveltia-cms-auth.cyberheavenhq.workers.dev>** | Whoever can log in to that Cloudflare account. Add maintainers as members (*Manage account → Members*) so it never depends on one person. |
+| Login service (Worker `sveltia-cms-auth`) | Cloudflare account **cyberheavenhq@proton.me** (account id `980d3a553e327394723e423ce87b7a88`) → *Workers & Pages* → `sveltia-cms-auth`. URL: **<https://sveltia-cms-auth.cyberheavenhq.workers.dev>** | Whoever has the login of that shared Cloudflare account (one account on the project email, by choice: no separate members). Hand its password over with the project email. |
 | Its code | Not in this repo: it's upstream [sveltia/sveltia-cms-auth](https://github.com/sveltia/sveltia-cms-auth), deployed as-is (commit `5623041`, 20 Oct 2026). One file, `src/index.js`, MIT licence. | — |
 | GitHub OAuth app **CyberHeaven CMS** | <https://github.com/organizations/Cyberheaven/settings/applications> (owned by the organisation, not a person). Callback URL: `https://sveltia-cms-auth.cyberheavenhq.workers.dev/callback` | Organisation owners (currently PurpleShonen, medhansh5, timo123421). |
 | Worker settings | Cloudflare → `sveltia-cms-auth` → *Settings → Variables and Secrets*: `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` (both stored as **Secret**), `ALLOWED_DOMAINS` (set by the deploy command below). | Cloudflare account. |
