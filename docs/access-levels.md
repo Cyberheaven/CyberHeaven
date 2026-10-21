@@ -4,7 +4,8 @@ Anyone can suggest a change through the CMS, but a change only goes live once so
 The rules are enforced by GitHub, not by the CMS: the CMS just follows them. How the CMS itself is built:
 [cms.md](cms.md).
 
-> **Status (21 Oct 2026):** live on `Cyberheaven/cyberheaven.github.io` (ruleset *Review before publishing*, id 25525380).
+> **Status (21 Oct 2026):** live on `Cyberheaven/cyberheaven.github.io` (rulesets *Review before publishing*, id 25525380,
+> and *Checks pass before publishing*, id 25552358).
 > Maintainers: PurpleShonen, medhansh5, timo123421. Editors and Writers: nobody yet.
 
 ## The four levels
