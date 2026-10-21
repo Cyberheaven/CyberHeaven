@@ -44,9 +44,10 @@ You don’t need to be an expert, and you don’t need to know how to code.
 
 ### Editing content without code
 
-Volunteers with access can sign in at **`/admin`** (Sveltia CMS, GitHub login). Every change is saved as a commit
-to `main` on GitHub. The CMS always shows what’s on GitHub, not your local copy, so push your local changes before
-editing the same thing in the CMS.
+Anyone can sign in at **`/admin`** (Sveltia CMS, GitHub login). Every change is saved as a draft (a pull request
+on GitHub) and goes live when an editor or maintainer publishes it: who can do what is in
+[docs/access-levels.md](docs/access-levels.md). The CMS always shows what’s on GitHub, not your local copy, so push
+your local changes before editing the same thing in the CMS.
 
 The CMS has a short guide for volunteers, **Start here** (the waving hand in its top bar; `src/pages/admin/start.astro`).
 Its “Where everything is” table repeats the one below: change both together.
@@ -55,7 +56,7 @@ Here’s where to find each thing on the site:
 
 | In the CMS | What you can change |
 | --- | --- |
-| **Articles** | Every article: title, category, date, author, summary, cover image and body. New articles start as **Draft** (hidden; the button says “Save draft”); switch Draft off and the button says “Publish”. |
+| **Articles** | Every article: title, category, date, author, summary, cover image and body. Saving keeps a draft; it goes live once it’s published. |
 | **Pages → Home** | The carousel articles at the top (pick and drag to set the order; leave it empty for the 5 newest), the tagline, the About band, the values cards, the scrolling ticker, the topics, the labs and resources headings, the FAQ and the contact section. |
 | **Pages → Articles** | The heading and intro of the articles list. |
 | **Pages → Interactive** | The heading and intro of the Interactive page, and every lab and tool listed on it: its card, whether it’s featured on the homepage, its topic, and the heading and intro on its own page (this includes the career quiz and the glossary). |
@@ -72,14 +73,10 @@ Here’s where to find each thing on the site:
 | **Settings → Site** | The site name, contact email, Discord link, top menu, footer menu, social links, footer note and copyright year. |
 | **Settings → Categories** | The categories for articles and resources, the glossary topics and the team roles. |
 
-The CMS has the site’s look: its colours, font and buttons live in `public/admin/theme.css`. Sveltia doesn’t
-officially support themes yet, so after updating Sveltia (the version is in `public/admin/index.html`), open `/admin`
-and check the dark theme still applies.
-
-The preview next to the editor shows articles and team members the way the live site will, using the site’s own
-stylesheets. Its markup is in `public/admin/cms.js` and copies `src/pages/articles/[slug].astro` and
-`src/pages/team/[person].astro`: if you change the markup of one of those pages, change it in `cms.js` too.
-`cms.js` also adds “Interactive widget” to the editor’s Insert menu.
+How the CMS is built, themed and tested (and how to update Sveltia safely): [docs/cms.md](docs/cms.md). In short:
+the look is `public/admin/theme.css`; the previews, which copy `src/pages/articles/[slug].astro` and
+`src/pages/team/[person].astro`, are in `public/admin/cms.js`: if you change the markup of one of those pages,
+change it in `cms.js` too.
 
 The CMS editor rewrites the Markdown when it saves, and some Markdown doesn’t survive that (indented lists, HTML
 tables, `<iframe>` embeds). If you edit content files directly, run `node scripts/check-content.mjs` before pushing.
