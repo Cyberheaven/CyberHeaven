@@ -4,7 +4,7 @@ Anyone can suggest a change through the CMS, but a change only goes live once so
 The rules are enforced by GitHub, not by the CMS: the CMS just follows them. How the CMS itself is built:
 [cms.md](cms.md).
 
-> **Status (21 Oct 2026):** live on `Cyberheaven/CyberHeaven` (ruleset *Review before publishing*, id 25525380).
+> **Status (21 Oct 2026):** live on `Cyberheaven/cyberheaven.github.io` (ruleset *Review before publishing*, id 25525380).
 > Maintainers: PurpleShonen, medhansh5, timo123421. Editors and Writers: nobody yet.
 
 ## The four levels
@@ -73,7 +73,7 @@ admins (Settings → Collaborators and teams) can also skip the review rule; kee
 
 ## Setting it up on a repo
 
-How it was done on `Cyberheaven/CyberHeaven` (and first on a sandbox copy). Repeat it for a new or moved repo.
+How it was done on `Cyberheaven/cyberheaven.github.io` (and first on a sandbox copy). Repeat it for a new or moved repo.
 
 1. **The CMS:** `public/admin/config.yml` has `publish_mode: editorial_workflow`, and under `backend:`
    `open_authoring: true` and `auth_scope: public_repo` (a public repo needs no wider access).
@@ -81,7 +81,7 @@ How it was done on `Cyberheaven/CyberHeaven` (and first on a sandbox copy). Repe
    (20225793). Creating them makes you a member; remove yourself from the ones you don't belong in.
 3. **Team access to the repo:**
    ```sh
-   R=Cyberheaven/CyberHeaven
+   R=Cyberheaven/cyberheaven.github.io
    gh api -X PUT orgs/Cyberheaven/teams/maintainers/repos/$R -f permission=maintain
    gh api -X PUT orgs/Cyberheaven/teams/editors/repos/$R -f permission=push
    gh api -X PUT orgs/Cyberheaven/teams/writers/repos/$R -f permission=push

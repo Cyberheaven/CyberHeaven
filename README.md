@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://cyberheaven.github.io"><b>cyberheaven.github.io</b></a> ·
   <a href="https://discord.gg/QH8mRSCdW9">Discord</a> ·
   <a href="https://twitter.com/cyberheaven0x">X (Twitter)</a> ·
   <a href="https://www.linkedin.com/company/cyberheaven">LinkedIn</a> ·
@@ -89,6 +90,12 @@ fake link and Hash and salt labs, and small interface text such as search boxes,
 
 Writing tips: to embed a YouTube video, paste its link on a line of its own. To show an interactive widget in an
 article, add `<div data-widget="soc-ladder"></div>` or `<div data-widget="malware-explorer"></div>` on its own line.
+
+## Docs for maintainers
+
+- [docs/hosting.md](docs/hosting.md): where the site runs (GitHub Pages) and how changes get online
+- [docs/access-levels.md](docs/access-levels.md): who can publish what, and the GitHub setup behind it
+- [docs/cms.md](docs/cms.md): how the CMS is built, themed and tested
 
 ## Running it locally
 

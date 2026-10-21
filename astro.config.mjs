@@ -6,7 +6,7 @@ import youtube from "./src/lib/markdown-youtube.mjs";
 
 export default defineConfig({
   output: "static",
-  site: "https://cyberheaven.eu",
+  site: "https://cyberheaven.github.io", // GitHub Pages: docs/hosting.md
   // Styles go into the page itself, so the first paint does not wait for a stylesheet request.
   build: { inlineStylesheets: "always" },
   // sitemap-index.xml for search engines; the 404 page and the CMS guide (/admin/start) are left out.
