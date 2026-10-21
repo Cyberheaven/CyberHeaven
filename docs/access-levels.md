@@ -43,7 +43,8 @@ The repo is public, so there's no separate read-only level: anyone can already r
 
 ## Day to day
 
-**Writing (any level).** Save as often as you like: it stays a draft. When it's ready, set *Status → In Review*.
+**Writing (any level).** Save as often as you like: it stays a draft. After each save the CMS asks *Send for Review?*:
+pick it when the draft is ready, or *Later*. (*Status → In Review* in the editor's top bar does the same.)
 Contributors: that's the moment your change is sent.
 
 **Approving (editors and maintainers).** Open the pull request on GitHub (from the notification, or the repo's

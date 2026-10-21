@@ -358,7 +358,9 @@ main[aria-label*="Team members"] :not(.grid-view) > [aria-label="Entries"][role=
 :is([aria-label="Entries"], [aria-label="Files"])[role="grid"] [role="row"]:focus-visible {
   background-size: 100% 100%;
   color: #121212;
-  outline: none;
+  /* Invisible here, but Windows High Contrast mode drops the white background and draws this outline instead */
+  outline: 2px solid transparent;
+  outline-offset: -2px;
 }
 /* Sveltia colours the title itself, so it has to follow the row */
 :is([aria-label="Entries"], [aria-label="Files"])[role="grid"] [role="row"]:is(:hover, :focus-visible) :is(.title, .title *) { color: inherit; }
